@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import ttk
-import backend  # Importing the backend module
+import backend.backend as backend  # Importing the backend module
 
 class train_model(tk.Frame):
     def __init__(self, master):
@@ -40,6 +40,10 @@ class train_model(tk.Frame):
 
     def select_model():
         backend.select_model()
+
+def train_model_call():
+    tain_model = train_model()
+    train_model.pack()
 
 # Main window
 # root = tk.Tk()

@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import ttk
-import backend  # Importing the backend module
+import backend.backend as backend  # Importing the backend module
 
 def upload_dataset():
     filepath = filedialog.askopenfilename()

@@ -3,6 +3,7 @@ from gui.login_frame import LoginFrame  # LoginFrame import karte hain (Login sc
 from gui.register_frame import RegisterFrame  # RegisterFrame import karte hain (Register screen ke liye)
 from gui.main_frame import MainScreen  # MainScreen import karte hain (Main screen ke liye)
 from gui.recover_password_frame import RecoverPasswordFrame  # RecoverPasswordFrame import karte hain (Password recovery ke liye)
+from gui.train_model import train_model  # RecoverPasswordFrame import karte hain (Password recovery ke liye)
 
 # App class jo Tkinter ki main window ko manage karegi
 class App(tk.Tk):
@@ -35,6 +36,13 @@ class App(tk.Tk):
         # Register screen banate hain aur usko current frame ke variable mein store karte hain
         self.current_frame = RegisterFrame(self, self.show_login)
         self.current_frame.pack(fill=tk.BOTH, expand=True)  # Register screen ko window mein dikhate hain
+    
+    # def train_model(self):
+    #     if self.current_frame is not None:
+    #         self.current_frame.pack_forget()
+            
+    #     self.current_frame =  train_model.train_model(self)
+    #     self.current_frame.pack()
 
     # Yeh method main screen ko display karne ke liye hai
     def show_main_screen(self):
