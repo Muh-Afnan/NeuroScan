@@ -53,7 +53,6 @@ class RecoverPasswordFrame(tk.Frame):
     def recover_password(self):
         username = self.entry_username.get()
         security_question = self.combobox_security_question.get()
-        print(security_question)
         security_answer = self.entry_security_answer.get()
 
         # Placeholder logic for password recovery

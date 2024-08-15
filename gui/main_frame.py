@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
+import gui.train_model as train_model
 # import train_model as tm
 import database.query as Query
 
@@ -39,7 +40,8 @@ class MainScreen(tk.Frame):
         self.button_logout.grid(row=1, column=2, padx=10, pady=10)
 
     def train_model(self):
-        messagebox.showinfo("Train Model", "Training model...")
+        self.train =  train_model.train_model(self)
+        self.train.pack()
 
     def test_model(self):
         messagebox.showinfo("Test Model", "Testing model...")
