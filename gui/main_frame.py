@@ -40,11 +40,8 @@ class MainScreen(tk.Frame):
         self.button_logout.grid(row=1, column=2, padx=10, pady=10)
 
     def train_model(self):
-        if self.current_frame is not None:
-            self.current_frame.pack_forget()
-            
-        self.train =  train_model.train_model(self)
-        self.train.pack()
+        self.master.clear_screen()
+        self.master.pack_screen(train_model.train_model(self.master))
 
     def test_model(self):
         messagebox.showinfo("Test Model", "Testing model...")

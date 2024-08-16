@@ -9,6 +9,7 @@ class train_model(tk.Frame):
         self.master = master
         self.create_widgets()
 
+
     def create_widgets(self):
         # Upload dataset button
         self.upload_button = tk.Button(self, text="Upload Dataset", command=self.upload_dataset)
@@ -27,27 +28,16 @@ class train_model(tk.Frame):
         self.model_button.pack(pady=10)
 
 
-    def upload_dataset():
+    def upload_dataset(self):
         filepath = filedialog.askopenfilename()
         if filepath:
             backend.handle_dataset_upload(filepath)
 
-    def preprocess_data():
+    def preprocess_data(self):
         backend.preprocess_data()
 
-    def augment_data():
+    def augment_data(self):
         backend.augment_data()
 
-    def select_model():
+    def select_model(self):
         backend.select_model()
-
-def train_model_call():
-    tain_model = train_model()
-    train_model.pack()
-
-# Main window
-# root = tk.Tk()
-# root.title("Deep Learning Preprocessing and Model Selection")
-# root.geometry("400x300")
-
-# root.mainloop()
