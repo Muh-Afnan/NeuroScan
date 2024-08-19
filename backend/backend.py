@@ -1,49 +1,39 @@
-import torch
-import torchvision.transforms as transforms
-import torch.nn as nn
-import torch.optim as optim
-from torchvision.models import resnet18
+from PIL import Image, ImageEnhance
+import numpy as np
+import os
+import random
 
-def handle_dataset_upload(filepath):
-    # Placeholder function to handle dataset upload
-    print(f"Dataset uploaded from: {filepath}")
-    # Load your dataset here and store it in a global variable or class
+def load_images_from_folder(folder_path):
+    images = []
+    for filename in os.listdir(folder_path):
+        if filename.endswith(('.png', '.jpg', '.jpeg')):
+            img_path = os.path.join(folder_path, filename)
+            img = Image.open(img_path).convert("RGB")
+            images.append((filename, img))
+    return images
 
-def preprocess_data():
-    # Example preprocessing: Normalize and convert to tensor
-    transform = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.Normalize((0.5,), (0.5,))  # Adjust according to your dataset
-    ])
-    # Apply the transform to your dataset
-    # transformed_dataset = [transform(image) for image in dataset]
-    print("Data preprocessing applied")
+def preprocess_image(img):
+    # Implement your preprocessing steps here
+    return img
 
-def augment_data():
-    # Example augmentations: Random rotation and horizontal flip
-    augmentation = transforms.Compose([
-        transforms.RandomRotation(30),
-        transforms.RandomHorizontalFlip()
-    ])
-    # Apply the augmentation to your dataset
-    # augmented_dataset = [augmentation(image) for image in dataset]
-    print("Data augmentation applied")
+def augment_image(img, technique, *args):
+    if technique == "rotate":
+        angle = args[0]
+        return img.rotate(angle)
+    elif technique == "flip_horizontal":
+        return img.transpose(Image.FLIP_LEFT_RIGHT)
+    elif technique == "flip_vertical":
+        return img.transpose(Image.FLIP_TOP_BOTTOM)
+    elif technique == "add_noise":
+        noise_value = args[0]
+        np_img = np.array(img)
+        noise = np.random.normal(0, noise_value, np_img.shape)
+        noisy_img = np_img + noise
+        noisy_img = np.clip(noisy_img, 0, 255).astype(np.uint8)
+        return Image.fromarray(noisy_img)
+    # Add more augmentation techniques as needed
+    return img
 
-def select_model():
-    # Example: Using ResNet18 from torchvision
-    model = resnet18(pretrained=False)
-    model.fc = nn.Linear(model.fc.in_features, 10)  # Replace 10 with the number of your classes
-    criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
-    
-    # Training loop placeholder
-    # for epoch in range(num_epochs):
-    #     for data in dataloader:
-    #         inputs, labels = data
-    #         optimizer.zero_grad()
-    #         outputs = model(inputs)
-    #         loss = criterion(outputs, labels)
-    #         loss.backward()
-    #         optimizer.step()
-    
-    print("Model selected and training started")
+def train_yolo_model(dataset_path, images):
+    # Implement YOLO training here
+    pass

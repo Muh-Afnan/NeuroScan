@@ -9,7 +9,7 @@ class App(tk.Tk):
     def __init__(self):
         super().__init__() 
         self.title("NeuroScan App")  
-        self.geometry("800x600")  
+        self.geometry("800x600")
 
         self.current_frame = None  
         self.show_login()  
