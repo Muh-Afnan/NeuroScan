@@ -77,7 +77,29 @@ button.pack()
 
 
 
+drop_1 = tk.StringVar(value = "Select the Option")
+options= ["What is this?", "What is that?", "What is other?"]
+select_opt = tk.OptionMenu(root, drop_1, *options).pack()
 
-drop_down = tk.OptionMenu(root)
-drop_down.insert()
+def get_val():
+   drop_1.get().pack()
+
+button2 = tk.Button(root, text="Click me to get Text", command = get_val).pack()
+
+
+def say_hello():
+    print("Hello!")
+
+
+menu_bar = tk.Menu(root)  # Create a menu bar
+file_menu = tk.Menu(menu_bar, tearoff=0)
+file_menu.add_command(label="Say Hello", command=say_hello)
+menu_bar.add_cascade(label="File", menu=file_menu)
+
+root.config(menu=menu_bar)
+
+
+spinbox = tk.Spinbox(root, from_=0, to=10)  # Create a spinbox for selecting numbers between 0 and 10
+spinbox.pack()
+
 root.mainloop()
