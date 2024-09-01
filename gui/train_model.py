@@ -6,9 +6,11 @@ import threading
 from backend import backend
 
 class train_model(tk.Frame):
-    def __init__(self, master):
+    def __init__(self, master, show_main_screen):
         super().__init__(master)
         self.master = master
+        self.callback_main_Screen = show_main_screen
+        
 
         self.dataset_path = ""
         self.loaded_images = []
@@ -19,20 +21,32 @@ class train_model(tk.Frame):
             "Skull Stripping": tk.BooleanVar(),
             "Artifact Removal": tk.BooleanVar(),
         }
-        self.dataset_info_label = tk.Label(self.master, text="No dataset loaded")
-        self.dataset_info_label.pack(pady=10)
 
-        self.upload_button = tk.Button(self.master, text="Upload Dataset", command=self.upload_dataset)
-        self.upload_button.pack(pady=10)
+        self.frame1 = tk.Frame(self).pack()
+        self.back_button= tk.Button(self.frame1, text="Back to Main", command=self.callback_main_Screen)
+        self.back_button.place(x=800, y=300)
+        
+        self.frame2 = tk.Frame(self).pack()
 
-        self.preprocess_button = tk.Button(self.master, text="Preprocess Data", command=self.preprocess_data)
-        self.preprocess_button.pack(pady=10)
+        
 
-        self.augment_button = tk.Button(self.master, text="Augment Data", command=self.augment_data)
-        self.augment_button.pack(pady=10)
+        self.back_button= tk.Button(self.frame2, text="Back to Main", command=self.callback_main_Screen)
+        self.back_button.grid(row=0, column=3,columnspan=1)
 
-        self.select_model_button = tk.Button(self.master, text="Select Model", command=self.select_model)
-        self.select_model_button.pack(pady=10)
+        self.dataset_info_label = tk.Label(self.frame2, text="No dataset loaded")
+        self.dataset_info_label.grid(row=1, column=0,columnspan=3, sticky="ew")
+
+        self.upload_button = tk.Button(self.frame2, text="Upload Dataset", command=self.upload_dataset)
+        self.upload_button.grid(row=1, column=0,columnspan=3)
+
+        self.preprocess_button = tk.Button(self.frame2, text="Preprocess Data", command=self.preprocess_data)
+        self.preprocess_button.grid(row=2, column=0,columnspan=1)
+
+        self.augment_button = tk.Button(self.frame2, text="Augment Data", command=self.augment_data)
+        self.augment_button.grid(row=2, column=1,columnspan=1)
+
+        self.select_model_button = tk.Button(self.frame2, text="Select Model", command=self.select_model)
+        self.select_model_button.grid(row=2, column=2,columnspan=1)
 
     def upload_dataset(self):
         self.dataset_path = filedialog.askdirectory(title="Select Dataset Folder")
@@ -55,7 +69,7 @@ class train_model(tk.Frame):
             messagebox.showwarning("No Dataset", "Please upload a dataset first.")
             return
 
-        progress_window = tk.Toplevel(self.master)
+        progress_window = tk.Toplevel(self)
         progress_window.title("Preprocessing Progress")
         progress_window.geometry("600x400")
 
@@ -101,7 +115,7 @@ class train_model(tk.Frame):
             messagebox.showwarning("No Dataset", "Please upload a dataset first.")
             return
 
-        augment_window = tk.Toplevel(self.master)
+        augment_window = tk.Toplevel(self)
         augment_window.title("Data Augmentation")
         augment_window.geometry("1200x800")
 
@@ -303,5 +317,3 @@ class train_model(tk.Frame):
 
         # Here you would integrate model selection and training logic
         messagebox.showinfo("Model Selection", "Model selection and training functionality needs to be integrated.")
-
-

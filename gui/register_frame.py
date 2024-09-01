@@ -72,4 +72,4 @@ class RegisterFrame(tk.Frame):  # RegisterFrame class define karte hain jo tk.Fr
         selected_question= self.default_val.get()
         print(selected_question)
 
-        self.show_login_callback()
+        # self.show_login_callback()

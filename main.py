@@ -24,11 +24,15 @@ class App(tk.Tk):
     
     def show_main_screen(self):
         self.clear_screen()
-        self.pack_screen(MainScreen(self))
+        self.pack_screen(MainScreen(self,self.show_train_model))
 
     def show_recover_password(self):
         self.clear_screen()
         self.pack_screen(RecoverPasswordFrame(self, self.show_login))
+
+    def show_train_model(self):
+        self.clear_screen()
+        self.pack_screen(train_model(self,self.show_main_screen))
 
     def pack_screen(self,frame):
         self.current_frame = frame

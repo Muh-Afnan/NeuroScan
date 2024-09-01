@@ -4,9 +4,10 @@ import gui.train_model as train_model
 import database.query as Query
 
 class MainScreen(tk.Frame):
-    def __init__(self, master):
+    def __init__(self, master, show_train_model):
         super().__init__(master)
         self.master = master
+        self.show_train_model = show_train_model
         self.pack(fill=tk.BOTH, expand=True)
 
         self.configure_gui()
@@ -20,7 +21,7 @@ class MainScreen(tk.Frame):
 
         button_style_large = {"font": ("Arial", 14), "width": 15, "height": 2, "padx": 10, "pady": 10}
 
-        self.button_train_model = tk.Button(button_frame, text="Train Model", **button_style_large, command=self.train_model)
+        self.button_train_model = tk.Button(button_frame, text="Train Model", **button_style_large, command=self.show_train_model)
         self.button_train_model.grid(row=0, column=0, padx=10, pady=10)
 
         self.button_test_model = tk.Button(button_frame, text="Test Model", **button_style_large, command=self.test_model)
@@ -38,9 +39,9 @@ class MainScreen(tk.Frame):
         self.button_logout = tk.Button(button_frame, text="Logout", **button_style_large, command=self.logout)
         self.button_logout.grid(row=1, column=2, padx=10, pady=10)
 
-    def train_model(self):
-        self.master.clear_screen()
-        self.master.pack_screen(train_model.train_model(self.master))
+    # def train_model(self):
+    #     self.master.clear_screen()
+    #     self.master.pack_screen(train_model.train_model(self.master))
 
     def test_model(self):
         messagebox.showinfo("Test Model", "Testing model...")
@@ -57,9 +58,3 @@ class MainScreen(tk.Frame):
     def logout(self):
         self.pack_forget()
         self.master.show_login()
-
-# if __name__ == "__main__":
-#     root = tk.Tk()
-#     app = MainScreen(root)
-#     app.pack(fill=tk.BOTH, expand=True)
-#     root.mainloop()
