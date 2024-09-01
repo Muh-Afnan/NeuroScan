@@ -43,16 +43,17 @@ class RegisterFrame(tk.Frame):  # RegisterFrame class define karte hain jo tk.Fr
         ]
 
         # Combobox create karte hain jahan security questions ka list dikhaya jayega
-        self.combobox_security_question = ttk.Combobox(self, values=self.security_questions, state="readonly", width=50)
-        self.combobox_security_question.pack(pady=10)
-        self.combobox_security_question.set("Select a question")  # Default text set karte hain
+        self.default_val = tk.StringVar()
+        self.question_drop_down = tk.OptionMenu(self, self.default_val, *self.security_questions)
+        self.question_drop_down.pack(pady=10)
+        self.default_val.set("Select a question")
 
         # Security answer ke liye label create karte hain
         self.label_security_answer = tk.Label(self, text="Answer")
         self.label_security_answer.pack(pady=10)
 
         # Security answer input field create karte hain jahan user apna answer enter karega
-        self.entry_security_answer = ttk.Entry(self)
+        self.entry_security_answer = tk.Entry(self)
         self.entry_security_answer.pack(pady=10)
 
         # Button styles define karte hain
@@ -61,8 +62,6 @@ class RegisterFrame(tk.Frame):  # RegisterFrame class define karte hain jo tk.Fr
         # Register button create karte hain jo click hone par register method call karega
         self.button_register = tk.Button(self, text="Register", **button_style_small, command=self.register)
         self.button_register.pack(pady=10)
-
-        # Back to Login button create karte hain jo click hone par show_login_callback method call karega
         self.button_back_to_login = tk.Button(self, text="Back to Login", **button_style_small,
                                               command=self.show_login_callback)
         self.button_back_to_login.pack(pady=10)
@@ -70,7 +69,7 @@ class RegisterFrame(tk.Frame):  # RegisterFrame class define karte hain jo tk.Fr
     def register(self):
         username=self.entry_username.get()
         password=self.entry_password.get()
-        secret_question=self.security_questions.__new__()
-        print(secret_question)
-        # Yeh method registration logic ko handle karti hai (abhi ke liye yeh just login screen dikhane ke liye callback function call karti hai)
+        selected_question= self.default_val.get()
+        print(selected_question)
+
         self.show_login_callback()

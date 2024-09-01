@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
 import gui.train_model as train_model
-# import train_model as tm
 import database.query as Query
 
 class MainScreen(tk.Frame):
@@ -13,7 +12,7 @@ class MainScreen(tk.Frame):
         self.configure_gui()
 
     def configure_gui(self):
-        self.label_title = tk.Label(self, text="Admin Main Screen", font=("Arial", 24), pady=20)
+        self.label_title = tk.Label(self, text="Main Screen", font=("Arial", 24), pady=20)
         self.label_title.pack()
 
         button_frame = tk.Frame(self)
@@ -59,8 +58,8 @@ class MainScreen(tk.Frame):
         self.pack_forget()
         self.master.show_login()
 
-if __name__ == "__main__":
-    root = tk.Tk()
-    app = MainScreen(root)
-    app.pack(fill=tk.BOTH, expand=True)
-    root.mainloop()
+# if __name__ == "__main__":
+#     root = tk.Tk()
+#     app = MainScreen(root)
+#     app.pack(fill=tk.BOTH, expand=True)
+#     root.mainloop()

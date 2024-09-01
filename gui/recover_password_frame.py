@@ -28,11 +28,11 @@ class RecoverPasswordFrame(tk.Frame):
             "What is your favorite food?"
         ]
 
-        self.security_question_var = tk.StringVar()
-        self.combobox_security_question = ttk.Combobox(self, textvariable=self.security_question_var,
-                                                       values=self.security_questions, state="readonly", width=50)
-        self.combobox_security_question.pack(pady=10)
-        self.combobox_security_question.set("Select a question")
+        self.default_val = tk.StringVar()
+        self.default_val.set("Select a question")
+        self.question_drop_down = tk.OptionMenu(self, self.default_val, *self.security_questions)
+        self.question_drop_down.pack(pady=10)
+        
 
         self.label_security_answer = tk.Label(self, text="Answer")
         self.label_security_answer.pack(pady=10)
@@ -52,12 +52,13 @@ class RecoverPasswordFrame(tk.Frame):
 
     def recover_password(self):
         username = self.entry_username.get()
-        security_question = self.combobox_security_question.get()
+        security_question = self.default_val.get()
+        print(security_question)
         security_answer = self.entry_security_answer.get()
 
         # Placeholder logic for password recovery
-        if username and security_question != "Select a question" and security_answer:
-            messagebox.showinfo("Recover Password", "Password recovery successful (simulated).")
-            self.show_login_callback()
-        else:
-            messagebox.showerror("Error", "Please complete all fields.")
+        # if username and security_question != "Select a question" and security_answer:
+        #     messagebox.showinfo("Recover Password", "Password recovery successful (simulated).")
+        #     self.show_login_callback()
+        # else:
+        #     messagebox.showerror("Error", "Please complete all fields.")
