@@ -3,50 +3,55 @@ from tkinter import ttk
 from tkinter import ttk, filedialog, messagebox
 from PIL import Image, ImageTk
 import threading
-from backend import backend
+from preprocessing_logic import backend
+# from gui.preprocessing import preprocess
 
 class train_model(tk.Frame):
-    def __init__(self, master, show_main_screen):
+    def __init__(self, master,show_preproc_screen ,show_main_screen):
         super().__init__(master)
         self.master = master
         self.callback_main_Screen = show_main_screen
-        
+        self.preprocessframe = show_preproc_screen
+
+    
 
         self.dataset_path = ""
         self.loaded_images = []
-
-        self.preprocessing_status = {
-            "Normalization": tk.BooleanVar(),
-            "Noise Reduction": tk.BooleanVar(),
-            "Skull Stripping": tk.BooleanVar(),
-            "Artifact Removal": tk.BooleanVar(),
-        }
-
-        self.frame1 = tk.Frame(self).pack()
-        self.back_button= tk.Button(self.frame1, text="Back to Main", command=self.callback_main_Screen)
-        self.back_button.place(x=800, y=300)
         
-        self.frame2 = tk.Frame(self).pack()
+        # # Copied This Code Open
 
-        
+        # self.preprocessing_status = {
+        #     "Normalization": tk.BooleanVar(),
+        #     "Noise Reduction": tk.BooleanVar(),
+        #     "Skull Stripping": tk.BooleanVar(),
+        #     "Artifact Removal": tk.BooleanVar(),
+        # }
 
-        self.back_button= tk.Button(self.frame2, text="Back to Main", command=self.callback_main_Screen)
-        self.back_button.grid(row=0, column=3,columnspan=1)
+        #  # Copied This Code Close
+        self.create_widgets()
+ 
 
-        self.dataset_info_label = tk.Label(self.frame2, text="No dataset loaded")
-        self.dataset_info_label.grid(row=1, column=0,columnspan=3, sticky="ew")
+    def create_widgets(self):
+        self.back_button= tk.Button(self, text="Back to Main", command=self.callback_main_Screen)
+        self.back_button.pack()
 
-        self.upload_button = tk.Button(self.frame2, text="Upload Dataset", command=self.upload_dataset)
-        self.upload_button.grid(row=1, column=0,columnspan=3)
+        self.dataset_info_label = tk.Label(self, text="No dataset loaded")
+        self.dataset_info_label.pack()
 
-        self.preprocess_button = tk.Button(self.frame2, text="Preprocess Data", command=self.preprocess_data)
-        self.preprocess_button.grid(row=2, column=0,columnspan=1)
+        self.upload_button = tk.Button(self, text="Upload Dataset", command=self.upload_dataset)
+        self.upload_button.pack()
 
-        self.augment_button = tk.Button(self.frame2, text="Augment Data", command=self.augment_data)
-        self.augment_button.grid(row=2, column=1,columnspan=1)
+            
+        self.preprocess_button = tk.Button(self, text="Preprocess Data", command=self.preprocessframe)
 
-        self.select_model_button = tk.Button(self.frame2, text="Select Model", command=self.select_model)
-        self.select_model_button.grid(row=2, column=2,columnspan=1)
+        # self.preprocess_button = tk.Button(self, text="Preprocess Data", command=self.preprocess_data)
+        self.preprocess_button.pack()
+
+        self.augment_button = tk.Button(self, text="Augment Data", command=self.augment_data)
+        self.augment_button.pack()
+
+        self.select_model_button = tk.Button(self, text="Select Model", command=self.select_model)
+        self.select_model_button.pack()    
 
     def upload_dataset(self):
         self.dataset_path = filedialog.askdirectory(title="Select Dataset Folder")
@@ -64,51 +69,54 @@ class train_model(tk.Frame):
         else:
             messagebox.showwarning("No Dataset", "Please select a valid dataset folder.")
 
-    def preprocess_data(self):
-        if not self.dataset_path:
-            messagebox.showwarning("No Dataset", "Please upload a dataset first.")
-            return
+    #  # Copied This Code Open
+    # def preprocess_data(self):
+    #     if not self.dataset_path:
+    #         messagebox.showwarning("No Dataset", "Please upload a dataset first.")
+    #         return
 
-        progress_window = tk.Toplevel(self)
-        progress_window.title("Preprocessing Progress")
-        progress_window.geometry("600x400")
+    #     progress_window = tk.Toplevel(self)
+    #     progress_window.title("Preprocessing Progress")
+    #     progress_window.geometry("600x400")
 
-        tk.Label(progress_window, text="Preprocessing images...").pack(pady=10)
+    #     tk.Label(progress_window, text="Preprocessing images...").pack(pady=10)
 
-        # Create a frame to hold the progress bars and labels
-        progress_frame = tk.Frame(progress_window)
-        progress_frame.pack(pady=10)
+    #     # Create a frame to hold the progress bars and labels
+    #     progress_frame = tk.Frame(progress_window)
+    #     progress_frame.pack(pady=10)
 
-        progress_bars = {}
-        for step in self.preprocessing_status:
-            tk.Label(progress_frame, text=step).pack(anchor="w", padx=10)
-            progress_bar = ttk.Progressbar(progress_frame, orient="horizontal", length=500, mode="determinate")
-            progress_bar.pack(pady=5)
-            progress_bars[step] = progress_bar
+    #     progress_bars = {}
+    #     for step in self.preprocessing_status:
+    #         tk.Label(progress_frame, text=step).pack(anchor="w", padx=10)
+    #         progress_bar = ttk.Progressbar(progress_frame, orient="horizontal", length=500, mode="determinate")
+    #         progress_bar.pack(pady=5)
+    #         progress_bars[step] = progress_bar
 
-        def run_preprocessing():
-            total_images = len(self.loaded_images)
-            for step in self.preprocessing_status:
-                self.preprocessing_status[step].set(True)
-                progress_bars[step]["maximum"] = total_images
-                progress_bars[step]["value"] = 0
-                progress_window.update_idletasks()
+    #     def run_preprocessing():
+    #         total_images = len(self.loaded_images)
+    #         for step in self.preprocessing_status:
+    #             self.preprocessing_status[step].set(True)
+    #             progress_bars[step]["maximum"] = total_images
+    #             progress_bars[step]["value"] = 0
+    #             progress_window.update_idletasks()
 
-                # Simulate the preprocessing step
-                for idx, (name, img) in enumerate(self.loaded_images):
-                    if step == "Normalization":
-                        img = backend.preprocess_image(img)
-                    # Update progress bar for the current step
-                    progress_bars[step]["value"] += 1
-                    progress_window.update_idletasks()
+    #             # Simulate the preprocessing step
+    #             for idx, (name, img) in enumerate(self.loaded_images):
+    #                 if step == "Normalization":
+    #                     img = backend.preprocess_image(img)
+    #                 # Update progress bar for the current step
+    #                 progress_bars[step]["value"] += 1
+    #                 progress_window.update_idletasks()
 
-                # Mark the step as complete
-                self.preprocessing_status[step].set(False)
+    #             # Mark the step as complete
+    #             self.preprocessing_status[step].set(False)
 
-            messagebox.showinfo("Preprocessing", "Preprocessing completed!")
-            progress_window.destroy()
+    #         messagebox.showinfo("Preprocessing", "Preprocessing completed!")
+    #         progress_window.destroy()
 
-        threading.Thread(target=run_preprocessing).start()
+    #     threading.Thread(target=run_preprocessing).start()
+
+    #  # Copied This Code Close
 
     def augment_data(self):
         if not self.dataset_path:

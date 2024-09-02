@@ -4,10 +4,10 @@ import gui.train_model as train_model
 import database.query as Query
 
 class MainScreen(tk.Frame):
-    def __init__(self, master, show_train_model):
+    def __init__(self, master, show_train_frame):
         super().__init__(master)
         self.master = master
-        self.show_train_model = show_train_model
+        self.show_train_frame = show_train_frame
         self.pack(fill=tk.BOTH, expand=True)
 
         self.configure_gui()
@@ -21,7 +21,7 @@ class MainScreen(tk.Frame):
 
         button_style_large = {"font": ("Arial", 14), "width": 15, "height": 2, "padx": 10, "pady": 10}
 
-        self.button_train_model = tk.Button(button_frame, text="Train Model", **button_style_large, command=self.show_train_model)
+        self.button_train_model = tk.Button(button_frame, text="Train Model", **button_style_large, command=self.show_train_frame)
         self.button_train_model.grid(row=0, column=0, padx=10, pady=10)
 
         self.button_test_model = tk.Button(button_frame, text="Test Model", **button_style_large, command=self.test_model)

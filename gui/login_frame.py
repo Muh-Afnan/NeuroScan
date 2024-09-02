@@ -3,7 +3,7 @@ from tkinter import ttk  # ttk module ko import karte hain jo additional GUI wid
 import database.query as Query
 
 class LoginFrame(tk.Frame):  # LoginFrame class ko define karte hain jo tk.Frame se inherit karti hai
-    def __init__(self, master, show_register_callback, show_main_screen_callback, show_recover_password_callback):
+    def __init__(self,master,show_register_callback, show_main_screen_callback, show_recover_password_callback):
         # Constructor method jo class ka instance banane ke liye use hota hai
         super().__init__(master)  # Parent class (tk.Frame) ka __init__ method call karte hain
 
