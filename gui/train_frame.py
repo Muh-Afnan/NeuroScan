@@ -3,8 +3,8 @@ from tkinter import ttk
 from tkinter import ttk, filedialog, messagebox
 from PIL import Image, ImageTk
 import threading
-from preprocessing_logic import backend
-# from gui.preprocessing import preprocess
+from backend.backend import load_images_from_folder,preprocess_image,augment_image
+from gui.preprocessing import PreprocessingApp
 
 class train_model(tk.Frame):
     def __init__(self, master,show_preproc_screen ,show_main_screen):

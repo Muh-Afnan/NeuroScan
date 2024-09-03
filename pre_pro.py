@@ -18,27 +18,15 @@ class PreprocessingApp:
         self.thumbnails = []  # List to store thumbnail images for the scrollable frame
 
         # Configure the grid layout for the main window
-        # root.grid_rowconfigure(0, weight=1)
-        # root.grid_columnconfigure(0, weight=8)
-        # root.grid_columnconfigure(1, weight=2)
-
-        self.paned_window = tk.PanedWindow(root, orient=tk.HORIZONTAL)
-        self.paned_window.pack(fill=tk.BOTH, expand=True)
-
-        # Create frames for the panes
-        self.left_frame = tk.Frame(self.paned_window, bg="white", width=200)
-        self.right_frame = tk.Frame(self.paned_window, bg="white")
-
-        # Add frames to the PanedWindow
-        self.paned_window.add(self.left_frame)
-        self.paned_window.add(self.right_frame)
-
+        root.grid_rowconfigure(0, weight=1)
+        root.grid_columnconfigure(0, weight=8)
+        root.grid_columnconfigure(1, weight=2)
 
         # Create a frame on the left side for thumbnails
-        # self.left_frame = tk.Frame(root)
-        # self.left_frame.grid(row=0, column=0, padx=10, pady=10, sticky='nswe')
-        # self.left_frame.grid_rowconfigure(0, weight=1)
-        # self.left_frame.grid_columnconfigure(0, weight=1)
+        self.left_frame = tk.Frame(root)
+        self.left_frame.grid(row=0, column=0, padx=10, pady=10, sticky='nswe')
+        self.left_frame.grid_rowconfigure(0, weight=1)
+        self.left_frame.grid_columnconfigure(0, weight=1)
 
         # Create a canvas and scrollbar for scrolling through thumbnails
         self.canvas = tk.Canvas(self.left_frame)
@@ -62,25 +50,21 @@ class PreprocessingApp:
         self.scrollbar.pack(side="right", fill="y")
 
         # Create a frame on the right side for control buttons and settings
-        # self.right_frame = tk.Frame(root)
-        # self.right_frame.grid(row=0, column=1, padx=10, pady=10, sticky='nswe')
+        self.right_frame = tk.Frame(root)
+        self.right_frame.grid(row=0, column=1, padx=15, pady=15, sticky='nswe')
 
         # Configure rows and columns in the right frame
-        # self.right_frame.grid_rowconfigure(0, weight=1)
-        # for i in range(17):
-        #     self.right_frame.grid_rowconfigure(i, weight=1)
-        # self.right_frame.grid_columnconfigure(0, weight=1)
-        self.canvas.pack(side="left", fill="both", expand=True)
-        self.scrollbar.pack(side="right", fill="y")
+        self.right_frame.grid_rowconfigure(0, weight=1)
+        for i in range(17):
+            self.right_frame.grid_rowconfigure(i, weight=1)
+        self.right_frame.grid_columnconfigure(0, weight=1)
 
-        # Create a frame on the right side for control buttons and settings
-        # Note: The right frame is already added to the PanedWindow
         # You should configure it directly without redefining it
-        # self.configure_right_frame()
+        self.configure_right_frame()
 
-        # Button to load dataset of images
+    def configure_right_frame(self):
         self.load_button = tk.Button(self.right_frame, text="Load Dataset", command=self.load_dataset)
-        self.load_button.grid(row=0, column=0, padx = 20, pady=10, sticky='ew')
+        self.load_button.grid(row=0, column=0, padx = 10, pady=10, sticky='ew')
 
         # Button to apply normalization to the current image
         self.norm_button = tk.Button(self.right_frame, text="Normalize Image", command=self.apply_normalization)
@@ -92,8 +76,8 @@ class PreprocessingApp:
         self.noise_var = tk.StringVar(value='gaussian')  # Default noise reduction method
         self.noise_gaussian = tk.Radiobutton(self.right_frame, text="Gaussian", variable=self.noise_var, value='gaussian')
         self.noise_median = tk.Radiobutton(self.right_frame, text="Median", variable=self.noise_var, value='median')
-        self.noise_gaussian.grid(row=5, column=0, sticky='w')
-        self.noise_median.grid(row=6, column=0, sticky='w')
+        self.noise_gaussian.grid(row=5, column=0, padx=20, sticky="w")
+        self.noise_median.grid(row=5, column=1,sticky="w")
 
         # Slider to select kernel size for noise reduction
         self.kernel_size_label = tk.Label(self.right_frame, text="Kernel Size:")
@@ -123,8 +107,8 @@ class PreprocessingApp:
         self.artifact_var = tk.StringVar(value='default')  # Default artifact removal method
         self.artifact_default = tk.Radiobutton(self.right_frame, text="Default", variable=self.artifact_var, value='default')
         self.artifact_custom = tk.Radiobutton(self.right_frame, text="Custom", variable=self.artifact_var, value='custom')
-        self.artifact_default.grid(row=14, column=0, sticky='w')
-        self.artifact_custom.grid(row=15, column=0, sticky='w')
+        self.artifact_default.grid(row=14, column=0, padx=20,sticky='w')
+        self.artifact_custom.grid(row=14, column=1, sticky='w')
 
         # Button to apply artifact removal
         self.artifact_button = tk.Button(self.right_frame, text="Remove Artifacts", command=self.apply_artifact_removal)

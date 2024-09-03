@@ -5,7 +5,7 @@ from gui.main_frame import MainScreen  # MainScreen import karte hain (Main scre
 from gui.recover_password_frame import RecoverPasswordFrame  # RecoverPasswordFrame import karte hain (Password recovery ke liye)
 from gui.train_frame import train_model  # RecoverPasswordFrame import karte hain (Password recovery ke liye)
 # from 
-from gui.preprocessing import preprocess
+from gui.preprocessing import PreprocessingApp
 
 
 class App(tk.Tk):
@@ -39,7 +39,7 @@ class App(tk.Tk):
 
     def show_preproc_screen(self):
         self.clear_screen()
-        # self.pack_screen(preprocess(self))
+        self.pack_screen(PreprocessingApp(self,self.show_train_frame))
 
     def pack_screen(self,frame):
         self.current_frame = frame

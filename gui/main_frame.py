@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
-import gui.train_model as train_model
+import gui.train_frame as train_model
 import database.query as Query
 
 class MainScreen(tk.Frame):
