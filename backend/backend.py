@@ -12,9 +12,6 @@ def load_images_from_folder(folder_path):
             images.append((filename, img))
     return images
 
-def preprocess_image(img):
-    # Implement your preprocessing steps here
-    return img
 
 def augment_image(img, technique, *args):
     if technique == "rotate":

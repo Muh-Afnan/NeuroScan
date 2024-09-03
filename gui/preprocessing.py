@@ -3,10 +3,10 @@ from tkinter import filedialog, messagebox, ttk
 from PIL import Image, ImageTk
 import cv2
 import numpy as np
-from preprocessing_logic import normalize_image, reduce_noise, skull_strip, remove_artifacts
+from backend.preprocessing_logic import normalize_image, reduce_noise, skull_strip, remove_artifacts
 import os
 
-class PreprocessingApp(tk.Frame):
+class PreprocessingFrame(tk.Frame):
     def __init__(self, master,show_train_frame):
         super().__init__(master)
         self.master = master
@@ -63,6 +63,7 @@ class PreprocessingApp(tk.Frame):
 
         # You should configure it directly without redefining it
         self.configure_right_frame()
+        self.load_dataset()
 
     def configure_right_frame(self):
         self.load_button = tk.Button(self.right_frame, text="Load Dataset", command=self.load_dataset)
@@ -122,9 +123,12 @@ class PreprocessingApp(tk.Frame):
 
     def load_dataset(self):
         # Opens a file dialog to select a directory and loads image file paths
-        directory_path = filedialog.askdirectory()
+        # directory_path = filedialog.askdirectory()
+        directory_path = self.master.dataset_path
         if directory_path:
-            self.image_paths = [os.path.join(directory_path, f) for f in os.listdir(directory_path) if f.lower().endswith(('.jpg', '.jpeg', '.png', '.bmp', '.tiff'))]
+            self.image_paths = self.master.image_paths
+            # self.image_paths = [os.path.join(directory_path, f) for f in os.listdir(directory_path) if f.lower().endswith(('.jpg', '.jpeg', '.png', '.bmp', '.tiff'))]
+
             if self.image_paths:
                 self.current_image_index = 0
                 self.display_thumbnails()  # Show image thumbnails in the left frame
@@ -153,7 +157,7 @@ class PreprocessingApp(tk.Frame):
     def load_image(self, image_path):
         # Load and display the selected image
         self.current_image = cv2.imread(image_path)
-        self.display_image(self.current_image)  # Display the image in the right frame
+        # self.display_image(self.current_image)  # Display the image in the right frame
 
     def display_image(self, image):
         # Display the current image in the scrollable frame

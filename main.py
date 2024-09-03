@@ -3,9 +3,9 @@ from gui.login_frame import LoginFrame  # LoginFrame import karte hain (Login sc
 from gui.register_frame import RegisterFrame  # RegisterFrame import karte hain (Register screen ke liye)
 from gui.main_frame import MainScreen  # MainScreen import karte hain (Main screen ke liye)
 from gui.recover_password_frame import RecoverPasswordFrame  # RecoverPasswordFrame import karte hain (Password recovery ke liye)
-from gui.train_frame import train_model  # RecoverPasswordFrame import karte hain (Password recovery ke liye)
+from gui.train_frame import trainmodelframe  # RecoverPasswordFrame import karte hain (Password recovery ke liye)
 # from 
-from gui.preprocessing import PreprocessingApp
+from gui.preprocessing import PreprocessingFrame
 
 
 class App(tk.Tk):
@@ -13,6 +13,9 @@ class App(tk.Tk):
         super().__init__() 
         self.title("NeuroScan App")  
         self.geometry("800x600")
+        self.dataset_path = ""
+        self.loaded_images = []
+        self.image_paths = []
 
         self.current_frame = None  
         self.show_login()  
@@ -35,11 +38,12 @@ class App(tk.Tk):
 
     def show_train_frame(self):
         self.clear_screen()
-        self.pack_screen(train_model(self,self.show_preproc_screen,self.show_main_screen))
+        self.pack_screen(trainmodelframe(self,self.show_preproc_screen,self.show_main_screen))
 
     def show_preproc_screen(self):
         self.clear_screen()
-        self.pack_screen(PreprocessingApp(self,self.show_train_frame))
+        print("Called Processing Frame")
+        self.pack_screen(PreprocessingFrame(self,self.show_train_frame))
 
     def pack_screen(self,frame):
         self.current_frame = frame

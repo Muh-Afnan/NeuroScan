@@ -3,10 +3,11 @@ from tkinter import ttk
 from tkinter import ttk, filedialog, messagebox
 from PIL import Image, ImageTk
 import threading
-from backend.backend import load_images_from_folder,preprocess_image,augment_image
-from gui.preprocessing import PreprocessingApp
+from backend.backend import load_images_from_folder,augment_image
+from gui.preprocessing import PreprocessingFrame
+import os
 
-class train_model(tk.Frame):
+class trainmodelframe(tk.Frame):
     def __init__(self, master,show_preproc_screen ,show_main_screen):
         super().__init__(master)
         self.master = master
@@ -15,19 +16,9 @@ class train_model(tk.Frame):
 
     
 
-        self.dataset_path = ""
-        self.loaded_images = []
-        
-        # # Copied This Code Open
-
-        # self.preprocessing_status = {
-        #     "Normalization": tk.BooleanVar(),
-        #     "Noise Reduction": tk.BooleanVar(),
-        #     "Skull Stripping": tk.BooleanVar(),
-        #     "Artifact Removal": tk.BooleanVar(),
-        # }
-
-        #  # Copied This Code Close
+        self.master.dataset_path = ""
+        self.master.image_paths = []
+        self.master.loaded_images = []
         self.create_widgets()
  
 
@@ -54,24 +45,26 @@ class train_model(tk.Frame):
         self.select_model_button.pack()    
 
     def upload_dataset(self):
-        self.dataset_path = filedialog.askdirectory(title="Select Dataset Folder")
-        if self.dataset_path:
-            self.loaded_images = backend.load_images_from_folder(self.dataset_path)
+        self.master.dataset_path = filedialog.askdirectory(title="Select Dataset Folder")
+        directory_path = self.master.dataset_path
+        self.master.image_paths = [os.path.join(directory_path, f) for f in os.listdir(directory_path) if f.lower().endswith(('.jpg', '.jpeg', '.png', '.bmp', '.tiff'))]
+        if self.master.dataset_path:
+            self.master.loaded_images = load_images_from_folder(self.master.dataset_path)
             
             # Get the number of images
-            num_images = len(self.loaded_images)
+            num_images = len(self.master.loaded_images)
             
             # Update the display with dataset information
-            self.dataset_info_label.config(text=f"Dataset loaded from: {self.dataset_path}\nNumber of images: {num_images}")
+            self.dataset_info_label.config(text=f"Dataset loaded from: {self.master.dataset_path}\nNumber of images: {num_images}")
             
             # Show a message box with the details
-            messagebox.showinfo("Dataset Uploaded", f"Dataset uploaded from: {self.dataset_path}\nNumber of images: {num_images}")
+            messagebox.showinfo("Dataset Uploaded", f"Dataset uploaded from: {self.master.dataset_path}\nNumber of images: {num_images}")
         else:
             messagebox.showwarning("No Dataset", "Please select a valid dataset folder.")
 
     #  # Copied This Code Open
     # def preprocess_data(self):
-    #     if not self.dataset_path:
+    #     if not self.master.dataset_path:
     #         messagebox.showwarning("No Dataset", "Please upload a dataset first.")
     #         return
 
@@ -93,7 +86,7 @@ class train_model(tk.Frame):
     #         progress_bars[step] = progress_bar
 
     #     def run_preprocessing():
-    #         total_images = len(self.loaded_images)
+    #         total_images = len(self.master.loaded_images)
     #         for step in self.preprocessing_status:
     #             self.preprocessing_status[step].set(True)
     #             progress_bars[step]["maximum"] = total_images
@@ -101,7 +94,7 @@ class train_model(tk.Frame):
     #             progress_window.update_idletasks()
 
     #             # Simulate the preprocessing step
-    #             for idx, (name, img) in enumerate(self.loaded_images):
+    #             for idx, (name, img) in enumerate(self.master.loaded_images):
     #                 if step == "Normalization":
     #                     img = backend.preprocess_image(img)
     #                 # Update progress bar for the current step
@@ -119,7 +112,7 @@ class train_model(tk.Frame):
     #  # Copied This Code Close
 
     def augment_data(self):
-        if not self.dataset_path:
+        if not self.master.dataset_path:
             messagebox.showwarning("No Dataset", "Please upload a dataset first.")
             return
 
@@ -159,13 +152,13 @@ class train_model(tk.Frame):
             max_width = 150
             max_height = 150
             cols = 4
-            rows = (len(self.loaded_images) + cols - 1) // cols
+            rows = (len(self.master.loaded_images) + cols - 1) // cols
 
             for i in range(rows):
                 for j in range(cols):
                     idx = i * cols + j
-                    if idx < len(self.loaded_images):
-                        name, img = self.loaded_images[idx]
+                    if idx < len(self.master.loaded_images):
+                        name, img = self.master.loaded_images[idx]
 
                         # Resize image for preview
                         img_preview = img.resize((max_width, max_height))
@@ -233,9 +226,9 @@ class train_model(tk.Frame):
             
             for var, idx in check_vars:
                 if var.get():
-                    name, img = self.loaded_images[idx]
-                    rotated_img = backend.augment_image(img, "rotate", angle)
-                    self.loaded_images[idx] = (name, rotated_img)
+                    name, img = self.master.loaded_images[idx]
+                    rotated_img = augment_image(img, "rotate", angle)
+                    self.master.loaded_images[idx] = (name, rotated_img)
             
             update_grid()
             messagebox.showinfo("Rotation", f"Applied {angle} degrees rotation to selected images.")
@@ -251,9 +244,9 @@ class train_model(tk.Frame):
         def apply_preset_rotation(angle):
             for var, idx in check_vars:
                 if var.get():
-                    name, img = self.loaded_images[idx]
-                    rotated_img = backend.augment_image(img, "rotate", angle)
-                    self.loaded_images[idx] = (name, rotated_img)
+                    name, img = self.master.loaded_images[idx]
+                    rotated_img = augment_image(img, "rotate", angle)
+                    self.master.loaded_images[idx] = (name, rotated_img)
             
             update_grid()
             messagebox.showinfo("Rotation", f"Applied {angle} degrees rotation to selected images.")
@@ -292,11 +285,11 @@ class train_model(tk.Frame):
             def run_augmentation():
                 for var, idx in check_vars:
                     if var.get():
-                        name, img = self.loaded_images[idx]
+                        name, img = self.master.loaded_images[idx]
                         if flip_horizontal_var.get():
-                            img = backend.augment_image(img, "flip_horizontal")
+                            img = augment_image(img, "flip_horizontal")
                         if flip_vertical_var.get():
-                            img = backend.augment_image(img, "flip_vertical")
+                            img = augment_image(img, "flip_vertical")
                         if noise_var.get():
                             noise_value = noise_value_entry.get()
                             try:
@@ -304,9 +297,9 @@ class train_model(tk.Frame):
                             except ValueError:
                                 messagebox.showwarning("Invalid Input", "Please enter a valid noise value.")
                                 return
-                            img = backend.augment_image(img, "add_noise", noise_value)
+                            img = augment_image(img, "add_noise", noise_value)
                         # Update image list
-                        self.loaded_images[idx] = (name, img)
+                        self.master.loaded_images[idx] = (name, img)
                         progress_bar["value"] += 1
                         progress_window.update_idletasks()
 
@@ -319,7 +312,7 @@ class train_model(tk.Frame):
         augment_button.pack(pady=10)
 
     def select_model(self):
-        if not self.dataset_path:
+        if not self.master.dataset_path:
             messagebox.showwarning("No Dataset", "Please upload a dataset first.")
             return
 
