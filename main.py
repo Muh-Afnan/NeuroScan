@@ -38,12 +38,8 @@ class App(tk.Tk):
 
     def show_train_frame(self):
         self.clear_screen()
-        self.pack_screen(trainmodelframe(self,self.show_preproc_screen,self.show_main_screen))
+        self.pack_screen(trainmodelframe(self,self.show_main_screen))
 
-    def show_preproc_screen(self):
-        self.clear_screen()
-        print("Called Processing Frame")
-        self.pack_screen(PreprocessingFrame(self,self.show_train_frame))
 
     def pack_screen(self,frame):
         self.current_frame = frame

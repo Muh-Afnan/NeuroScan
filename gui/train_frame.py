@@ -3,16 +3,15 @@ from tkinter import ttk
 from tkinter import ttk, filedialog, messagebox
 from PIL import Image, ImageTk
 import threading
-from backend.backend import load_images_from_folder,augment_image
+from Implementation.backend import load_images_from_folder,augment_image
 from gui.preprocessing import PreprocessingFrame
 import os
 
 class trainmodelframe(tk.Frame):
-    def __init__(self, master,show_preproc_screen ,show_main_screen):
+    def __init__(self, master ,show_main_screen):
         super().__init__(master)
         self.master = master
         self.callback_main_Screen = show_main_screen
-        self.preprocessframe = show_preproc_screen
 
     
 
@@ -33,9 +32,7 @@ class trainmodelframe(tk.Frame):
         self.upload_button.pack()
 
             
-        self.preprocess_button = tk.Button(self, text="Preprocess Data", command=self.preprocessframe)
-
-        # self.preprocess_button = tk.Button(self, text="Preprocess Data", command=self.preprocess_data)
+        self.preprocess_button = tk.Button(self, text="Preprocess Data", command=self.call_preprocessingframe)
         self.preprocess_button.pack()
 
         self.augment_button = tk.Button(self, text="Augment Data", command=self.augment_data)
@@ -62,55 +59,17 @@ class trainmodelframe(tk.Frame):
         else:
             messagebox.showwarning("No Dataset", "Please select a valid dataset folder.")
 
-    #  # Copied This Code Open
-    # def preprocess_data(self):
-    #     if not self.master.dataset_path:
-    #         messagebox.showwarning("No Dataset", "Please upload a dataset first.")
-    #         return
 
-    #     progress_window = tk.Toplevel(self)
-    #     progress_window.title("Preprocessing Progress")
-    #     progress_window.geometry("600x400")
-
-    #     tk.Label(progress_window, text="Preprocessing images...").pack(pady=10)
-
-    #     # Create a frame to hold the progress bars and labels
-    #     progress_frame = tk.Frame(progress_window)
-    #     progress_frame.pack(pady=10)
-
-    #     progress_bars = {}
-    #     for step in self.preprocessing_status:
-    #         tk.Label(progress_frame, text=step).pack(anchor="w", padx=10)
-    #         progress_bar = ttk.Progressbar(progress_frame, orient="horizontal", length=500, mode="determinate")
-    #         progress_bar.pack(pady=5)
-    #         progress_bars[step] = progress_bar
-
-    #     def run_preprocessing():
-    #         total_images = len(self.master.loaded_images)
-    #         for step in self.preprocessing_status:
-    #             self.preprocessing_status[step].set(True)
-    #             progress_bars[step]["maximum"] = total_images
-    #             progress_bars[step]["value"] = 0
-    #             progress_window.update_idletasks()
-
-    #             # Simulate the preprocessing step
-    #             for idx, (name, img) in enumerate(self.master.loaded_images):
-    #                 if step == "Normalization":
-    #                     img = backend.preprocess_image(img)
-    #                 # Update progress bar for the current step
-    #                 progress_bars[step]["value"] += 1
-    #                 progress_window.update_idletasks()
-
-    #             # Mark the step as complete
-    #             self.preprocessing_status[step].set(False)
-
-    #         messagebox.showinfo("Preprocessing", "Preprocessing completed!")
-    #         progress_window.destroy()
-
-    #     threading.Thread(target=run_preprocessing).start()
-
-    #  # Copied This Code Close
-
+    def call_preprocessingframe(self, master):
+        if not self.master.dataset_path:
+            messagebox.showwarning("No Dataset", "Please upload a dataset first.")
+            return
+        
+        self.preprocess_window = tk.Toplevel(self)
+        self.preprocess_window.title("Data Preprocessing")
+        self.preprocess_window.geometry("1200x800")
+        PreprocessingFrame(self, self.preprocess_window,master)
+        
     def augment_data(self):
         if not self.master.dataset_path:
             messagebox.showwarning("No Dataset", "Please upload a dataset first.")

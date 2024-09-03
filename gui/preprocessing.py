@@ -3,184 +3,152 @@ from tkinter import filedialog, messagebox, ttk
 from PIL import Image, ImageTk
 import cv2
 import numpy as np
-from backend.preprocessing_logic import normalize_image, reduce_noise, skull_strip, remove_artifacts
+from Implementation.preprocessing_logic import normalize_image, reduce_noise, skull_strip, remove_artifacts
 import os
 
 class PreprocessingFrame(tk.Frame):
-    def __init__(self, master,show_train_frame):
+    def __init__(self, master,preprocess_window,master_master):
         super().__init__(master)
         self.master = master
-        self.show_train_frame = show_train_frame
-        # self.master.title("Brain Tumor Detection - Advanced Preprocessing")
-        
-        # Initialize variables
-        self.image_paths = []  # List to store paths of images in the dataset
-        self.current_image_index = 0  # Index of the currently selected image
-        self.current_image = None  # Currently loaded image
-        self.thumbnails = []  # List to store thumbnail images for the scrollable frame
+        self.master_master = master_master
+        self.preprocess_window = preprocess_window
 
-        # Configure the grid layout for the main window
-        self.grid_rowconfigure(0, weight=1)
-        self.grid_columnconfigure(0, weight=8)
-        self.grid_columnconfigure(1, weight=2)
+        self.master.master.dataset_path = ""
+        self.master.master.image_paths = []
+        self.master.master.loaded_images = []
 
-        # Create a frame on the left side for thumbnails
-        self.left_frame = tk.Frame(self)
-        self.left_frame.grid(row=0, column=0, padx=10, pady=10, sticky='nswe')
-        self.left_frame.grid_rowconfigure(0, weight=1)
-        self.left_frame.grid_columnconfigure(0, weight=1)
+        self.master.create_widgets()
 
-        # Create a canvas and scrollbar for scrolling through thumbnails
-        self.canvas = tk.Canvas(self.left_frame)
-        self.scrollbar = ttk.Scrollbar(self.left_frame, orient="vertical", command=self.canvas.yview)
+        self.preview_frame = tk.Frame(self.preprocess_window )
+        self.preview_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10, pady=10)
+
+        self.menue_frame = tk.Frame(self.preprocess_window )
+        self.menue_frame.pack(side=tk.RIGHT, fill=tk.Y, expand=True, padx=10, pady=10)
+        self.check_vars = []
+        self.build_preprocessing_screen()
+
+    def build_preprocessing_screen(self):
+        self.canvas = tk.Canvas(self.preview_frame)
+        self.scrollbar = tk.Scrollbar(self.preview_frame, orient="vertical", command=self.canvas.yview)
         self.scrollable_frame = tk.Frame(self.canvas)
 
-        # Bind the scrollable frame to the canvas for scrolling
-        self.scrollable_frame.bind(
-            "<Configure>",
-            lambda e: self.canvas.configure(
-                scrollregion=self.canvas.bbox("all")
-            )
-        )
+        # Pack Scrollbar and Canvas
+        self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-        # Create a window on the canvas to hold the scrollable frame
+        # Create window on Canvas to contain scrollable_frame
         self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+
+        # Bind the Configure event to update scroll region
+        self.scrollable_frame.bind("<Configure>", self.on_frame_configure)
+        
+        # Set scrollbar command to the canvas
         self.canvas.configure(yscrollcommand=self.scrollbar.set)
 
-        # Pack the canvas and scrollbar into the left frame
-        self.canvas.pack(side="left", fill="both", expand=True)
-        self.scrollbar.pack(side="right", fill="y")
 
-        # Create a frame on the right side for control buttons and settings
-        self.right_frame = tk.Frame(self)
-        self.right_frame.grid(row=0, column=1, padx=15, pady=15, sticky='nswe')
+        selectall_button = tk.Button(self.menue_frame, text="Select All", command=self.check_all)
+        selectall_button.pack(pady=5)
 
-        # Configure rows and columns in the right frame
-        self.right_frame.grid_rowconfigure(0, weight=1)
-        for i in range(17):
-            self.right_frame.grid_rowconfigure(i, weight=1)
-        self.right_frame.grid_columnconfigure(0, weight=1)
+        unselectall_button = tk.Button(self.menue_frame, text="Un Select All", command=self.uncheck_all)
+        unselectall_button.pack(pady=5)
 
-        # You should configure it directly without redefining it
-        self.configure_right_frame()
-        self.load_dataset()
-
-    def configure_right_frame(self):
-        self.load_button = tk.Button(self.right_frame, text="Load Dataset", command=self.load_dataset)
-        self.load_button.grid(row=0, column=0, padx = 10, pady=10, sticky='ew')
-
-        # Button to apply normalization to the current image
-        self.norm_button = tk.Button(self.right_frame, text="Normalize Image", command=self.apply_normalization)
-        self.norm_button.grid(row=3, column=0, padx = 20,pady=10, sticky='ew')
+        self.norm_button = tk.Button(self.menue_frame, text="Normalize Image", command=self.apply_normalization)
+        self.norm_button.pack(pady=5)
 
         # Controls for noise reduction
-        self.noise_label = tk.Label(self.right_frame, text="Noise Reduction:")
-        self.noise_label.grid(row=4, column=0, padx = 20,pady=5, sticky='w')
+        self.noise_label = tk.Label(self.menue_frame, text="Noise Reduction:")
+        self.noise_label.pack(pady=5)
         self.noise_var = tk.StringVar(value='gaussian')  # Default noise reduction method
-        self.noise_gaussian = tk.Radiobutton(self.right_frame, text="Gaussian", variable=self.noise_var, value='gaussian')
-        self.noise_median = tk.Radiobutton(self.right_frame, text="Median", variable=self.noise_var, value='median')
-        self.noise_gaussian.grid(row=5, column=0, padx=20, sticky="w")
-        self.noise_median.grid(row=5, column=1,sticky="w")
+        self.noise_gaussian = tk.Radiobutton(self.menue_frame, text="Gaussian", variable=self.noise_var, value='gaussian')
+        self.noise_median = tk.Radiobutton(self.menue_frame, text="Median", variable=self.noise_var, value='median')
+        self.noise_gaussian.pack(pady=5)
+        self.noise_median.pack(pady=5)
 
         # Slider to select kernel size for noise reduction
-        self.kernel_size_label = tk.Label(self.right_frame, text="Kernel Size:")
-        self.kernel_size_label.grid(row=7, column=0, padx = 20,pady=5, sticky='w')
-        self.kernel_size_slider = tk.Scale(self.right_frame, from_=1, to=15, orient=tk.HORIZONTAL)
+        self.kernel_size_label = tk.Label(self.menue_frame, text="Kernel Size:")
+        self.kernel_size_label.pack(pady=5)
+        self.kernel_size_slider = tk.Scale(self.menue_frame, from_=1, to=15, orient=tk.HORIZONTAL)
         self.kernel_size_slider.set(5)  # Default kernel size
-        self.kernel_size_slider.grid(row=8, column=0, padx = 20,pady=5, sticky='ew')
+        self.kernel_size_slider.pack(pady=5)
 
         # Button to apply noise reduction
-        self.noise_button = tk.Button(self.right_frame, text="Apply Noise Reduction", command=self.apply_noise_reduction)
-        self.noise_button.grid(row=9, column=0, padx = 20,pady=10, sticky='ew')
+        self.noise_button = tk.Button(self.menue_frame, text="Apply Noise Reduction", command=self.apply_noise_reduction)
+        self.noise_button.pack(pady=5)
 
         # Controls for skull stripping
-        self.skull_label = tk.Label(self.right_frame, text="Skull Stripping Threshold:")
-        self.skull_label.grid(row=10, column=0, padx = 20,pady=5, sticky='w')
-        self.skull_threshold_slider = tk.Scale(self.right_frame, from_=0, to=255, orient=tk.HORIZONTAL)
+        self.skull_label = tk.Label(self.menue_frame, text="Skull Stripping Threshold:")
+        self.skull_label.pack(pady=5)
+        self.skull_threshold_slider = tk.Scale(self.menue_frame, from_=0, to=255, orient=tk.HORIZONTAL)
         self.skull_threshold_slider.set(10)  # Default threshold
-        self.skull_threshold_slider.grid(row=11, column=0, padx = 20,pady=5, sticky='ew')
+        self.skull_threshold_slider.pack(pady=5)
 
         # Button to apply skull stripping
-        self.skull_button = tk.Button(self.right_frame, text="Apply Skull Stripping", command=self.apply_skull_stripping)
-        self.skull_button.grid(row=12, column=0, padx = 20,pady=10, sticky='ew')
+        self.skull_button = tk.Button(self.menue_frame, text="Apply Skull Stripping", command=self.apply_skull_stripping)
+        self.skull_button.pack(pady=5)
 
         # Controls for artifact removal
-        self.artifact_label = tk.Label(self.right_frame, text="Artifact Removal:")
-        self.artifact_label.grid(row=13, column=0, padx = 20,pady=5, sticky='w')
+        self.artifact_label = tk.Label(self.menue_frame, text="Artifact Removal:")
+        self.artifact_label.pack(pady=5)
         self.artifact_var = tk.StringVar(value='default')  # Default artifact removal method
-        self.artifact_default = tk.Radiobutton(self.right_frame, text="Default", variable=self.artifact_var, value='default')
-        self.artifact_custom = tk.Radiobutton(self.right_frame, text="Custom", variable=self.artifact_var, value='custom')
-        self.artifact_default.grid(row=14, column=0, padx=20,sticky='w')
-        self.artifact_custom.grid(row=14, column=1, sticky='w')
+        self.artifact_default = tk.Radiobutton(self.menue_frame, text="Default", variable=self.artifact_var, value='default')
+        self.artifact_custom = tk.Radiobutton(self.menue_frame, text="Custom", variable=self.artifact_var, value='custom')
+        self.artifact_default.pack(pady=5)
+        self.artifact_custom.pack(pady=5)
 
         # Button to apply artifact removal
-        self.artifact_button = tk.Button(self.right_frame, text="Remove Artifacts", command=self.apply_artifact_removal)
-        self.artifact_button.grid(row=16, column=0, padx = 20,pady=10, sticky='ew')
+        self.artifact_button = tk.Button(self.menue_frame, text="Remove Artifacts", command=self.apply_artifact_removal)
+        self.artifact_button.pack(pady=5)
 
-        # Progress bar to show ongoing processes
-        self.progress_bar = ttk.Progressbar(self.right_frame, orient="horizontal", mode="indeterminate")
-        self.progress_bar.grid(row=17, column=0, padx = 20,pady=10, sticky='ew')
+    def on_frame_configure(self, event):
+        # Update the scroll region of the canvas
+        self.canvas.configure(scrollregion=self.canvas.bbox("all"))
 
-    def load_dataset(self):
-        # Opens a file dialog to select a directory and loads image file paths
-        # directory_path = filedialog.askdirectory()
-        directory_path = self.master.dataset_path
-        if directory_path:
-            self.image_paths = self.master.image_paths
-            # self.image_paths = [os.path.join(directory_path, f) for f in os.listdir(directory_path) if f.lower().endswith(('.jpg', '.jpeg', '.png', '.bmp', '.tiff'))]
+    def check_all(self):
+        for aa in self.check_vars:
+            var, _ = aa
+            var.set(True)
 
-            if self.image_paths:
-                self.current_image_index = 0
-                self.display_thumbnails()  # Show image thumbnails in the left frame
-                self.load_image(self.image_paths[self.current_image_index])  # Load the first image
-            else:
-                messagebox.showwarning("No Images Found", "No images found in the selected directory.")
-
-    def display_thumbnails(self):
-        # Clears existing thumbnails from the scrollable frame
+    def uncheck_all(self):
+        for aa in self.check_vars:
+            var, _ = aa
+            var.set(False)
+    
+    def update_grid(self):
+        # Clear existing widgets
         for widget in self.scrollable_frame.winfo_children():
             widget.destroy()
-
-        self.thumbnails = []  # Reset thumbnails list
-        for idx, image_path in enumerate(self.image_paths):
-            image = cv2.imread(image_path)  # Read image file
-            image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # Convert BGR to RGB format
-            image_pil = Image.fromarray(image_rgb)  # Convert to PIL image
-            image_pil.thumbnail((100, 100))  # Resize for thumbnails
-            image_tk = ImageTk.PhotoImage(image_pil)  # Convert to Tkinter image format
-            self.thumbnails.append(image_tk)
-
-            # Create a button with the thumbnail image
-            button = tk.Button(self.scrollable_frame, image=image_tk, command=lambda idx=idx: self.load_image(self.image_paths[idx]))
-            button.grid(row=idx // 4, column=idx % 4, padx=5, pady=5)  # Arrange thumbnails in a grid
-
-    def load_image(self, image_path):
-        # Load and display the selected image
-        self.current_image = cv2.imread(image_path)
-        # self.display_image(self.current_image)  # Display the image in the right frame
-
-    def display_image(self, image):
-        # Display the current image in the scrollable frame
-        if image is None:
-            return
         
-        image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # Convert BGR to RGB format
-        image_pil = Image.fromarray(image_rgb)  # Convert to PIL image
-        image_pil.thumbnail((100, 100))  # Resize for thumbnails
-        image_tk = ImageTk.PhotoImage(image_pil)  # Convert to Tkinter image format
+        max_width = 150
+        max_height = 150
+        cols = 4
+        rows = (len(self.master.master.loaded_images) + cols - 1) // cols
 
-                # Check if thumbnail already exists
-        if 0 <= self.current_image_index < len(self.thumbnails):
-            # Replace existing thumbnail with updated image
-            self.thumbnails[self.current_image_index] = image_tk
-            # Update or add a new button for the thumbnail
-            button = tk.Button(self.scrollable_frame, image=image_tk, command=lambda idx=self.current_image_index: self.load_image(self.image_paths[idx]))
-            button.grid(row=self.current_image_index // 4, column=self.current_image_index % 4, padx=5, pady=5)
-        else:
-            # Create a new button with the thumbnail image
-            button = tk.Button(self.scrollable_frame, image=image_tk, command=lambda idx=self.current_image_index: self.load_image(self.image_paths[idx]))
-            button.grid(row=len(self.thumbnails) // 4, column=len(self.thumbnails) % 4, padx=5, pady=5)
-            self.thumbnails.append(image_tk)
+        for i in range(rows):
+            for j in range(cols):
+                idx = i * cols + j
+                if idx < len(self.master.master.loaded_images):
+                    name, img = self.master.master.loaded_images[idx]
+
+                    img_preview = img.resize((max_width, max_height))
+                    img_preview_tk = ImageTk.PhotoImage(img_preview)
+
+                    frame = tk.Frame(self.scrollable_frame, borderwidth=2, relief="solid")
+                    frame.grid(row=i, column=j, padx=5, pady=5)
+
+                    def on_image_click(event, idx=idx):
+                        var, _ = self.check_vars[idx]
+                        var.set(not var.get())
+
+                    img_label = tk.Label(frame, image=img_preview_tk, bg="white")
+                    img_label.pack(padx=5, pady=5)
+                    img_label.bind("<Button-1>", on_image_click)
+
+                    var = tk.BooleanVar()
+                    self.check_vars.append((var, idx))
+                    checkbox = tk.Checkbutton(frame, variable=var)
+                    checkbox.pack(side=tk.BOTTOM)
+
+                    frame.image = img_preview_tk  # Store reference to avoid garbage collection
 
     def apply_normalization(self):
         # Apply normalization to the current image and update the display
@@ -237,5 +205,3 @@ class PreprocessingFrame(tk.Frame):
             messagebox.showinfo("Success", "Artifact removal applied successfully!")
         else:
             messagebox.showerror("Error", "No image loaded!")
-
-
