@@ -5,22 +5,36 @@ import database.query as Query
 
 class MainScreen(tk.Frame):
     def __init__(self, master, show_train_frame):
-        super().__init__(master)
-        self.master = master
-        self.show_train_frame = show_train_frame
-        self.pack(fill=tk.BOTH, expand=True)
+        """
+        Constructor method jo MainScreen class ka instance banate waqt call hota hai.
+        Parameters:
+            - master: Tkinter window ya frame jisme yeh MainScreen attach hoga.
+            - show_train_frame: Function jo training screen dikhane ke liye call hoga.
+        """
+        super().__init__(master)  # Parent class (tk.Frame) ka __init__ method call karte hain taake frame initialize ho jaye
+        self.master = master  # Main application window ko store karte hain
+        self.show_train_frame = show_train_frame  # Callback function jo training screen dikhane ke liye use hota hai
+        self.pack(fill=tk.BOTH, expand=True)  # MainScreen ko pack karte hain taake yeh available space ko fill kar sake
 
-        self.configure_gui()
+        self.configure_gui()  # GUI components ko configure karne ke liye method call karte hain
 
     def configure_gui(self):
+        """
+        Yeh method GUI components ko configure karne ke liye use hoti hai.
+        Isme labels aur buttons create aur arrange kiye jaate hain.
+        """
+        # Main title label create karte hain
         self.label_title = tk.Label(self, text="Main Screen", font=("Arial", 24), pady=20)
         self.label_title.pack()
 
+        # Buttons ke liye ek frame create karte hain
         button_frame = tk.Frame(self)
         button_frame.pack(pady=20)
 
+        # Button styles define karte hain
         button_style_large = {"font": ("Arial", 14), "width": 15, "height": 2, "padx": 10, "pady": 10}
 
+        # Buttons create karte hain aur unko button_frame mein arrange karte hain
         self.button_train_model = tk.Button(button_frame, text="Train Model", **button_style_large, command=self.show_train_frame)
         self.button_train_model.grid(row=0, column=0, padx=10, pady=10)
 
@@ -40,21 +54,45 @@ class MainScreen(tk.Frame):
         self.button_logout.grid(row=1, column=2, padx=10, pady=10)
 
     # def train_model(self):
+    #     """
+    #     Train model button click hone par call hota hai.
+    #     Is method ko future implementation ke liye uncomment kar sakte hain.
+    #     """
     #     self.master.clear_screen()
     #     self.master.pack_screen(train_model.train_model(self.master))
 
     def test_model(self):
+        """
+        Test model button click hone par call hota hai.
+        Yeh method ek info message show karti hai jo model testing ke process ko indicate karta hai.
+        """
         messagebox.showinfo("Test Model", "Testing model...")
 
     def generate_matrix(self):
+        """
+        Generate Confusion Matrix button click hone par call hota hai.
+        Yeh method ek info message show karti hai jo confusion matrix generate karne ke process ko indicate karta hai.
+        """
         messagebox.showinfo("Generate Confusion Matrix", "Generating confusion matrix...")
 
     def adjust_metrics(self):
+        """
+        Adjust Metrics button click hone par call hota hai.
+        Yeh method ek info message show karti hai jo metrics adjust karne ke process ko indicate karta hai.
+        """
         messagebox.showinfo("Adjust Metrics", "Adjusting metrics...")
 
     def detect_tumor(self):
+        """
+        Detect Tumor button click hone par call hota hai.
+        Yeh method ek info message show karti hai jo tumor detection ke process ko indicate karta hai.
+        """
         messagebox.showinfo("Detect Tumor", "Detecting tumor...")
 
     def logout(self):
-        self.pack_forget()
-        self.master.show_login()
+        """
+        Logout button click hone par call hota hai.
+        Yeh method current screen ko hide karti hai aur login screen dikhane ke liye master window ka method call karti hai.
+        """
+        self.pack_forget()  # Current screen ko hide karti hai
+        self.master.show_login()  # Login screen dikhane ke liye master window ka method call karti hai

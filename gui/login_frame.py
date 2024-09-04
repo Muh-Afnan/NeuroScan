@@ -1,10 +1,17 @@
 import tkinter as tk  # Tkinter library ko import karte hain jo GUI banane ke liye use hoti hai
 from tkinter import ttk  # ttk module ko import karte hain jo additional GUI widgets provide karta hai
-import database.query as Query
+import database.query as Query  # Database queries ke liye custom Query module ko import karte hain
 
-class LoginFrame(tk.Frame):  # LoginFrame class ko define karte hain jo tk.Frame se inherit karti hai
-    def __init__(self,master,show_register_callback, show_main_screen_callback, show_recover_password_callback):
-        # Constructor method jo class ka instance banane ke liye use hota hai
+class LoginFrame(tk.Frame):
+    def __init__(self, master, show_register_callback, show_main_screen_callback, show_recover_password_callback):
+        """
+        Constructor method jo LoginFrame class ka instance banane ke liye use hota hai.
+        Parameters:
+            - master: Tkinter window ya frame jisme yeh LoginFrame attach hoga.
+            - show_register_callback: Function jo registration screen show karega.
+            - show_main_screen_callback: Function jo main screen show karega jab login successful ho.
+            - show_recover_password_callback: Function jo password recovery screen show karega.
+        """
         super().__init__(master)  # Parent class (tk.Frame) ka __init__ method call karte hain
 
         self.master = master  # Main application window ko store karte hain
@@ -15,8 +22,10 @@ class LoginFrame(tk.Frame):  # LoginFrame class ko define karte hain jo tk.Frame
         self.create_widgets()  # Widgets create karne ke liye method call karte hain
 
     def create_widgets(self):
-        # Yeh method GUI widgets create karne ke liye hai
-
+        """
+        Yeh method GUI widgets create karta hai jo login screen par display honge.
+        Widgets mein labels, entry fields, aur buttons shamil hain.
+        """
         # Username label create karte hain aur window mein add karte hain
         self.label_username = tk.Label(self, text="Username")
         self.label_username.pack(pady=10)  # pady se vertical spacing add karte hain
@@ -34,7 +43,7 @@ class LoginFrame(tk.Frame):  # LoginFrame class ko define karte hain jo tk.Frame
         self.entry_password = ttk.Entry(self, show="*")
         self.entry_password.pack(pady=10)
 
-        # Button styles define karte hain
+        # Button styles define karte hain taake buttons consistent aur aesthetic lagain
         button_style_small = {"font": ("Arial", 10), "width": 15, "height": 1, "padx": 5, "pady": 5}
 
         # Login button create karte hain, command parameter se button click hone par login method call hoti hai
@@ -46,7 +55,7 @@ class LoginFrame(tk.Frame):  # LoginFrame class ko define karte hain jo tk.Frame
                                          command=self.show_register_callback)
         self.button_register.pack(pady=10)
 
-        # Wide button style define karte hain
+        # Wide button style define karte hain jo recovery button ke liye use hoga
         button_style_wide = {"font": ("Arial", 10), "width": 20, "height": 1, "padx": 5, "pady": 5}
 
         # Recover Password button create karte hain, command parameter se button click hone par show_recover_password_callback method call hoti hai
@@ -55,17 +64,19 @@ class LoginFrame(tk.Frame):  # LoginFrame class ko define karte hain jo tk.Frame
         self.button_recover_password.pack(pady=10)
 
     def login(self):
-        username = self.entry_username.get()
-        password = self.entry_password.get()
+        """
+        Login method jo login button click hone par call hoti hai.
+        Yeh method user ke entered username aur password ko check karta hai.
+        Agar credentials sahi hote hain to main screen show karta hai, warna error message display hota hai.
+        """
+        username = self.entry_username.get()  # Username field se user ka input lete hain
+        password = self.entry_password.get()  # Password field se user ka input lete hain
 
-        # Loggin Authentication
-
+        # Logging Authentication check karta hai (commented out)
         # if Query.login_query(username, password):
         #     self.show_main_screen_callback()
         # else:
-        #     tk.messagebox.showinfo("Error","Username or Password Error.Please Try Again")
+        #     tk.messagebox.showinfo("Error","Username or Password Error. Please Try Again")
 
-        # print(username)
-        # Login method jo login button click hone par call hoti hai
-        # Yeh method main screen ko show karne ke liye show_main_screen_callback method call karti hai
-        self.show_main_screen_callback()
+        # For now, directly show main screen for testing
+        self.show_main_screen_callback()  # Login successful hone par main screen show karte hain

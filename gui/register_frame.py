@@ -3,15 +3,22 @@ from tkinter import ttk  # ttk module ko import karte hain jo additional widgets
 
 class RegisterFrame(tk.Frame):  # RegisterFrame class define karte hain jo tk.Frame se inherit karti hai
     def __init__(self, master, show_login_callback):
-        # Constructor method jo class ka instance banate waqt call hota hai
+        """
+        Constructor method jo RegisterFrame class ka instance banate waqt call hota hai.
+        Parameters:
+            - master: Tkinter window ya frame jisme yeh RegisterFrame attach hoga.
+            - show_login_callback: Function jo login screen dikhane ke liye call hoga.
+        """
         super().__init__(master)  # Parent class (tk.Frame) ka __init__ method call karte hain taake frame initialize ho jaye
-        self.master = master  # Master window (application window) ko store karte hain
+        self.master = master  # Main application window ko store karte hain
         self.show_login_callback = show_login_callback  # Callback function ko store karte hain jo login screen dikhane ke liye use hota hai
         self.create_widgets()  # Widgets create karne ke liye method call karte hain
 
     def create_widgets(self):
-        # Yeh method GUI widgets ko create karne aur arrange karne ke liye use hoti hai
-
+        """
+        Yeh method GUI widgets ko create karne aur arrange karne ke liye use hota hai.
+        Isme labels, entry fields, combobox, aur buttons include hote hain.
+        """
         # Username ke liye label create karte hain aur window mein add karte hain
         self.label_username = tk.Label(self, text="Username")
         self.label_username.pack(pady=10)  # pady=10 se vertical spacing add karte hain
@@ -46,7 +53,7 @@ class RegisterFrame(tk.Frame):  # RegisterFrame class define karte hain jo tk.Fr
         self.default_val = tk.StringVar()
         self.question_drop_down = tk.OptionMenu(self, self.default_val, *self.security_questions)
         self.question_drop_down.pack(pady=10)
-        self.default_val.set("Select a question")
+        self.default_val.set("Select a question")  # Default option set karte hain
 
         # Security answer ke liye label create karte hain
         self.label_security_answer = tk.Label(self, text="Answer")
@@ -56,20 +63,27 @@ class RegisterFrame(tk.Frame):  # RegisterFrame class define karte hain jo tk.Fr
         self.entry_security_answer = tk.Entry(self)
         self.entry_security_answer.pack(pady=10)
 
-        # Button styles define karte hain
+        # Button styles define karte hain jo consistent button appearance ke liye use hoti hain
         button_style_small = {"font": ("Arial", 10), "width": 10, "height": 1, "padx": 5, "pady": 5}
 
         # Register button create karte hain jo click hone par register method call karega
         self.button_register = tk.Button(self, text="Register", **button_style_small, command=self.register)
         self.button_register.pack(pady=10)
+        
+        # Back to Login button create karte hain jo click hone par login screen dikhane ke liye show_login_callback ko call karega
         self.button_back_to_login = tk.Button(self, text="Back to Login", **button_style_small,
                                               command=self.show_login_callback)
         self.button_back_to_login.pack(pady=10)
 
     def register(self):
-        username=self.entry_username.get()
-        password=self.entry_password.get()
-        selected_question= self.default_val.get()
-        print(selected_question)
+        """
+        Register method jo Register button click hone par call hota hai.
+        Yeh method user ke entered data ko retrieve karta hai aur future implementation ke liye ready karta hai.
+        """
+        username = self.entry_username.get()  # Username field se user ka input lete hain
+        password = self.entry_password.get()  # Password field se user ka input lete hain
+        selected_question = self.default_val.get()  # Selected security question ko retrieve karte hain
+        print(selected_question)  # Abhi ke liye sirf selected question ko print karte hain
 
+        # Future implementation: User ko register karne ke baad login screen dikhani hai
         # self.show_login_callback()

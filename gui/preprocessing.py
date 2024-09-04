@@ -7,17 +7,14 @@ from Implementation.preprocessing_logic import normalize_image, reduce_noise, sk
 import os
 
 class PreprocessingFrame(tk.Frame):
-    def __init__(self, master,preprocess_window,master_master):
+    def __init__(self, master,preprocess_window,):
         super().__init__(master)
         self.master = master
-        self.master_master = master_master
         self.preprocess_window = preprocess_window
 
         self.master.master.dataset_path = ""
         self.master.master.image_paths = []
         self.master.master.loaded_images = []
-
-        self.master.create_widgets()
 
         self.preview_frame = tk.Frame(self.preprocess_window )
         self.preview_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10, pady=10)
@@ -104,51 +101,64 @@ class PreprocessingFrame(tk.Frame):
         self.canvas.configure(scrollregion=self.canvas.bbox("all"))
 
     def check_all(self):
-        for aa in self.check_vars:
-            var, _ = aa
+        for checkbox_state  in self.check_vars:
+            var, _ = checkbox_state 
             var.set(True)
 
     def uncheck_all(self):
-        for aa in self.check_vars:
-            var, _ = aa
+        for checkbox_state in self.check_vars:
+            var, _ = checkbox_state
             var.set(False)
     
     def update_grid(self):
-        # Clear existing widgets
+    # Step 1: Clear existing image widgets from the grid
         for widget in self.scrollable_frame.winfo_children():
             widget.destroy()
         
+        # Step 2: Set the size for image previews and determine the grid layout
         max_width = 150
         max_height = 150
-        cols = 4
-        rows = (len(self.master.master.loaded_images) + cols - 1) // cols
+        columns = 4  # Number of images per row
+        rows = (len(self.master.master.loaded_images) + columns - 1) // columns  # Calculate number of rows needed
 
-        for i in range(rows):
-            for j in range(cols):
-                idx = i * cols + j
-                if idx < len(self.master.master.loaded_images):
-                    name, img = self.master.master.loaded_images[idx]
+        # Step 3: Loop through each row and column to place the images
+        for row in range(rows):
+            for col in range(columns):
+                # Calculate the index of the current image in the loaded_images list
+                index = row * columns + col
+                
+                # Check if the index is within the range of available images
+                if index < len(self.master.master.loaded_images):
+                    # Step 4: Get the image and its name from the list
+                    name, image = self.master.master.loaded_images[index]
 
-                    img_preview = img.resize((max_width, max_height))
-                    img_preview_tk = ImageTk.PhotoImage(img_preview)
+                    # Step 5: Resize the image for preview purposes
+                    image_preview = image.resize((max_width, max_height))
+                    image_preview_tk = ImageTk.PhotoImage(image_preview)
 
+                    # Step 6: Create a frame to hold the image and its corresponding checkbox
                     frame = tk.Frame(self.scrollable_frame, borderwidth=2, relief="solid")
-                    frame.grid(row=i, column=j, padx=5, pady=5)
+                    frame.grid(row=row, column=col, padx=5, pady=5)
 
-                    def on_image_click(event, idx=idx):
-                        var, _ = self.check_vars[idx]
-                        var.set(not var.get())
-
-                    img_label = tk.Label(frame, image=img_preview_tk, bg="white")
+                    # Step 7: Create a label to display the image inside the frame
+                    img_label = tk.Label(frame, image=image_preview_tk, bg="white")
                     img_label.pack(padx=5, pady=5)
+
+                    # Step 8: Allow clicking on the image to toggle its selection
+                    def on_image_click(event, index=index):
+                        var, _ = self.check_vars[index]
+                        var.set(not var.get())  # Toggle the selection state
+
                     img_label.bind("<Button-1>", on_image_click)
 
-                    var = tk.BooleanVar()
-                    self.check_vars.append((var, idx))
-                    checkbox = tk.Checkbutton(frame, variable=var)
+                    # Step 9: Create a checkbox to allow manual selection of the image
+                    var = tk.BooleanVar()  # A Boolean variable to store the selection state (checked or unchecked)
+                    self.check_vars.append((var, index))  # Add the variable to the list of checkboxes
+                    checkbox = tk.Checkbutton(frame, variable=var)  # Create the checkbox and link it to the Boolean variable
                     checkbox.pack(side=tk.BOTTOM)
 
-                    frame.image = img_preview_tk  # Store reference to avoid garbage collection
+                    # Step 10: Keep a reference to the image to prevent it from being garbage collected
+                    frame.image = image_preview_tk
 
     def apply_normalization(self):
         # Apply normalization to the current image and update the display

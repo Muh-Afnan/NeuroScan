@@ -2,24 +2,37 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 
-
 class RecoverPasswordFrame(tk.Frame):
     def __init__(self, master, show_login_callback):
-        super().__init__(master)
-        self.master = master
-        self.show_login_callback = show_login_callback
-        self.create_widgets()
+        """
+        Constructor method jo RecoverPasswordFrame class ka instance banate waqt call hota hai.
+        Parameters:
+            - master: Tkinter window ya frame jisme yeh RecoverPasswordFrame attach hoga.
+            - show_login_callback: Function jo login screen dikhane ke liye call hota hai.
+        """
+        super().__init__(master)  # Parent class (tk.Frame) ka __init__ method call karte hain taake frame initialize ho jaye
+        self.master = master  # Main application window ko store karte hain
+        self.show_login_callback = show_login_callback  # Callback function jo login screen dikhane ke liye use hota hai
+        self.create_widgets()  # GUI widgets create karne ke liye method call karte hain
 
     def create_widgets(self):
+        """
+        Yeh method GUI widgets ko create aur arrange karne ke liye use hoti hai.
+        Isme labels, entry fields, dropdown menu, aur buttons create aur arrange kiye jaate hain.
+        """
+        # Username ke liye label create karte hain aur window mein add karte hain
         self.label_username = tk.Label(self, text="Username")
         self.label_username.pack(pady=10)
 
+        # Username input field create karte hain jahan user apna username enter karega
         self.entry_username = ttk.Entry(self)
         self.entry_username.pack(pady=10)
 
+        # Security question ke liye label create karte hain
         self.label_security_question = tk.Label(self, text="Select your security question")
         self.label_security_question.pack(pady=10)
 
+        # Security questions ka list banate hain jo user choose kar sakta hai
         self.security_questions = [
             "What is your pet's name?",
             "What is your mother's maiden name?",
@@ -28,37 +41,41 @@ class RecoverPasswordFrame(tk.Frame):
             "What is your favorite food?"
         ]
 
+        # Combobox create karte hain jahan security questions ka list dikhaya jayega
         self.default_val = tk.StringVar()
-        self.default_val.set("Select a question")
+        self.default_val.set("Select a question")  # Default value set karte hain
         self.question_drop_down = tk.OptionMenu(self, self.default_val, *self.security_questions)
         self.question_drop_down.pack(pady=10)
         
-
+        # Security answer ke liye label create karte hain
         self.label_security_answer = tk.Label(self, text="Answer")
         self.label_security_answer.pack(pady=10)
 
+        # Security answer input field create karte hain jahan user apna answer enter karega
         self.entry_security_answer = ttk.Entry(self)
         self.entry_security_answer.pack(pady=10)
 
+        # Button styles define karte hain
         button_style_small = {"font": ("Arial", 10), "width": 15, "height": 1, "padx": 5, "pady": 5}
 
+        # Recover Password button create karte hain, command parameter se recover_password method call hoti hai
         self.button_recover = tk.Button(self, text="Recover Password", **button_style_small,
                                         command=self.recover_password)
         self.button_recover.pack(pady=10)
 
+        # Back to Login button create karte hain, command parameter se show_login_callback method call hoti hai
         self.button_back_to_login = tk.Button(self, text="Back to Login", **button_style_small,
                                               command=self.show_login_callback)
         self.button_back_to_login.pack(pady=10)
 
     def recover_password(self):
-        username = self.entry_username.get()
-        security_question = self.default_val.get()
-        print(security_question)
-        security_answer = self.entry_security_answer.get()
+        """
+        Recover Password button click hone par call hoti hai.
+        Yeh method user se input le kar password recovery ke liye placeholder logic implement karti hai.
+        """
+        username = self.entry_username.get()  # Username ko get karte hain
+        security_question = self.default_val.get()  # Security question ko get karte hain
+        print(security_question)  # Debug purpose ke liye print karte hain
+        security_answer = self.entry_security_answer.get()  # Security answer ko get karte hain
 
-        # Placeholder logic for password recovery
-        # if username and security_question != "Select a question" and security_answer:
-        #     messagebox.showinfo("Recover Password", "Password recovery successful (simulated).")
-        #     self.show_login_callback()
-        # else:
-        #     messagebox.showerror("Error", "Please complete all fields.")
+        # Placeholder logic for password

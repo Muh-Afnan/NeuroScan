@@ -1,66 +1,83 @@
 import tkinter as tk
-from tkinter import ttk
 from tkinter import ttk, filedialog, messagebox
 from PIL import Image, ImageTk
 import threading
-from Implementation.backend import load_images_from_folder,augment_image
+from Implementation.backend import load_images_from_folder, augment_image
 from gui.preprocessing import PreprocessingFrame
 import os
 
 class trainmodelframe(tk.Frame):
-    def __init__(self, master ,show_main_screen):
+    def __init__(self, master, show_main_screen):
+        """
+        Constructor method jo trainmodelframe class ka instance banate waqt call hota hai.
+        Parameters:
+            - master: Tkinter window ya frame jisme yeh trainmodelframe attach hoga.
+            - show_main_screen: Function jo main screen dikhane ke liye call hota hai.
+        """
         super().__init__(master)
         self.master = master
         self.callback_main_Screen = show_main_screen
 
-    
-
+        # Initialize dataset path, image paths, and loaded images
         self.master.dataset_path = ""
         self.master.image_paths = []
         self.master.loaded_images = []
         self.create_widgets()
- 
 
     def create_widgets(self):
-        self.back_button= tk.Button(self, text="Back to Main", command=self.callback_main_Screen)
+        """
+        Yeh method GUI widgets ko create aur arrange karne ke liye use hoti hai.
+        Isme buttons aur labels create aur arrange kiye jaate hain.
+        """
+        # Back button to return to the main screen
+        self.back_button = tk.Button(self, text="Back to Main", command=self.callback_main_Screen)
         self.back_button.pack()
 
+        # Label to show dataset information
         self.dataset_info_label = tk.Label(self, text="No dataset loaded")
         self.dataset_info_label.pack()
 
+        # Button to upload dataset
         self.upload_button = tk.Button(self, text="Upload Dataset", command=self.upload_dataset)
         self.upload_button.pack()
 
-            
+        # Button to preprocess data
         self.preprocess_button = tk.Button(self, text="Preprocess Data", command=self.call_preprocessingframe)
         self.preprocess_button.pack()
 
+        # Button to augment data
         self.augment_button = tk.Button(self, text="Augment Data", command=self.augment_data)
         self.augment_button.pack()
 
+        # Button to select model
         self.select_model_button = tk.Button(self, text="Select Model", command=self.select_model)
-        self.select_model_button.pack()    
+        self.select_model_button.pack()
 
     def upload_dataset(self):
+        """
+        Upload button click hone par call hoti hai.
+        Yeh method dataset folder ko select karne ke liye dialog open karti hai aur images ko load karti hai.
+        """
         self.master.dataset_path = filedialog.askdirectory(title="Select Dataset Folder")
         directory_path = self.master.dataset_path
         self.master.image_paths = [os.path.join(directory_path, f) for f in os.listdir(directory_path) if f.lower().endswith(('.jpg', '.jpeg', '.png', '.bmp', '.tiff'))]
         if self.master.dataset_path:
             self.master.loaded_images = load_images_from_folder(self.master.dataset_path)
             
-            # Get the number of images
+            # Get the number of images and update display
             num_images = len(self.master.loaded_images)
-            
-            # Update the display with dataset information
             self.dataset_info_label.config(text=f"Dataset loaded from: {self.master.dataset_path}\nNumber of images: {num_images}")
             
-            # Show a message box with the details
+            # Show a message box with dataset details
             messagebox.showinfo("Dataset Uploaded", f"Dataset uploaded from: {self.master.dataset_path}\nNumber of images: {num_images}")
         else:
             messagebox.showwarning("No Dataset", "Please select a valid dataset folder.")
 
-
-    def call_preprocessingframe(self, master):
+    def call_preprocessingframe(self):
+        """
+        Preprocess button click hone par call hoti hai.
+        Yeh method ek new window open karti hai jahan data preprocessing ke options hote hain.
+        """
         if not self.master.dataset_path:
             messagebox.showwarning("No Dataset", "Please upload a dataset first.")
             return
@@ -68,9 +85,13 @@ class trainmodelframe(tk.Frame):
         self.preprocess_window = tk.Toplevel(self)
         self.preprocess_window.title("Data Preprocessing")
         self.preprocess_window.geometry("1200x800")
-        PreprocessingFrame(self, self.preprocess_window,master)
-        
+        PreprocessingFrame(self.preprocess_window, self.preprocess_window)
+
     def augment_data(self):
+        """
+        Augment button click hone par call hoti hai.
+        Yeh method ek new window open karti hai jahan data augmentation ke options hote hain.
+        """
         if not self.master.dataset_path:
             messagebox.showwarning("No Dataset", "Please upload a dataset first.")
             return
@@ -82,6 +103,10 @@ class trainmodelframe(tk.Frame):
         self.build_augmentation_interface(augment_window)
 
     def build_augmentation_interface(self, augment_window):
+        """
+        Yeh method data augmentation ke liye GUI interface ko build karti hai.
+        Isme image preview, checkboxes, buttons aur progress bar included hain.
+        """
         # Image preview frame
         preview_frame = tk.Frame(augment_window)
         preview_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10, pady=10)
@@ -103,8 +128,10 @@ class trainmodelframe(tk.Frame):
         # Checkboxes and image preview
         check_vars = []
 
-
         def update_grid():
+            """
+            Update karta hai image grid ko based on loaded images aur selection.
+            """
             for widget in scrollable_frame.winfo_children():
                 widget.destroy()
 
@@ -130,7 +157,6 @@ class trainmodelframe(tk.Frame):
                         def on_image_click(event, idx=idx):
                             var, _ = check_vars[idx]
                             var.set(not var.get())
-                            # event.widget.config(bg="lightblue" if var.get() else "white")
 
                         img_label = tk.Label(frame, image=img_preview_tk, bg="white")
                         img_label.pack(padx=5, pady=5)
@@ -144,29 +170,31 @@ class trainmodelframe(tk.Frame):
 
                         # Store image reference to prevent garbage collection
                         frame.image = img_preview_tk
-            
 
         update_grid()
 
         def check_all():
-            for aa in check_vars:
-                var, _ = aa
+            """
+            All images ko select karta hai.
+            """
+            for var, _ in check_vars:
                 var.set(True)
 
         def uncheck_all():
-            for aa in check_vars:
-                var, _ = aa
+            """
+            All images ko unselect karta hai.
+            """
+            for var, _ in check_vars:
                 var.set(False)
 
         # Augmentation menu
         augmentation_menu = tk.Frame(augment_window)
         augmentation_menu.pack(side=tk.RIGHT, fill=tk.Y, padx=10, pady=10)
 
-
         selectall_button = tk.Button(augmentation_menu, text="Select All", command=check_all)
         selectall_button.pack(pady=5)
 
-        unselectall_button = tk.Button(augmentation_menu, text="Un Select All", command=uncheck_all)
+        unselectall_button = tk.Button(augmentation_menu, text="Unselect All", command=uncheck_all)
         unselectall_button.pack(pady=5)
 
         rotation_label = tk.Label(augmentation_menu, text="Rotation Angle:")
@@ -176,6 +204,9 @@ class trainmodelframe(tk.Frame):
         rotation_entry.pack(pady=5)
         
         def apply_rotation():
+            """
+            Selected images ko rotation apply karta hai based on user input.
+            """
             angle = rotation_entry.get()
             try:
                 angle = float(angle)
@@ -191,7 +222,6 @@ class trainmodelframe(tk.Frame):
             
             update_grid()
             messagebox.showinfo("Rotation", f"Applied {angle} degrees rotation to selected images.")
-            # augmentation_menu.focus()
 
         rotation_button = tk.Button(augmentation_menu, text="Apply Rotation", command=apply_rotation)
         rotation_button.pack(pady=5)
@@ -201,6 +231,9 @@ class trainmodelframe(tk.Frame):
         presets_frame.pack(pady=10)
 
         def apply_preset_rotation(angle):
+            """
+            Preset angles apply karta hai selected images ko.
+            """
             for var, idx in check_vars:
                 if var.get():
                     name, img = self.master.loaded_images[idx]
@@ -230,6 +263,9 @@ class trainmodelframe(tk.Frame):
         noise_value_entry.pack(pady=5)
         
         def apply_augmentations():
+            """
+            Selected images par specified augmentations apply karta hai aur progress bar update karta hai.
+            """
             progress_window = tk.Toplevel(augment_window)
             progress_window.title("Data Augmentation Progress")
             progress_window.geometry("600x400")
@@ -242,6 +278,9 @@ class trainmodelframe(tk.Frame):
             progress_bar["value"] = 0
 
             def run_augmentation():
+                """
+                Augmentation ko background thread mein run karta hai aur progress bar ko update karta hai.
+                """
                 for var, idx in check_vars:
                     if var.get():
                         name, img = self.master.loaded_images[idx]
@@ -271,9 +310,13 @@ class trainmodelframe(tk.Frame):
         augment_button.pack(pady=10)
 
     def select_model(self):
+        """
+        Model selection button click hone par call hoti hai.
+        Yeh method model selection aur training ke functionality ko integrate karne ki jagah hai.
+        """
         if not self.master.dataset_path:
             messagebox.showwarning("No Dataset", "Please upload a dataset first.")
             return
 
-        # Here you would integrate model selection and training logic
+        # Model selection aur training logic ko yahan integrate kiya jaayega
         messagebox.showinfo("Model Selection", "Model selection and training functionality needs to be integrated.")
