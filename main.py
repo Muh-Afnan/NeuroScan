@@ -4,7 +4,6 @@ from gui.register_frame import RegisterFrame  # RegisterFrame import karte hain 
 from gui.main_frame import MainScreen  # MainScreen import karte hain (Main screen ke liye)
 from gui.recover_password_frame import RecoverPasswordFrame  # RecoverPasswordFrame import karte hain (Password recovery ke liye)
 from gui.train_frame import trainmodelframe  # TrainModelFrame import karte hain (Model training ke liye)
-from gui.preprocessing import PreprocessingFrame  # PreprocessingFrame import karte hain (Preprocessing ke liye)
 
 class App(tk.Tk):
     def __init__(self):

@@ -1,20 +1,14 @@
 import tkinter as tk
-from tkinter import filedialog, messagebox, ttk
-from PIL import Image, ImageTk
-import cv2
+from tkinter import messagebox
+from PIL import ImageTk
 import numpy as np
 from Implementation.preprocessing_logic import normalize_image, reduce_noise, skull_strip, remove_artifacts
-import os
 
 class PreprocessingFrame(tk.Frame):
     def __init__(self, master,preprocess_window,):
         super().__init__(master)
         self.master = master
         self.preprocess_window = preprocess_window
-
-        self.master.master.dataset_path = ""
-        self.master.master.image_paths = []
-        self.master.master.loaded_images = []
 
         self.preview_frame = tk.Frame(self.preprocess_window )
         self.preview_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10, pady=10)
@@ -95,6 +89,8 @@ class PreprocessingFrame(tk.Frame):
         # Button to apply artifact removal
         self.artifact_button = tk.Button(self.menue_frame, text="Remove Artifacts", command=self.apply_artifact_removal)
         self.artifact_button.pack(pady=5)
+        self.update_grid()
+
 
     def on_frame_configure(self, event):
         # Update the scroll region of the canvas

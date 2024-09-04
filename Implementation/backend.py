@@ -1,7 +1,6 @@
-from PIL import Image, ImageEnhance
+from PIL import Image, ImageEnhance, ImageOps
 import numpy as np
 import os
-import random
 
 # Folder se images load karne ka function
 def load_images_from_folder(folder_path):
@@ -32,6 +31,44 @@ def augment_image(img, technique, *args):
         noisy_img = np.clip(noisy_img, 0, 255).astype(np.uint8)  # Ensure karna ke pixel values 0 aur 255 ke beech me hain
         return Image.fromarray(noisy_img)  # Noisy image ko phir se PIL format me convert karna
     return img  # Agar koi valid technique specify nahi hai, to original image return karna
+
+def augment_image(image, augmentation_type, *args):
+    """
+    Apply augmentation to an image based on the type and parameters.
+    """
+    if augmentation_type == "translate":
+        x, y = args
+        return ImageOps.offset(image, x, y)
+    
+    elif augmentation_type == "scale":
+        scale_factor = args[0]
+        width, height = image.size
+        new_size = (int(width * scale_factor), int(height * scale_factor))
+        return image.resize(new_size, Image.ANTIALIAS)
+    
+    elif augmentation_type == "elastic_deformation":
+        # Elastic deformation implementation
+        return image
+    
+    elif augmentation_type == "intensity_adjustment":
+        intensity_value = args[0]
+        enhancer = ImageEnhance.Brightness(image)
+        return enhancer.enhance(intensity_value)
+    
+    elif augmentation_type == "shear":
+        shearing_factor = args[0]
+        # Shearing implementation
+        return image
+    
+    elif augmentation_type == "random_crop":
+        crop_width, crop_height = args
+        width, height = image.size
+        left = np.random.randint(0, width - crop_width)
+        top = np.random.randint(0, height - crop_height)
+        return image.crop((left, top, left + crop_width, top + crop_height))
+    
+    return image
+
 
 # YOLO model train karne ka function (placeholder)
 def train_yolo_model(dataset_path, images):
