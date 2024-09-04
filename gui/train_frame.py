@@ -29,29 +29,42 @@ class trainmodelframe(tk.Frame):
         Yeh method GUI widgets ko create aur arrange karne ke liye use hoti hai.
         Isme buttons aur labels create aur arrange kiye jaate hain.
         """
+        # Create a frame to hold the buttons
+        button_frame = tk.Frame(self)
+        button_frame.pack(pady=20, fill="x", expand=True)
+
+        # Add another frame inside `button_frame` to center the buttons horizontally
+        inner_frame = tk.Frame(button_frame)
+        inner_frame.pack(expand=True)
+
+        # Button styles define karte hain
+        button_style_large = {"font": ("Arial", 14), "width": 15, "height": 2, "padx": 10, "pady": 10}
+
         # Back button to return to the main screen
-        self.back_button = tk.Button(self, text="Back to Main", command=self.callback_main_Screen)
-        self.back_button.pack()
+        self.back_button = tk.Button(inner_frame, text="Back to Main", command=self.callback_main_Screen)
+        self.back_button.grid(row=0, column=1, padx=10, pady=10, sticky="e")
 
         # Label to show dataset information
-        self.dataset_info_label = tk.Label(self, text="No dataset loaded")
-        self.dataset_info_label.pack()
+        self.dataset_info_label = tk.Label(inner_frame, text="No dataset loaded")
+        self.dataset_info_label.grid(row=1, column=0, columnspan=2, padx=10, pady=10)
 
         # Button to upload dataset
-        self.upload_button = tk.Button(self, text="Upload Dataset", command=self.upload_dataset)
-        self.upload_button.pack()
+        self.upload_button = tk.Button(inner_frame, text="Upload Dataset", **button_style_large, command=self.upload_dataset)
+        self.upload_button.grid(row=2, column=0, padx=10, pady=10)
 
         # Button to preprocess data
-        self.preprocess_button = tk.Button(self, text="Preprocess Data", command=self.call_preprocessingframe)
-        self.preprocess_button.pack()
+        self.preprocess_button = tk.Button(inner_frame, text="Preprocess Data", **button_style_large, command=self.call_preprocessingframe)
+        self.preprocess_button.grid(row=2, column=1, padx=10, pady=10)
 
         # Button to augment data
-        self.augment_button = tk.Button(self, text="Augment Data", command=self.call_augmentation_frame)
-        self.augment_button.pack()
+        self.augment_button = tk.Button(inner_frame, text="Augment Data", **button_style_large, command=self.call_augmentation_frame)
+        self.augment_button.grid(row=3, column=0, padx=10, pady=10)
 
         # Button to select model
-        self.select_model_button = tk.Button(self, text="Select Model", command=self.select_model)
-        self.select_model_button.pack()
+        self.select_model_button = tk.Button(inner_frame, text="Select Model", **button_style_large, command=self.select_model)
+        self.select_model_button.grid(row=3, column=1, padx=10, pady=10)
+
+
 
     def upload_dataset(self):
         """

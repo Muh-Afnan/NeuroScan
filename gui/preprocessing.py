@@ -5,10 +5,14 @@ import numpy as np
 from Implementation.preprocessing_logic import normalize_image, reduce_noise, skull_strip, remove_artifacts
 
 class PreprocessingFrame(tk.Frame):
-    def __init__(self, master,preprocess_window,):
+    def __init__(self, master,preprocess_window):
         super().__init__(master)
         self.master = master
         self.preprocess_window = preprocess_window
+
+        self.preprocess_window.grid_columnconfigure(0, weight=8)  # Give equal weight to both columns
+        self.preprocess_window.grid_columnconfigure(1, weight=2)
+        self.preprocess_window.grid_rowconfigure(0, weight=1)
 
         self.preview_frame = tk.Frame(self.preprocess_window )
         self.preview_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10, pady=10)
