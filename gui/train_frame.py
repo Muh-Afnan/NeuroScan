@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 from PIL import ImageTk
 from Implementation.backend import load_images_from_folder, augment_image
-from gui.preprocessing import PreprocessingFrame
+from gui.preprocessing_frame import PreprocessingFrame
 from gui.augment_frame import AugmentFrame
 import os
 
@@ -107,10 +107,10 @@ class trainmodelframe(tk.Frame):
             messagebox.showwarning("No Dataset", "Please upload a dataset first.")
             return
         
-        self.preprocess_window = tk.Toplevel(self)
-        self.preprocess_window.title("Data Preprocessing")
-        self.preprocess_window.geometry("1200x800")
-        PreprocessingFrame(self,self.preprocess_window)
+        # self.preprocess_window = tk.Toplevel(self)
+        # self.preprocess_window.title("Data Preprocessing")
+        # self.preprocess_window.geometry("1200x800")
+        PreprocessingFrame(self)
 
     def call_augmentation_frame(self):
         """
