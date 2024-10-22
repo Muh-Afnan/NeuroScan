@@ -7,22 +7,22 @@ from gui.augment_frame import AugmentFrame
 import os
 
 class trainmodelframe(tk.Frame):
-    def __init__(self, master, show_main_screen):
+    def __init__(self, mainapp, show_main_screen):
         """
         Constructor method jo trainmodelframe class ka instance banate waqt call hota hai.
         Parameters:
             - master: Tkinter window ya frame jisme yeh trainmodelframe attach hoga.
             - show_main_screen: Function jo main screen dikhane ke liye call hota hai.
         """
-        super().__init__(master)
-        self.master = master
+        super().__init__(mainapp)
+        self.mainapp_obj = mainapp
         self.callback_main_Screen = show_main_screen
 
-        # Initialize dataset path, image paths, and loaded images
-        self.master.dataset_path = ""
-        self.master.image_paths = []
-        self.master.loaded_images = []
-        self.create_widgets()
+        # # Initialize dataset path, image paths, and loaded images
+        # self.master.dataset_path = ""
+        # self.master.image_paths = []
+        # self.master.loaded_images = []
+        # self.create_widgets()
 
     def create_widgets(self):
         """
@@ -74,16 +74,12 @@ class trainmodelframe(tk.Frame):
         # Open a dialog to select a folder and store the path
         dataset_folder = filedialog.askdirectory(title="Select Dataset Folder")
         
-        # Check if a folder was selected
         if dataset_folder:
             # Get all image file paths in the folder
             image_extensions = ('.jpg', '.jpeg', '.png', '.bmp', '.tiff')
             image_paths = [os.path.join(dataset_folder, f) for f in os.listdir(dataset_folder) if f.lower().endswith(image_extensions)]
-            
-            # Load the images
-            loaded_images = load_images_from_folder(dataset_folder)
-            num_images = len(loaded_images)  # Count the number of loaded images
-            
+        
+
             # Update the UI with dataset information
             self.dataset_info_label.config(text=f"Dataset loaded from: {dataset_folder}\nNumber of images: {num_images}")
             
@@ -91,26 +87,20 @@ class trainmodelframe(tk.Frame):
             messagebox.showinfo("Dataset Uploaded", f"Dataset uploaded from: {dataset_folder}\nNumber of images: {num_images}")
             
             # Store paths and images for later use
-            self.master.dataset_path = dataset_folder
-            self.master.image_paths = image_paths
-            self.master.loaded_images = loaded_images
+            self.mainapp_obj.dataset_path = dataset_folder
+            self.mainapp_obj.image_paths = image_paths
         else:
-            # Show a warning if no folder was selected
             messagebox.showwarning("No Dataset", "Please select a valid dataset folder.")
 
-    def call_preprocessingframe(self):
+    def call_preprocessingframe(self,mainapp_obj):
         """
         Preprocess button click hone par call hoti hai.
         Yeh method ek new window open karti hai jahan data preprocessing ke options hote hain.
         """
-        if not self.master.dataset_path:
+        if not self.mainapp_obj.dataset_path:
             messagebox.showwarning("No Dataset", "Please upload a dataset first.")
             return
-        
-        # self.preprocess_window = tk.Toplevel(self)
-        # self.preprocess_window.title("Data Preprocessing")
-        # self.preprocess_window.geometry("1200x800")
-        PreprocessingFrame(self)
+        PreprocessingFrame(self,mainapp_obj)
 
     def call_augmentation_frame(self):
         """
@@ -125,10 +115,3 @@ class trainmodelframe(tk.Frame):
         augment_window.title("Data Augmentation")
         augment_window.geometry("1200x800")
         AugmentFrame(self,augment_window)
-
-
-    
-
-
-    def select_model(self):
-        pass

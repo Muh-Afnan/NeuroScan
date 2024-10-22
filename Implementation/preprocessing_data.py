@@ -1,8 +1,9 @@
-import cv2 
-import PIL
+import tensorflow  as tf
 
-def resize_data():
-    pass
+
+
+    
+    
 
 def normalize_data():
     pass

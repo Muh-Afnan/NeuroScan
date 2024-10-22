@@ -16,9 +16,11 @@ class App(tk.Tk):
         super().__init__() 
         self.title("NeuroScan App")  
         self.geometry("800x600")
+        
         self.dataset_path = ""
         self.loaded_images = []
         self.image_paths = []
+        self.preprocesed_images = []
 
         self.current_frame = None  # Currently visible frame ko store karta hai
         self.show_login()  # Login screen show karata hai jab app start hoti hai
