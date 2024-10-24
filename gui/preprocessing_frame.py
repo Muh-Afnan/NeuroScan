@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import tensorflow as tf
 from Implementation.preprocessing_data import resize_data,normalize_data
+import cv2 as cv2
 
 class PreprocessingFrame(tk.Frame):
     def __init__(self, train_frame, mainapp_obj):
@@ -24,8 +25,9 @@ class PreprocessingFrame(tk.Frame):
     
     def load_image(self):
         for path in self.main_obj.image_paths:
-            image = tf.io.read_file(path)                # Read the image file
-            image = tf.image.decode_image(image, channels=3)  # Decode the image (RGB)
+            image = cv2.imread(path, cv2.IMREAD_COLOR)
+            if image is None:
+                raise ValueError (f"Image at Path {path} couldnot be loaded")
             self.main_obj.loaded_images.append(image)
 
     def std_resize_images(self):
@@ -42,6 +44,31 @@ class PreprocessingFrame(tk.Frame):
         for i in range(len(self.main_obj.loaded_images)):
             # Normalize the image by dividing by 255.0
             self.main_obj.loaded_images[i] = tf.cast(self.main_obj.loaded_images[i], tf.float32) / 255.0
+
+    def remove_noise(image, filter_strength=10, template_window_size=7, search_window_size=21):
+        
+        if image is None:
+            raise ValueError("Input image is None")
+
+        # Check if the image is colored or grayscale
+        if len(image.shape) == 3:
+            # Colored image (MRI or CT scan in RGB)
+            denoised_image = cv2.fastNlMeansDenoisingColored(image, None, filter_strength, filter_strength,
+                                                            template_window_size, search_window_size)
+        else:
+            # Grayscale image
+            denoised_image = cv2.fastNlMeansDenoising(image, None, filter_strength, 
+                                                    template_window_size, search_window_size)
+
+        return denoised_image
+
+            # Example usage:
+            # img = cv2.imread('scan_image.png')
+            # denoised_img = remove_noise(img)
+            # cv2.imshow('Denoised Image', denoised_img)
+            # cv2.waitKey(0)
+            # cv2.destroyAllWindows()
+
 
         
 
