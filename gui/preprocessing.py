@@ -9,16 +9,31 @@ class PreprocessingFrame(tk.Frame):
         super().__init__(master)
         self.master = master
         self.preprocess_window = preprocess_window
+        # self.augmentwindow.grid_columnconfigure(0, weight=8)  # Left column takes 70% of space
+        # self.augmentwindow.grid_columnconfigure(1, weight=2)  # Right column takes 30% of space
+        # self.augmentwindow.grid_rowconfigure(0, weight=1)  # Row takes all available vertical space
+
+        # self.preview_frame = tk.Frame(self.augmentwindow)
+        # self.preview_frame.grid(row=0, column=0, sticky="nsew")
+
+        # self.menue_frame = tk.Frame(self.augmentwindow)
+        # self.menue_frame.grid(row=0, column=1, sticky="nsew")
+
+        # self.check_vars = []
+        # self.build_augmentation_interface()
+        # self.build_menue_frame()
 
         self.preprocess_window.grid_columnconfigure(0, weight=8)  # Give equal weight to both columns
         self.preprocess_window.grid_columnconfigure(1, weight=2)
         self.preprocess_window.grid_rowconfigure(0, weight=1)
 
         self.preview_frame = tk.Frame(self.preprocess_window )
-        self.preview_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10, pady=10)
+        # self.preview_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10, pady=10)
+        self.preview_frame.grid(row=0, column=0, sticky="nsew")
 
         self.menue_frame = tk.Frame(self.preprocess_window )
-        self.menue_frame.pack(side=tk.RIGHT, fill=tk.Y, expand=True, padx=10, pady=10)
+        # self.menue_frame.pack(side=tk.RIGHT, fill=tk.Y, expand=True, padx=10, pady=10)
+        self.menue_frame.grid(row=0, column=1, sticky="nsew")
         self.check_vars = []
         self.build_preprocessing_screen()
 
@@ -118,7 +133,7 @@ class PreprocessingFrame(tk.Frame):
         # Step 2: Set the size for image previews and determine the grid layout
         max_width = 150
         max_height = 150
-        columns = 4  # Number of images per row
+        columns = 8  # Number of images per row
         rows = (len(self.master.master.loaded_images) + columns - 1) // columns  # Calculate number of rows needed
 
         # Step 3: Loop through each row and column to place the images

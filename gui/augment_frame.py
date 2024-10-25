@@ -53,7 +53,8 @@ class AugmentFrame(tk.Frame):
 
         max_width = 150
         max_height = 150
-        cols = 4
+        # cols = int(self.scrollable_frame.winfo_width()/150)
+        cols = 8
         rows = (len(self.master.master.loaded_images) + cols - 1) // cols
 
         for i in range(rows):
@@ -110,7 +111,6 @@ class AugmentFrame(tk.Frame):
         Build the menu frame with all augmentation options.
         """
         # Select all and unselect all buttons
-        print("I am being Called")
         selectall_button = tk.Button(self.menue_frame, text="Select All", command=self.check_all)
         selectall_button.pack(pady=5)
 
@@ -174,13 +174,39 @@ class AugmentFrame(tk.Frame):
         
         tk.Checkbutton(self.menue_frame, text="Flip Horizontally", variable=flip_horizontal_var).pack(anchor="w", padx=10)
         tk.Checkbutton(self.menue_frame, text="Flip Vertically", variable=flip_vertical_var).pack(anchor="w", padx=10)
+
+        flip_button = tk.Button(self.menue_frame, text="Apply Flipping", command=None)
+        flip_button.pack(pady=5)
+
         
-        # Noise Value (currently not implemented)
+        # Noise Addition
         noise_value_label = tk.Label(self.menue_frame, text="Noise Value:")
         noise_value_label.pack(pady=5)
         
         noise_value_entry = tk.Entry(self.menue_frame)
         noise_value_entry.pack(pady=5)
+        
+        def apply_noise():
+            """
+            Applies noise to selected images based on user input.
+            """
+            noise_value = noise_value_entry.get()
+            try:
+                noise_value = float(noise_value)
+            except ValueError:
+                messagebox.showwarning("Invalid Input", "Please enter a valid noise value.")
+                return
+            
+            for var, idx in self.check_vars:
+                if var.get():
+                    name, img = self.master.master.loaded_images[idx]
+                    noisy_img = augment_image(img, "add_noise", noise_value)
+                    self.master.master.loaded_images[idx] = (name, noisy_img)
+            
+            self.update_grid()
+            messagebox.showinfo("Noise Addition", f"Applied noise with value {noise_value} to selected images.")
+        noise_button = tk.Button(self.menue_frame, text="Apply Noise", command=apply_noise)
+        noise_button.pack(pady=5)
         
         # Translation
         translation_label = tk.Label(self.menue_frame, text="Translation (x, y):")
@@ -361,33 +387,3 @@ class AugmentFrame(tk.Frame):
 
         random_cropping_button = tk.Button(self.menue_frame, text="Apply Random Cropping", command=apply_random_cropping)
         random_cropping_button.pack(pady=5)
-
-        # Noise Addition
-        noise_value_label = tk.Label(self.menue_frame, text="Noise Value:")
-        noise_value_label.pack(pady=5)
-        
-        noise_value_entry = tk.Entry(self.menue_frame)
-        noise_value_entry.pack(pady=5)
-        
-        def apply_noise():
-            """
-            Applies noise to selected images based on user input.
-            """
-            noise_value = noise_value_entry.get()
-            try:
-                noise_value = float(noise_value)
-            except ValueError:
-                messagebox.showwarning("Invalid Input", "Please enter a valid noise value.")
-                return
-            
-            for var, idx in self.check_vars:
-                if var.get():
-                    name, img = self.master.master.loaded_images[idx]
-                    noisy_img = augment_image(img, "add_noise", noise_value)
-                    self.master.master.loaded_images[idx] = (name, noisy_img)
-            
-            self.update_grid()
-            messagebox.showinfo("Noise Addition", f"Applied noise with value {noise_value} to selected images.")
-
-        noise_button = tk.Button(self.menue_frame, text="Apply Noise", command=apply_noise)
-        noise_button.pack(pady=5)
