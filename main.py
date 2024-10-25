@@ -16,6 +16,7 @@ class App(tk.Tk):
         super().__init__() 
         self.title("NeuroScan App")  
         self.geometry("800x600")
+
         self.dataset_path = ""
         self.loaded_images = []
         self.image_paths = []
