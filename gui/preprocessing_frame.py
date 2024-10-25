@@ -23,6 +23,9 @@ class PreprocessingFrame(tk.Frame):
         self.inner_frame = tk.Frame(self.second_window)
         self.inner_frame.pack()
     
+    def load_tf_image(image)
+        image = tf.io.read_file(path) 
+    
     def load_image(self):
         for path in self.main_obj.image_paths:
             image = cv2.imread(path, cv2.IMREAD_COLOR)
