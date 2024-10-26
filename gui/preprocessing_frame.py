@@ -53,25 +53,54 @@ class PreprocessingFrame(tk.Frame):
                     self.main_obj.loaded_images[i], None, filter_strength, 
                     template_window_size, search_window_size
                 )
-
-    def std_resize_images(self, target_height=256, target_width=256):
+    def pad_to_square_139x139(self):
         """
-        Resizes images using OpenCV to the target dimensions.
+        Pads each image to make it 139x139 by adding padding to the width.
         """
         for i in range(len(self.main_obj.loaded_images)):
-            # Resize with OpenCV and keep as NumPy array
-            self.main_obj.loaded_images[i] = cv2.resize(
-                self.main_obj.loaded_images[i], (target_width, target_height), interpolation=cv2.INTER_AREA
-            )
+            image = self.main_obj.loaded_images[i]
+            w, h = image.shape[:2]
+
+            # Check if the image height is already 139
+            if h == 139 and w == 139:
+                continue  # Skip if already square
+
+            # Calculate padding for width to reach 139x139
+            delta_h = 139 - h
+            left = delta_h // 2
+            right = delta_h - left
+
+            # Pad the image to make it square
+            color = [0, 0, 0]  # Black padding
+            padded_image = cv2.copyMakeBorder(image, 0, 0, left, right, cv2.BORDER_CONSTANT, value=color)
+            self.main_obj.loaded_images[i] = padded_image
+
+            # Adjust labels by shifting x_center for horizontal padding
+            for label in self.main_obj.labels[i]:  # Assuming labels are stored per image
+                label['x_center'] += left / 139  # Adjust by normalized padding shift
 
     def normalize_images(self):
-        """
-        Normalizes images by scaling pixel values to [0, 1] and converts them to TensorFlow tensors.
-        """
         for i in range(len(self.main_obj.loaded_images)):
-            # Convert to TensorFlow tensor and normalize
-            image_tensor = tf.convert_to_tensor(self.main_obj.loaded_images[i], dtype=tf.float32) / 255.0
-            self.main_obj.loaded_images[i] = image_tensor
+            self.main_obj.loaded_images[i] = tf.convert_to_tensor(self.main_obj.loaded_images[i], dtype=tf.float32) / 255.0
+
+    # def std_resize_images(self, target_height=256, target_width=256):
+    #     """
+    #     Resizes images using OpenCV to the target dimensions.
+    #     """
+    #     for i in range(len(self.main_obj.loaded_images)):
+    #         # Resize with OpenCV and keep as NumPy array
+    #         self.main_obj.loaded_images[i] = cv2.resize(
+    #             self.main_obj.loaded_images[i], (target_width, target_height), interpolation=cv2.INTER_AREA
+    #         )
+
+    # def normalize_images(self):
+    #     """
+    #     Normalizes images by scaling pixel values to [0, 1] and converts them to TensorFlow tensors.
+    #     """
+    #     for i in range(len(self.main_obj.loaded_images)):
+    #         # Convert to TensorFlow tensor and normalize
+    #         image_tensor = tf.convert_to_tensor(self.main_obj.loaded_images[i], dtype=tf.float32) / 255.0
+    #         self.main_obj.loaded_images[i] = image_tensor
 
     def convert_to_dataset(self):
         """
