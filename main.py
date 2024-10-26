@@ -21,7 +21,6 @@ class App(tk.Tk):
         self.loaded_images = []
         self.image_paths = []
 
-        self.label_path = ""
         self.label_paths = []
         self.loaded_label = []
 

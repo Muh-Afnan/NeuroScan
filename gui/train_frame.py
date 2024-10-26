@@ -77,6 +77,7 @@ class trainmodelframe(tk.Frame):
         if dataset_folder:
             # Get all image file paths in the folder
             image_extensions = ('.jpg', '.jpeg', '.png', '.bmp', '.tiff')
+            if 
             image_paths = [os.path.join(dataset_folder, f) for f in os.listdir(dataset_folder) if f.lower().endswith(image_extensions)]
 
             num_images = len(image_paths)
