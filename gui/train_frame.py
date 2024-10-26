@@ -68,32 +68,52 @@ class trainmodelframe(tk.Frame):
 
     def upload_dataset(self):
         """
-        This method is called when the Upload button is clicked.
-        It opens a dialog to select a dataset folder and loads the images.
+        Opens a dialog to select a dataset folder, loads images and corresponding labels.
         """
-        # Open a dialog to select a folder and store the path
         dataset_folder = filedialog.askdirectory(title="Select Dataset Folder")
         
         if dataset_folder:
-            # Get all image file paths in the folder
+            # Image and label file extensions
             image_extensions = ('.jpg', '.jpeg', '.png', '.bmp', '.tiff')
-            image_paths = [os.path.join(dataset_folder, f) for f in os.listdir(dataset_folder) if f.lower().endswith(image_extensions)]
+            label_extension = '.txt'
+            
+            # Collect image and label paths
+            image_paths = []
+            label_paths = []
+            
+            for filename in os.listdir(dataset_folder):
+                file_path = os.path.join(dataset_folder, filename)
+                
+                # Add image paths
+                if filename.lower().endswith(image_extensions):
+                    image_paths.append(file_path)
+                    
+                    # Look for a corresponding label file
+                    label_file = filename.rsplit('.', 1)[0] + label_extension
+                    label_path = os.path.join(dataset_folder, label_file)
+                    
+                    # Check if the label file exists
+                    if os.path.exists(label_path):
+                        label_paths.append(label_path)
+                    else:
+                        messagebox.showwarning("Missing Label", f"Label file for {filename} not found.")
 
             num_images = len(image_paths)
-        
-
+            num_labels = len(label_paths)
+            
             # Update the UI with dataset information
-            self.dataset_info_label.config(text=f"Dataset loaded from: {dataset_folder}\nNumber of images: {num_images}")
-            
-            # Show a message box with the dataset details
-            messagebox.showinfo("Dataset Uploaded", f"Dataset uploaded from: {dataset_folder}\nNumber of images: {num_images}")
-            
-            # Store paths and images for later use
             self.mainapp_obj.dataset_path = dataset_folder
             self.mainapp_obj.image_paths = image_paths
+            self.mainapp_obj.label_paths = label_paths
+            self.mainapp_obj.loaded_images.clear()
+            self.mainapp_obj.labels.clear()
+            
+            # Show dataset details
+            messagebox.showinfo("Dataset Uploaded", f"Dataset loaded from: {dataset_folder}\nNumber of images: {num_images}\nNumber of labels: {num_labels}")
+
         else:
             messagebox.showwarning("No Dataset", "Please select a valid dataset folder.")
-
+            
     def call_preprocessingframe(self,mainapp_obj):
         """
         Preprocess button click hone par call hoti hai.
