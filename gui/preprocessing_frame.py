@@ -23,54 +23,62 @@ class PreprocessingFrame(tk.Frame):
         self.inner_frame = tk.Frame(self.second_window)
         self.inner_frame.pack()
     
-    def load_tf_image(image)
-        image = tf.io.read_file(path) 
+    # def load_tf_image(image)
+    #     image = tf.io.read_file(path) 
     
-    def load_image(self):
+    def load_images(self):
+        """
+        Loads images from the specified paths and appends them to loaded_images as NumPy arrays.
+        Raises an error if an image cannot be loaded.
+        """
         for path in self.main_obj.image_paths:
             image = cv2.imread(path, cv2.IMREAD_COLOR)
             if image is None:
-                raise ValueError (f"Image at Path {path} couldnot be loaded")
+                raise ValueError(f"Image at path {path} could not be loaded")
             self.main_obj.loaded_images.append(image)
 
-    def std_resize_images(self):
-        target_width = 256
-        target_height = 256
+    def remove_noise(self, filter_strength=10, template_window_size=7, search_window_size=21):
+        """
+        Removes noise from images using OpenCV's fastNlMeansDenoising.
+        Supports both color and grayscale images.
+        """
         for i in range(len(self.main_obj.loaded_images)):
-            self.main_obj.loaded_images[i] = tf.image.resize_with_pad(self.main_obj.loaded_images[i], target_height=256, target_width=256)
-    
+            if len(self.main_obj.loaded_images[i].shape) == 3:  # Color image
+                self.main_obj.loaded_images[i] = cv2.fastNlMeansDenoisingColored(
+                    self.main_obj.loaded_images[i], None, filter_strength, filter_strength,
+                    template_window_size, search_window_size
+                )
+            else:  # Grayscale image
+                self.main_obj.loaded_images[i] = cv2.fastNlMeansDenoising(
+                    self.main_obj.loaded_images[i], None, filter_strength, 
+                    template_window_size, search_window_size
+                )
+
+    def std_resize_images(self, target_height=256, target_width=256):
+        """
+        Resizes images using OpenCV to the target dimensions.
+        """
+        for i in range(len(self.main_obj.loaded_images)):
+            # Resize with OpenCV and keep as NumPy array
+            self.main_obj.loaded_images[i] = cv2.resize(
+                self.main_obj.loaded_images[i], (target_width, target_height), interpolation=cv2.INTER_AREA
+            )
+
     def normalize_images(self):
         """
-        This function normalizes the images in the loaded_images array.
-        The pixel values are scaled to the range [0, 1].
+        Normalizes images by scaling pixel values to [0, 1] and converts them to TensorFlow tensors.
         """
         for i in range(len(self.main_obj.loaded_images)):
-            # Normalize the image by dividing by 255.0
-            self.main_obj.loaded_images[i] = tf.cast(self.main_obj.loaded_images[i], tf.float32) / 255.0
+            # Convert to TensorFlow tensor and normalize
+            image_tensor = tf.convert_to_tensor(self.main_obj.loaded_images[i], dtype=tf.float32) / 255.0
+            self.main_obj.loaded_images[i] = image_tensor
 
-    def remove_noise(image, filter_strength=10, template_window_size=7, search_window_size=21):
-        
-        if image is None:
-            raise ValueError("Input image is None")
-
-        # Check if the image is colored or grayscale
-        if len(image.shape) == 3:
-            # Colored image (MRI or CT scan in RGB)
-            denoised_image = cv2.fastNlMeansDenoisingColored(image, None, filter_strength, filter_strength,
-                                                            template_window_size, search_window_size)
-        else:
-            # Grayscale image
-            denoised_image = cv2.fastNlMeansDenoising(image, None, filter_strength, 
-                                                    template_window_size, search_window_size)
-
-        return denoised_image
-
-            # Example usage:
-            # img = cv2.imread('scan_image.png')
-            # denoised_img = remove_noise(img)
-            # cv2.imshow('Denoised Image', denoised_img)
-            # cv2.waitKey(0)
-            # cv2.destroyAllWindows()
+    def convert_to_dataset(self):
+        """
+        Converts the loaded images into a TensorFlow Dataset.
+        """
+        dataset = tf.data.Dataset.from_tensor_slices(self.main_obj.loaded_images)
+        return dataset
 
 
         
