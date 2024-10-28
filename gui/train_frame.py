@@ -22,7 +22,7 @@ class trainmodelframe(tk.Frame):
         # self.master.dataset_path = ""
         # self.master.image_paths = []
         # self.master.loaded_images = []
-        # self.create_widgets()
+        self.create_widgets()
 
     def create_widgets(self):
         """
@@ -45,15 +45,21 @@ class trainmodelframe(tk.Frame):
         self.back_button.grid(row=0, column=1, padx=10, pady=10, sticky="e")
 
         # Label to show dataset information
-        self.dataset_info_label = tk.Label(inner_frame, text="No dataset loaded")
-        self.dataset_info_label.grid(row=1, column=0, columnspan=2, padx=10, pady=10)
+        if len(self.mainapp_obj.image_paths) > 0:
+            self.dataset_info_label = tk.Label(inner_frame, text="No dataset loaded")
+            self.dataset_info_label.grid(row=1, column=0, columnspan=2, padx=10, pady=10)
+            return
+        else:
+            self.dataset_info_label = tk.Label(inner_frame, text=f"Data set with {len(self.mainapp_obj.image_paths)} images and {len(self.mainapp_obj.image_paths)} labels is ready to be Loaded")
+            self.dataset_info_label.grid(row=1, column=0, columnspan=2, padx=10, pady=10)
+
 
         # Button to upload dataset
         self.upload_button = tk.Button(inner_frame, text="Upload Dataset", **button_style_large, command=self.upload_dataset)
         self.upload_button.grid(row=2, column=0, padx=10, pady=10)
 
         # Button to preprocess data
-        self.preprocess_button = tk.Button(inner_frame, text="Preprocess Data", **button_style_large, command=self.call_preprocessingframe)
+        self.preprocess_button = tk.Button(inner_frame, text="Preprocess Data", **button_style_large, command=self.call_preprocessingframe(self.mainapp_obj))
         self.preprocess_button.grid(row=2, column=1, padx=10, pady=10)
 
         # Button to augment data
@@ -105,8 +111,7 @@ class trainmodelframe(tk.Frame):
             self.mainapp_obj.dataset_path = dataset_folder
             self.mainapp_obj.image_paths = image_paths
             self.mainapp_obj.label_paths = label_paths
-            self.mainapp_obj.loaded_images.clear()
-            self.mainapp_obj.labels.clear()
+
             
             # Show dataset details
             messagebox.showinfo("Dataset Uploaded", f"Dataset loaded from: {dataset_folder}\nNumber of images: {num_images}\nNumber of labels: {num_labels}")
@@ -114,7 +119,7 @@ class trainmodelframe(tk.Frame):
         else:
             messagebox.showwarning("No Dataset", "Please select a valid dataset folder.")
             
-    def call_preprocessingframe(self,mainapp_obj):
+    def call_preprocessingframe (self, mainapp_obj):
         """
         Preprocess button click hone par call hoti hai.
         Yeh method ek new window open karti hai jahan data preprocessing ke options hote hain.
@@ -137,3 +142,6 @@ class trainmodelframe(tk.Frame):
         augment_window.title("Data Augmentation")
         augment_window.geometry("1200x800")
         AugmentFrame(self,augment_window)
+
+    def select_model(self):
+        pass

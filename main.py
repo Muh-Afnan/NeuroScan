@@ -23,10 +23,9 @@ class App(tk.Tk):
 
         self.image_paths = []
 
-        self.label_path = ""
-        self.label_paths = []
-        # self.loaded_label = []
-
+        self.label_path = []
+        self.loaded_labels = []
+        
 
         self.current_frame = None  # Currently visible frame ko store karta hai
         self.show_login()  # Login screen show karata hai jab app start hoti hai

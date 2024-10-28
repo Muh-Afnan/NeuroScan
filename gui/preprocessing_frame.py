@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import tensorflow as tf
-from Implementation.preprocessing_data import resize_data,normalize_data
+# from Implementation.preprocessing_data import resize_data,normalize_data
 import cv2 as cv2
 
 class PreprocessingFrame(tk.Frame):
@@ -10,9 +10,13 @@ class PreprocessingFrame(tk.Frame):
         self.train_frame = train_frame
         self.mainapp_obj = mainapp_obj
 
+        self.stages = ["Image Loading", "Image Resizing", "Noise Removal", "Image Normalization"]
+        self.progress_bars = {}
+        self.create_progress_bars()
+
 
         self.create_interface()
-
+        
     def create_interface(self):
         self.second_window = tk.Toplevel(self)
         self.second_window.title("Data Preprocessing Progress")
@@ -22,6 +26,46 @@ class PreprocessingFrame(tk.Frame):
         
         self.inner_frame = tk.Frame(self.second_window)
         self.inner_frame.pack()
+
+    def create_progress_bars(self):
+        for i, stage in enumerate(self.stages):
+            # Label for the stage
+            label = tk.Label(self.progress_frame, text=stage)
+            label.grid(row=i, column=0, padx=10, pady=5, sticky="w")
+            
+            # Progress bar for the stage
+            progress = ttk.Progressbar(self.progress_frame, orient="horizontal", length=300, mode="determinate")
+            progress.grid(row=i, column=1, padx=10, pady=5)
+            self.progress_bars[stage] = progress
+    
+    def run_preprocessing(self):
+        # Mock list of images, replace with actual data
+        image_count = 9900  # Total number of images to process
+        
+        # Run each preprocessing step one by one, updating progress bars
+        self.update_progress_bar("Image Loading", image_count, self.image_loading)
+        self.update_progress_bar("Image Resizing", image_count, self.image_resizing)
+        self.update_progress_bar("Noise Removal", image_count, self.noise_removal)
+        self.update_progress_bar("Image Normalization", image_count, self.image_normalization)
+        
+    def update_progress_bar(self, stage, image_count, process_function):
+        progress = self.progress_bars[stage]
+        progress["maximum"] = image_count
+
+        # Process each image with the specified function
+        for i in range(1, image_count + 1):
+            # Perform the processing function (e.g., load, resize, etc.)
+            process_function(i)
+            
+            # Update progress bar every 10 images for better performance
+            if i % 10 == 0 or i == image_count:
+                progress["value"] = i
+                self.master.update_idletasks()
+        
+        # Reset progress bar for the next stage
+        progress["value"] = 0
+
+    
     
     # def load_tf_image(image)
     #     image = tf.io.read_file(path) 
