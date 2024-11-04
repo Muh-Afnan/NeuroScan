@@ -58,16 +58,12 @@ class preprocessing_code():
         """
 
         for path in os.listdir(self.main_obj.training_dir):
-            if os.
-            dataset_path=os.path.join(self.main_obj.training_dir,path )
-
-        for img_path, lbl_path in zip(self.main_obj.image_paths, self.main_obj.label_paths):
-            # Load the image
+            dataset_path=os.path.join(self.main_obj.training_dir,path)
             image = cv2.imread(img_path, cv2.IMREAD_COLOR)
             if image is None:
                 raise ValueError(f"Image at path {img_path} could not be loaded")
             self.main_obj.loaded_images.append(image)
-            self.main_obj.loaded_labels.append()
+
             # Load the Label
             individual_label = []
 
