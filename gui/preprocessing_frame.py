@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import tensorflow as tf
-# from Implementation.preprocessing_data import resize_data,normalize_data
+from Implementation.preprocessing_code import preprocessing_code
 import cv2 as cv2
 
 class PreprocessingFrame(tk.Frame):
@@ -10,14 +10,15 @@ class PreprocessingFrame(tk.Frame):
         self.train_frame = train_frame
         self.mainapp_obj = mainapp_obj
 
-        self.stages = ["Image Loading", "Image Resizing", "Noise Removal", "Image Normalization"]
-        self.progress_bars = {}
-        self.create_progress_bars()
+        # self.stages = ["Image Loading", "Image Resizing", "Noise Removal", "Image Normalization"]
+        # self.progress_bars = {}
+        # self.create_progress_bars()
 
 
         self.create_interface()
         
-    def create_interface(self):
+    def create_interface(self, mainapp_obj):
+        preprocessing_code(mainapp_obj)
         self.second_window = tk.Toplevel(self)
         self.second_window.title("Data Preprocessing Progress")
         self.second_window.geometry("800x500")

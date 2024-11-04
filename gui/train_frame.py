@@ -109,8 +109,8 @@ class trainmodelframe(tk.Frame):
             
             # Update the UI with dataset information
             self.mainapp_obj.dataset_path = dataset_folder
-            self.mainapp_obj.image_paths = image_paths
-            self.mainapp_obj.label_paths = label_paths
+            # self.mainapp_obj.image_paths = image_paths
+            # self.mainapp_obj.label_paths = label_paths
 
             
             # Show dataset details

@@ -1,4 +1,5 @@
 import tkinter as tk  # Tkinter library ko import karte hain GUI banane ke liye
+import os
 from gui.login_frame import LoginFrame  # LoginFrame import karte hain (Login screen ke liye)
 from gui.register_frame import RegisterFrame  # RegisterFrame import karte hain (Register screen ke liye)
 from gui.main_frame import MainScreen  # MainScreen import karte hain (Main screen ke liye)
@@ -18,12 +19,17 @@ class App(tk.Tk):
         self.geometry("800x600")
 
         self.dataset_path = ""
-        self.loaded_images = []
+
+        self.training_dir = os.path.join(self.dataset_path, 'Training_Dataset')
+        self.validation_dir = os.path.join(self.dataset_path, 'Validation_Dataset')
+        self.testing_dir = os.path.join(self.dataset_path,'Testing_Dataset')
+
 
 
         self.image_paths = []
-
         self.label_path = []
+
+        self.loaded_images = []
         self.loaded_labels = []
         
 
