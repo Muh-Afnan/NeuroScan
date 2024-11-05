@@ -31,6 +31,7 @@ class App(tk.Tk):
 
         self.loaded_images = []
         self.loaded_labels = []
+        self.dataset = 0
         
 
         self.current_frame = None  # Currently visible frame ko store karta hai
