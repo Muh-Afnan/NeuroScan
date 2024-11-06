@@ -16,6 +16,86 @@ class preprocessing_code():
         # self.remove_noise_custome()
         # self.create_dataset_custom()
 
+    
+    def load_images_and_labels_custom(self):
+        """
+        Loads images and their labels into memory.
+        """
+
+        for path in os.listdir(self.main_obj.dataset_path):
+            img_path=os.path.join(self.main_obj.dataset_path, path)
+            image = cv2.imread(img_path, cv2.IMREAD_COLOR)
+            if image is None:
+                raise ValueError(f"Image at path {img_path} could not be loaded")
+                continue
+            self.main_obj.loaded_images.append(image)
+
+            # Load the Label
+            individual_label = []
+
+            label_file = path.rsplit('.', 1)[0] + ".txt"
+            lbl_path = os.path.join(self.main_obj.training_dir, label_file)
+
+            with open(lbl_path, 'r') as file:
+                labels = file.readlines()
+
+            for label in labels:
+                parts = label.strip().split()
+                class_id = int(parts[0])
+                x_center = float(parts[1]) * 139
+                y_center = float(parts[2]) * 132
+                box_width = float(parts[3]) * 139
+                box_height = float(parts[4]) * 132
+
+                x_min = int(x_center - box_width/2)
+                y_min = int(y_center - box_height/2)
+                x_max = int(x_center + box_width/2)
+                y_max = int(y_center + box_height/2)
+
+                individual_label.append([class_id, x_min, y_min, x_max, y_max])
+        
+            self.main_obj.loaded_label.append(individual_label)
+            
+    def remove_noise_custome(self,filter_strength=10, template_window_size=7, search_window_size=21):
+            """
+            Removes noise from images using fastNlMeansDenoising.
+            """
+            for i in range(len(self.main_obj.loaded_images)):
+                if len(self.main_obj.loaded_images[i].shape) == 3:
+                    self.main_obj.loaded_images[i] = cv2.fastNlMeansDenoisingColored(
+                        self.main_obj.loaded_images[i], None, filter_strength, filter_strength,
+                        template_window_size, search_window_size
+                    )
+                else:
+                    self.main_obj.loaded_images[i] = cv2.fastNlMeansDenoising(
+                        self.main_obj.loaded_images[i], None, filter_strength, 
+                        template_window_size, search_window_size
+                    )
+
+    def preprocess_and_save(self):
+        """
+        Load images, apply preprocessing (e.g., noise removal), and save the processed images.
+        """
+        for image_filename in os.listdir(self.main_obj.dataset_path):
+            # Load image
+            image_path = os.path.join(self.main_obj.dataset_path, image_filename)
+            image = cv2.imread(image_path)
+
+            # Apply preprocessing (e.g., noise removal)
+            if image is not None:
+                image = self.remove_noise_custome(image)  # Your custom preprocessing function
+                # Save preprocessed image back in the same directory
+                processed_image_path = os.path.join(self.main_obj.training_dir_images, image_filename)
+                cv2.imwrite(processed_image_path, image)
+            else:
+                print(f"Image {image_filename} could not be loaded and was skipped.")
+
+        # Optional: Process labels if needed (e.g., if coordinates need adjustment)
+        for label_filename in os.listdir(self.main_obj.dataset_path):
+            label_path = os.path.join(self.main_obj.dataset_path, label_filename)
+            # No processing needed for labels in this case, but can be added if required.
+            shutil.copy(label_path, os.path.join(self.main_obj.dataset_path, label_filename))
+
     def dataset_split(self):
         # Define the paths for images and labels directories
         images_path = os.path.join(self.main_obj.dataset_path, 'images')
@@ -93,90 +173,6 @@ class preprocessing_code():
 
         # Generate the YAML file and save the path
         self.main_obj.yaml_path = create_yaml_config()    
-
-    def load_images_and_labels_custom(self):
-        """
-        Loads images and their labels into memory.
-        """
-
-        for path in os.listdir(self.main_obj.training_dir):
-            img_path=os.path.join(self.main_obj.training_dir, path)
-            image = cv2.imread(img_path, cv2.IMREAD_COLOR)
-            if image is None:
-                raise ValueError(f"Image at path {img_path} could not be loaded")
-                continue
-            self.main_obj.loaded_images.append(image)
-
-            # Load the Label
-            individual_label = []
-
-            label_file = path.rsplit('.', 1)[0] + ".txt"
-            lbl_path = os.path.join(self.main_obj.training_dir, label_file)
-
-            with open(lbl_path, 'r') as file:
-                labels = file.readlines()
-
-            for label in labels:
-                parts = label.strip().split()
-                class_id = int(parts[0])
-                x_center = float(parts[1]) * 139
-                y_center = float(parts[2]) * 132
-                box_width = float(parts[3]) * 139
-                box_height = float(parts[4]) * 132
-
-                x_min = int(x_center - box_width/2)
-                y_min = int(y_center - box_height/2)
-                x_max = int(x_center + box_width/2)
-                y_max = int(y_center + box_height/2)
-
-                individual_label.append([class_id, x_min, y_min, x_max, y_max])
-        
-            self.main_obj.loaded_label.append(individual_label)
-            
-    def remove_noise_custome(self,filter_strength=10, template_window_size=7, search_window_size=21):
-            """
-            Removes noise from images using fastNlMeansDenoising.
-            """
-            for i in range(len(self.main_obj.loaded_images)):
-                if len(self.main_obj.loaded_images[i].shape) == 3:
-                    self.main_obj.loaded_images[i] = cv2.fastNlMeansDenoisingColored(
-                        self.main_obj.loaded_images[i], None, filter_strength, filter_strength,
-                        template_window_size, search_window_size
-                    )
-                else:
-                    self.main_obj.loaded_images[i] = cv2.fastNlMeansDenoising(
-                        self.main_obj.loaded_images[i], None, filter_strength, 
-                        template_window_size, search_window_size
-                    )
-
-    def preprocess_and_save(self):
-        """
-        Load images, apply preprocessing (e.g., noise removal), and save the processed images.
-        """
-        for image_filename in os.listdir(self.main_obj.training_dir_images):
-            # Load image
-            image_path = os.path.join(self.main_obj.training_dir_images, image_filename)
-            image = cv2.imread(image_path)
-
-            # Apply preprocessing (e.g., noise removal)
-            if image is not None:
-                image = self.remove_noise_custome(image)  # Your custom preprocessing function
-                # Save preprocessed image back in the same directory
-                processed_image_path = os.path.join(self.main_obj.training_dir_images, image_filename)
-                cv2.imwrite(processed_image_path, image)
-            else:
-                print(f"Image {image_filename} could not be loaded and was skipped.")
-
-        # Optional: Process labels if needed (e.g., if coordinates need adjustment)
-        for label_filename in os.listdir(self.main_obj.training_dir_label):
-            label_path = os.path.join(self.main_obj.training_dir_label, label_filename)
-            # No processing needed for labels in this case, but can be added if required.
-            shutil.copy(label_path, os.path.join(self.main_obj.training_dir_label, label_filename))
-
-    def create_dataset_custom(self):
-        tf_loaded_images = tf.convert_to_tensor(self.main_obj.loaded_images)
-        tf_loaded_labels = tf.ragged.constant(self.main_obj.loaded_labels, dtype=tf.float32)
-        self.main_obj.dataset = tf.data.Dataset.from_tensor_slices((tf_loaded_images,tf_loaded_labels))
 
 
     def train_model(self):
