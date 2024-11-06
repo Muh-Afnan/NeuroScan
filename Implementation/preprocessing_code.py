@@ -2,59 +2,97 @@ import os
 import numpy as np
 import cv2 as cv2
 import tensorflow as tf
+from ultralytics import YOLO
 from tensorflow.keras import layers, Model
 import random
 import shutil
+from ultralytics import YOLO
 
 class preprocessing_code():
     def __init__(self, mainapp_obj):
         self.main_obj = mainapp_obj
-
         self.dataset_split()
         # self.load_images_and_labels_custom()
         # self.remove_noise_custome()
         # self.create_dataset_custom()
 
-
-
     def dataset_split(self):
-        image_extension = ('.jpg', '.png', '.jpeg', '.tiff')
-        label_extension = '.txt'
-
+        # Define the paths for images and labels directories
+        images_path = os.path.join(self.main_obj.dataset_path, 'images')
+        labels_path = os.path.join(self.main_obj.dataset_path, 'labels')
         images = []
+        # Collect all image files
+        for image in os.listdir(images_path):
+            if image.endswith(".jpg"):
+                images.append(image)    
 
-        for filename in os.listdir(self.main_obj.dataset_path):
-            if filename.endswith(image_extension):
-                images.append[filename]
-        random.shuffle(images)
+        # images = [f for f in os.listdir(images_path) if f.endswith(".jpg")]
+        random.shuffle(images)  # Shuffle images for random splitting
 
-        os.makedirs(self.main_obj.training_dir , exist_ok=True)
-        os.makedirs(self.main_obj.validation_dir , exist_ok=True)
-        os.makedirs(self.main_obj.testing_dir , exist_ok=True)
+        # Create directories for train/val/test splits for images and labels
+        os.makedirs(self.main_obj.training_dir_images, exist_ok=True)
+        os.makedirs(self.main_obj.validation_dir_images, exist_ok=True)
+        os.makedirs(self.main_obj.testing_dir_images, exist_ok=True)
 
+        os.makedirs(self.main_obj.training_dir_label, exist_ok=True)
+        os.makedirs(self.main_obj.validation_dir_label, exist_ok=True)
+        os.makedirs(self.main_obj.testing_dir_label, exist_ok=True)
+
+        # Calculate dataset splits
         no_of_dataset = len(images)
-        training_split = int(0.7*no_of_dataset)
-        validation_split = int (0.85*no_of_dataset)
+        training_split = int(0.7 * no_of_dataset)
+        validation_split = int(0.85 * no_of_dataset)
 
+        # Split images into training, validation, and testing sets
         training_images = images[:training_split]
         validation_images = images[training_split:validation_split]
         testing_images = images[validation_split:]
 
-
-        def move_file(image_list, directory):
+        # Function to move image and corresponding label files
+        def move_file(image_list, image_directory, label_directory):
             for filename in image_list:
+                # Define source paths for image and corresponding label
+                image_src = os.path.join(images_path, filename)
+                label_file = filename.rsplit('.', 1)[0] + ".txt"
+                label_src = os.path.join(labels_path, label_file)
+                
+                # Define destination paths for image and label
+                image_dest = os.path.join(image_directory, filename)
+                label_dest = os.path.join(label_directory, label_file)
 
-                label_file = filename.rsplit('.', 1) [0] + label_extension
-
-                if os.path.exists(os.path.join(self.main_obj.directory, label_file)):
-                    shutil.move(os.path.join(self.main_obj.directory,label_file),os.path.join(directory,label_file))
-                    shutil.move(os.path.join(self.main_obj.directory,filename), os.path.join(directory,filename))
+                # Check if label file exists and move both files
+                if os.path.exists(label_src):
+                    shutil.move(image_src, image_dest)
+                    shutil.move(label_src, label_dest)
                 else:
-                    print(f"Imaged dropped {filename}")
+                    print(f"Label file missing for image: {filename}. Image dropped.")
 
-        move_file(training_images, self.main_obj.training_dir)
-        move_file(validation_images, self.main_obj.validation_dir)
-        move_file(testing_images, self.main_obj.testing_dir)
+        # Move files into the respective train/val/test directories
+        move_file(training_images, self.main_obj.training_dir_images, self.main_obj.training_dir_label)
+        move_file(validation_images, self.main_obj.validation_dir_images, self.main_obj.validation_dir_label)
+        move_file(testing_images, self.main_obj.testing_dir_images, self.main_obj.testing_dir_label)
+
+        print("Dataset split completed successfully.")
+
+        def create_yaml_config():
+            yaml_content = f"""
+            path: {self.main_obj.dataset_path}
+            train: {self.main_obj.training_dir_images}
+            val: {self.main_obj.validation_dir_images}
+            test: {self.main_obj.testing_dir_images}
+
+            nc: 3
+            names: ["No Tumor", "Middle Tumor", "Severe Tumor"]
+            """
+
+            yaml_path = os.path.join(self.main_obj.dataset_path, "tumor_detection.yaml")
+            with open(yaml_path, 'w') as yaml_file:
+                yaml_file.write(yaml_content.strip())
+            print(f"YAML configuration file created at {yaml_path}")
+            return yaml_path
+
+        # Generate the YAML file and save the path
+        self.main_obj.yaml_path = create_yaml_config()    
 
     def load_images_and_labels_custom(self):
         """
@@ -111,47 +149,46 @@ class preprocessing_code():
                         template_window_size, search_window_size
                     )
 
+    def preprocess_and_save(self):
+        """
+        Load images, apply preprocessing (e.g., noise removal), and save the processed images.
+        """
+        for image_filename in os.listdir(self.main_obj.training_dir_images):
+            # Load image
+            image_path = os.path.join(self.main_obj.training_dir_images, image_filename)
+            image = cv2.imread(image_path)
+
+            # Apply preprocessing (e.g., noise removal)
+            if image is not None:
+                image = self.remove_noise_custome(image)  # Your custom preprocessing function
+                # Save preprocessed image back in the same directory
+                processed_image_path = os.path.join(self.main_obj.training_dir_images, image_filename)
+                cv2.imwrite(processed_image_path, image)
+            else:
+                print(f"Image {image_filename} could not be loaded and was skipped.")
+
+        # Optional: Process labels if needed (e.g., if coordinates need adjustment)
+        for label_filename in os.listdir(self.main_obj.training_dir_label):
+            label_path = os.path.join(self.main_obj.training_dir_label, label_filename)
+            # No processing needed for labels in this case, but can be added if required.
+            shutil.copy(label_path, os.path.join(self.main_obj.training_dir_label, label_filename))
+
     def create_dataset_custom(self):
         tf_loaded_images = tf.convert_to_tensor(self.main_obj.loaded_images)
         tf_loaded_labels = tf.ragged.constant(self.main_obj.loaded_labels, dtype=tf.float32)
         self.main_obj.dataset = tf.data.Dataset.from_tensor_slices((tf_loaded_images,tf_loaded_labels))
 
-    def parse_yolo_label(self):
-        
-        labels = []
-        with open(label_path, 'r') as file:
-            for line in file:
-                parts = line.strip().split()
-                class_id = int(parts[0])
-                x_center, y_center, width, height = map(float, parts[1:])
-                labels.append([class_id, x_center, y_center, width, height])
-        return tf.convert_to_tensor(labels)
 
-        def load_image_with_label(image_path, label_path):
-            image = tf.io.read_file(image_path)
-            image = tf.image.decode_jpeg(image, channels=3)
-            image = tf.image.resize(image, [256, 256])
-            image /= 255.0  # Normalize to [0, 1]
+    def train_model(self):
+        model = YOLO("yolov8n.pt")  # 'yolov8n.pt' is for Nano, 'yolov8s.pt' is for Small, etc.
 
-            labels = parse_yolo_label(label_path)
-            return image, labels
+        # Train the model
+        results = model.train(
+            data=self.main_obj.yaml_path,  # Path to YAML configuration file
+            epochs=50,                              # Number of training epochs
+            imgsz=640,                              # Image size
+            batch=16,                               # Batch size
+            name="tumor_detection_model"             # Model name for saving
+        )
 
-
-    def create_yolo_model(input_shape=(256, 256, 3), num_classes=3):
-        inputs = layers.Input(shape=input_shape)
-
-        # Convolutional layers (simple architecture for illustration)
-        x = layers.Conv2D(32, (3, 3), activation='relu', padding='same')(inputs)
-        x = layers.MaxPooling2D(2, 2)(x)
-        x = layers.Conv2D(64, (3, 3), activation='relu', padding='same')(x)
-        x = layers.MaxPooling2D(2, 2)(x)
-        x = layers.Conv2D(128, (3, 3), activation='relu', padding='same')(x)
-        x = layers.MaxPooling2D(2, 2)(x)
-        
-        # Final layer
-        outputs = layers.Conv2D(num_classes, (1, 1), activation='softmax')(x)
-
-        model = Model(inputs, outputs)
-        model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
-        return model
-
+        print("Training complete.")
