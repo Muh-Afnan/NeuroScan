@@ -2,11 +2,10 @@ import os
 import numpy as np
 import cv2 as cv2
 import tensorflow as tf
-from ultralytics import YOLO
-from tensorflow.keras import layers, Model
+# from tensorflow.keras import layers, Model
 import random
 import shutil
-from ultralytics import YOLO
+# from ultralytics import YOLO
 
 class preprocessing_code():
     def __init__(self, mainapp_obj):
@@ -172,19 +171,4 @@ class preprocessing_code():
             return yaml_path
 
         # Generate the YAML file and save the path
-        self.main_obj.yaml_path = create_yaml_config()    
-
-
-    def train_model(self):
-        model = YOLO("yolov8n.pt")  # 'yolov8n.pt' is for Nano, 'yolov8s.pt' is for Small, etc.
-
-        # Train the model
-        results = model.train(
-            data=self.main_obj.yaml_path,  # Path to YAML configuration file
-            epochs=50,                              # Number of training epochs
-            imgsz=640,                              # Image size
-            batch=16,                               # Batch size
-            name="tumor_detection_model"             # Model name for saving
-        )
-
-        print("Training complete.")
+        self.main_obj.yaml_path = create_yaml_config()

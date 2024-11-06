@@ -1,9 +1,10 @@
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 from PIL import ImageTk
-from Implementation.backend import load_images_from_folder, augment_image
+# from Implementation.backend import load_images_from_folder, augment_image
 from gui.preprocessing_frame import PreprocessingFrame
 from gui.augment_frame import AugmentFrame
+from gui.model_training_frame import TrainModelScreen
 import os
 
 class trainmodelframe(tk.Frame):
@@ -143,5 +144,5 @@ class trainmodelframe(tk.Frame):
         augment_window.geometry("1200x800")
         AugmentFrame(self,augment_window)
 
-    def select_model(self):
-        pass
+    def select_model(self, mainapp_obj):
+        TrainModelScreen(self, mainapp_obj)
