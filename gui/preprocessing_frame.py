@@ -5,10 +5,10 @@ from Implementation.preprocessing_code import preprocessing_code
 import cv2 as cv2
 
 class PreprocessingFrame(tk.Frame):
-    def __init__(self, train_frame, mainapp_obj):
+    def __init__(self, train_frame):
         super().__init__(train_frame)
         self.train_frame = train_frame
-        self.mainapp_obj = mainapp_obj
+        self.mainapp_obj= self.train_frame.mainapp_obj
 
         # self.stages = ["Image Loading", "Image Resizing", "Noise Removal", "Image Normalization"]
         # self.progress_bars = {}
@@ -17,8 +17,8 @@ class PreprocessingFrame(tk.Frame):
 
         self.create_interface()
         
-    def create_interface(self, mainapp_obj):
-        preprocessing_code(mainapp_obj)
+    def create_interface(self):
+        preprocessing_code(self.mainapp_obj)
         self.second_window = tk.Toplevel(self)
         self.second_window.title("Data Preprocessing Progress")
         self.second_window.geometry("800x500")

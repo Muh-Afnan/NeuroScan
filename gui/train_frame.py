@@ -35,41 +35,42 @@ class trainmodelframe(tk.Frame):
         button_frame.pack(pady=20, fill="x", expand=True)
 
         # Add another frame inside `button_frame` to center the buttons horizontally
-        inner_frame = tk.Frame(button_frame)
-        inner_frame.pack(expand=True)
+        self.inner_frame = tk.Frame(button_frame)
+        self.inner_frame.pack(expand=True)
 
         # Button styles define karte hain
         button_style_large = {"font": ("Arial", 14), "width": 15, "height": 2, "padx": 10, "pady": 10}
 
         # Back button to return to the main screen
-        self.back_button = tk.Button(inner_frame, text="Back to Main", command=self.callback_main_Screen)
+        self.back_button = tk.Button(self.inner_frame, text="Back to Main", command=self.callback_main_Screen)
         self.back_button.grid(row=0, column=1, padx=10, pady=10, sticky="e")
-
+        self.dataset_info_label = tk.Label(self.inner_frame, text=f"Data set with {len(self.mainapp_obj.image_paths)} images and {len(self.mainapp_obj.image_paths)} labels is ready to be Loaded")
+        self.dataset_info_label.grid(row=1, column=0, columnspan=2, padx=10, pady=10)
         # Label to show dataset information
         if len(self.mainapp_obj.image_paths) > 0:
-            self.dataset_info_label = tk.Label(inner_frame, text="No dataset loaded")
+            self.dataset_info_label = tk.Label(self.inner_frame, text="No dataset loaded")
             self.dataset_info_label.grid(row=1, column=0, columnspan=2, padx=10, pady=10)
+
             return
-        else:
-            self.dataset_info_label = tk.Label(inner_frame, text=f"Data set with {len(self.mainapp_obj.image_paths)} images and {len(self.mainapp_obj.image_paths)} labels is ready to be Loaded")
-            self.dataset_info_label.grid(row=1, column=0, columnspan=2, padx=10, pady=10)
+    
+
 
 
         # Button to upload dataset
-        self.upload_button = tk.Button(inner_frame, text="Upload Dataset", **button_style_large, command=self.upload_dataset)
+        self.upload_button = tk.Button(self.inner_frame, text="Upload Dataset", **button_style_large, command=self.upload_dataset)
         self.upload_button.grid(row=2, column=0, padx=10, pady=10)
 
         # Button to preprocess data
-        self.preprocess_button = tk.Button(inner_frame, text="Preprocess Data", **button_style_large, command=self.call_preprocessingframe(self.mainapp_obj))
+        self.preprocess_button = tk.Button(self.inner_frame, text="Preprocess Data", **button_style_large, command=self.call_preprocessingframe)
         self.preprocess_button.grid(row=2, column=1, padx=10, pady=10)
 
         # Button to augment data
-        self.augment_button = tk.Button(inner_frame, text="Augment Data", **button_style_large, command=self.call_augmentation_frame)
+        self.augment_button = tk.Button(self.inner_frame, text="Augment Data", **button_style_large, command=self.call_augmentation_frame)
         self.augment_button.grid(row=3, column=0, padx=10, pady=10)
 
         # Button to select model
-        self.select_model_button = tk.Button(inner_frame, text="Select Model", **button_style_large, command=self.select_model)
-        self.select_model_button.grid(row=3, column=1, padx=10, pady=10)
+        self.start_training = tk.Button(self.inner_frame, text="Start Training", **button_style_large, command=self.select_model)
+        self.start_training.grid(row=3, column=1, padx=10, pady=10)
 
 
 
@@ -87,13 +88,14 @@ class trainmodelframe(tk.Frame):
             # Collect image and label paths
             image_paths = []
             label_paths = []
+            ignored_images = 0
             
             for filename in os.listdir(dataset_folder):
                 file_path = os.path.join(dataset_folder, filename)
                 
                 # Add image paths
                 if filename.lower().endswith(image_extensions):
-                    image_paths.append(file_path)
+                    
                     
                     # Look for a corresponding label file
                     label_file = filename.rsplit('.', 1)[0] + label_extension
@@ -101,9 +103,12 @@ class trainmodelframe(tk.Frame):
                     
                     # Check if the label file exists
                     if os.path.exists(label_path):
+                        image_paths.append(file_path)
                         label_paths.append(label_path)
                     else:
-                        messagebox.showwarning("Missing Label", f"Label file for {filename} not found.")
+                        ignored_images +=1 
+            if ignored_images>1:        
+                messagebox.showwarning("Missing Label", f"Label file for {ignored_images} not found.")
 
             num_images = len(image_paths)
             num_labels = len(label_paths)
@@ -119,8 +124,14 @@ class trainmodelframe(tk.Frame):
 
         else:
             messagebox.showwarning("No Dataset", "Please select a valid dataset folder.")
+        
+        print(self.mainapp_obj.dataset_path)
+
+        self.dataset_info_label.forget()
+        self.dataset_info_label = tk.Label(self.inner_frame, text=f"Data set with {len(num_images)} images and {len(num_labels)} labels is ready to be Loaded")
+        self.dataset_info_label.grid(row=1, column=0, columnspan=2, padx=10, pady=10)
             
-    def call_preprocessingframe (self, mainapp_obj):
+    def call_preprocessingframe (self):
         """
         Preprocess button click hone par call hoti hai.
         Yeh method ek new window open karti hai jahan data preprocessing ke options hote hain.
@@ -128,7 +139,7 @@ class trainmodelframe(tk.Frame):
         if not self.mainapp_obj.dataset_path:
             messagebox.showwarning("No Dataset", "Please upload a dataset first.")
             return
-        PreprocessingFrame(self,mainapp_obj)
+        PreprocessingFrame(self)
 
     def call_augmentation_frame(self):
         """

@@ -12,7 +12,7 @@ class App(tk.Tk):
         Yeh constructor method hai jo application window ko initialize karta hai.
         Ismein window ka title, size, aur kuch instance variables set kiye gaye hain.
         `self.current_frame` variable current visible frame ko store karta hai.
-        Application start hoti hi login screen show karata hai.
+        Application start hoti hi login screen show karcata hai.
         """
         super().__init__() 
         self.title("NeuroScan App")  
