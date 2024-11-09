@@ -1,10 +1,11 @@
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 from PIL import ImageTk
+from Implementation.train_code import load_dataset
 # from Implementation.backend import load_images_from_folder, augment_image
-from gui.preprocessing_frame import PreprocessingFrame
-from gui.augment_frame import AugmentFrame
-from gui.model_training_frame import TrainModelScreen
+# from gui.preprocessing_frame import PreprocessingFrame
+# from gui.augment_frame import AugmentFrame
+# from gui.model_training_frame import TrainModelScreen
 import os
 
 class trainmodelframe(tk.Frame):
@@ -56,17 +57,25 @@ class trainmodelframe(tk.Frame):
 
 
 
+        # # Button to upload dataset
+        # self.upload_button = tk.Button(self.inner_frame, text="Upload Dataset", **button_style_large, command=self.upload_dataset)
+        # self.upload_button.grid(row=2, column=0, padx=10, pady=10)
+
+        # # Button to preprocess data
+        # self.preprocess_button = tk.Button(self.inner_frame, text="Preprocess Data", **button_style_large, command=self.call_preprocessingframe)
+        # self.preprocess_button.grid(row=2, column=1, padx=10, pady=10)
+
+        # # Button to augment data
+        # self.augment_button = tk.Button(self.inner_frame, text="Augment Data", **button_style_large, command=self.call_augmentation_frame)
+        # self.augment_button.grid(row=3, column=0, padx=10, pady=10)
+
+        # # Button to select model
+        # self.start_training = tk.Button(self.inner_frame, text="Start Training", **button_style_large, command=self.select_model)
+        # self.start_training.grid(row=3, column=1, padx=10, pady=10)
+
         # Button to upload dataset
-        self.upload_button = tk.Button(self.inner_frame, text="Upload Dataset", **button_style_large, command=self.upload_dataset)
-        self.upload_button.grid(row=2, column=0, padx=10, pady=10)
-
-        # Button to preprocess data
-        self.preprocess_button = tk.Button(self.inner_frame, text="Preprocess Data", **button_style_large, command=self.call_preprocessingframe)
-        self.preprocess_button.grid(row=2, column=1, padx=10, pady=10)
-
-        # Button to augment data
-        self.augment_button = tk.Button(self.inner_frame, text="Augment Data", **button_style_large, command=self.call_augmentation_frame)
-        self.augment_button.grid(row=3, column=0, padx=10, pady=10)
+        self.load_dataset = tk.Button(self.inner_frame, text="Load Dataset", **button_style_large, command=self.load_dataset)
+        self.load_dataset.grid(row=3, column=0, padx=10, pady=10)
 
         # Button to select model
         self.start_training = tk.Button(self.inner_frame, text="Start Training", **button_style_large, command=self.select_model)
@@ -74,86 +83,90 @@ class trainmodelframe(tk.Frame):
 
 
 
-    def upload_dataset(self):
-        """
-        Opens a dialog to select a dataset folder, loads images and corresponding labels.
-        """
-        dataset_folder = filedialog.askdirectory(title="Select Dataset Folder")
+    # def upload_dataset(self):
+    #     """
+    #     Opens a dialog to select a dataset folder, loads images and corresponding labels.
+    #     """
+    #     dataset_folder = filedialog.askdirectory(title="Select Dataset Folder")
         
-        if dataset_folder:
-            # Image and label file extensions
-            image_extensions = ('.jpg', '.jpeg', '.png', '.bmp', '.tiff')
-            label_extension = '.txt'
+        # if dataset_folder:
+        #     # Image and label file extensions
+        #     image_extensions = ('.jpg', '.jpeg', '.png', '.bmp', '.tiff')
+        #     label_extension = '.txt'
             
-            # Collect image and label paths
-            image_paths = []
-            label_paths = []
-            ignored_images = 0
+        #     # Collect image and label paths
+        #     image_paths = []
+        #     label_paths = []
+        #     ignored_images = 0
             
-            for filename in os.listdir(dataset_folder):
-                file_path = os.path.join(dataset_folder, filename)
+        #     for filename in os.listdir(dataset_folder):
+        #         file_path = os.path.join(dataset_folder, filename)
                 
-                # Add image paths
-                if filename.lower().endswith(image_extensions):
+        #         # Add image paths
+        #         if filename.lower().endswith(image_extensions):
                     
                     
-                    # Look for a corresponding label file
-                    label_file = filename.rsplit('.', 1)[0] + label_extension
-                    label_path = os.path.join(dataset_folder, label_file)
+        #             # Look for a corresponding label file
+        #             label_file = filename.rsplit('.', 1)[0] + label_extension
+        #             label_path = os.path.join(dataset_folder, label_file)
                     
-                    # Check if the label file exists
-                    if os.path.exists(label_path):
-                        image_paths.append(file_path)
-                        label_paths.append(label_path)
-                    else:
-                        ignored_images +=1 
-            if ignored_images>1:        
-                messagebox.showwarning("Missing Label", f"Label file for {ignored_images} not found.")
+        #             # Check if the label file exists
+        #             if os.path.exists(label_path):
+        #                 image_paths.append(file_path)
+        #                 label_paths.append(label_path)
+        #             else:
+        #                 ignored_images +=1 
+        #     if ignored_images>1:        
+        #         messagebox.showwarning("Missing Label", f"Label file for {ignored_images} not found.")
 
-            num_images = len(image_paths)
-            num_labels = len(label_paths)
+        #     num_images = len(image_paths)
+        #     num_labels = len(label_paths)
             
-            # Update the UI with dataset information
-            self.mainapp_obj.dataset_path = dataset_folder
-            # self.mainapp_obj.image_paths = image_paths
-            # self.mainapp_obj.label_paths = label_paths
+        #     # Update the UI with dataset information
+        #     self.mainapp_obj.dataset_path = dataset_folder
+        #     # self.mainapp_obj.image_paths = image_paths
+        #     # self.mainapp_obj.label_paths = label_paths
 
             
-            # Show dataset details
-            messagebox.showinfo("Dataset Uploaded", f"Dataset loaded from: {dataset_folder}\nNumber of images: {num_images}\nNumber of labels: {num_labels}")
+        #     # Show dataset details
+        #     messagebox.showinfo("Dataset Uploaded", f"Dataset loaded from: {dataset_folder}\nNumber of images: {num_images}\nNumber of labels: {num_labels}")
 
-        else:
-            messagebox.showwarning("No Dataset", "Please select a valid dataset folder.")
+        # else:
+        #     messagebox.showwarning("No Dataset", "Please select a valid dataset folder.")
         
-        print(self.mainapp_obj.dataset_path)
+        # print(self.mainapp_obj.dataset_path)
 
-        self.dataset_info_label.forget()
-        self.dataset_info_label = tk.Label(self.inner_frame, text=f"Data set with {len(num_images)} images and {len(num_labels)} labels is ready to be Loaded")
-        self.dataset_info_label.grid(row=1, column=0, columnspan=2, padx=10, pady=10)
+        # self.dataset_info_label.forget()
+        # self.dataset_info_label = tk.Label(self.inner_frame, text=f"Data set with {len(num_images)} images and {len(num_labels)} labels is ready to be Loaded")
+        # self.dataset_info_label.grid(row=1, column=0, columnspan=2, padx=10, pady=10)
             
-    def call_preprocessingframe (self):
-        """
-        Preprocess button click hone par call hoti hai.
-        Yeh method ek new window open karti hai jahan data preprocessing ke options hote hain.
-        """
-        if not self.mainapp_obj.dataset_path:
-            messagebox.showwarning("No Dataset", "Please upload a dataset first.")
-            return
-        PreprocessingFrame(self)
+    # def call_preprocessingframe (self):
+    #     """
+    #     Preprocess button click hone par call hoti hai.
+    #     Yeh method ek new window open karti hai jahan data preprocessing ke options hote hain.
+    #     """
+    #     if not self.mainapp_obj.dataset_path:
+    #         messagebox.showwarning("No Dataset", "Please upload a dataset first.")
+    #         return
+    #     PreprocessingFrame(self)
 
-    def call_augmentation_frame(self):
-        """
-        Augment button click hone par call hoti hai.
-        Yeh method ek new window open karti hai jahan data augmentation ke options hote hain.
-        """
-        if not self.master.dataset_path:
-            messagebox.showwarning("No Dataset", "Please upload a dataset first.")
-            return
+    # def call_augmentation_frame(self):
+    #     """
+    #     Augment button click hone par call hoti hai.
+    #     Yeh method ek new window open karti hai jahan data augmentation ke options hote hain.
+    #     """
+    #     if not self.master.dataset_path:
+    #         messagebox.showwarning("No Dataset", "Please upload a dataset first.")
+    #         return
 
-        augment_window = tk.Toplevel(self)
-        augment_window.title("Data Augmentation")
-        augment_window.geometry("1200x800")
-        AugmentFrame(self,augment_window)
+    #     augment_window = tk.Toplevel(self)
+    #     augment_window.title("Data Augmentation")
+    #     augment_window.geometry("1200x800")
+    #     AugmentFrame(self,augment_window)
+
+    def load_dataset(self):
+        load_dataset(self)
 
     def select_model(self, mainapp_obj):
-        TrainModelScreen(self, mainapp_obj)
+        pass
+        # TrainModelScreen(self, mainapp_obj)
