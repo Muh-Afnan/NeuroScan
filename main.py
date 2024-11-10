@@ -5,6 +5,7 @@ from gui.register_frame import RegisterFrame  # RegisterFrame import karte hain 
 from gui.main_frame import MainScreen  # MainScreen import karte hain (Main screen ke liye)
 from gui.recover_password_frame import RecoverPasswordFrame  # RecoverPasswordFrame import karte hain (Password recovery ke liye)
 from gui.train_frame import trainmodelframe  # TrainModelFrame import karte hain (Model training ke liye)
+from gui.model_training_frame import modeltrainingscreen
 
 class App(tk.Tk):
     def __init__(self):
@@ -82,7 +83,11 @@ class App(tk.Tk):
         `self.show_main_screen` ko as a parameter pass kiya gaya hai taake main screen pe wapas ja sake.
         """
         self.clear_screen()
-        self.pack_screen(trainmodelframe(self, self.show_main_screen))
+        self.pack_screen(trainmodelframe(self, self.show_main_screen, self.show_model_training_frame))
+
+    def show_model_training_frame(self):
+        self.clear_screen()
+        self.pack_screen(modeltrainingscreen(self, self.show_train_frame))
 
     def pack_screen(self, frame):
         """

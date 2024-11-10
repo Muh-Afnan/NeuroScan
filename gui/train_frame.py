@@ -9,7 +9,7 @@ from Implementation.train_code import load_dataset
 import os
 
 class trainmodelframe(tk.Frame):
-    def __init__(self, mainapp, show_main_screen):
+    def __init__(self, mainapp, show_main_screen, show_model_training_frame):
         """
         Constructor method jo trainmodelframe class ka instance banate waqt call hota hai.
         Parameters:
@@ -19,6 +19,7 @@ class trainmodelframe(tk.Frame):
         super().__init__(mainapp)
         self.mainapp_obj = mainapp
         self.callback_main_Screen = show_main_screen
+        self.show_model_training_frame = show_model_training_frame
 
         # # Initialize dataset path, image paths, and loaded images
         # self.master.dataset_path = ""
@@ -78,7 +79,7 @@ class trainmodelframe(tk.Frame):
         self.load_dataset.grid(row=3, column=0, padx=10, pady=10)
 
         # Button to select model
-        self.start_training = tk.Button(self.inner_frame, text="Start Training", **button_style_large, command=self.select_model)
+        self.start_training = tk.Button(self.inner_frame, text="Start Training", **button_style_large, command=self.show_model_training_frame)
         self.start_training.grid(row=3, column=1, padx=10, pady=10)
 
 
@@ -167,6 +168,5 @@ class trainmodelframe(tk.Frame):
     def load_dataset(self):
         load_dataset(self)
 
-    def select_model(self, mainapp_obj):
-        pass
-        # TrainModelScreen(self, mainapp_obj)
+    # def select_model(self, mainapp):
+        # TrainModelScreen(self, mainapp)

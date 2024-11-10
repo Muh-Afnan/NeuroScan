@@ -1,16 +1,30 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 import random
+import time
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 
-class TrainModelScreen(tk.Toplevel):
-    def __init__(self, master, main_obj):
+class modeltrainingscreen(tk.Frame):
+    def __init__(self, master, show_train_frame):
         super().__init__(master)
-        self.main_obj = main_obj
+        self.master = master
+        # self.mainapp_obj = self.master.mainapp_obj
+        self.show_train_frame = show_train_frame
         self.title("Train YOLO Model")
         self.geometry("700x700")
-        
+
+        self.create_widget()
+
+    def create_widget(self):
+
+        # self.left_frame = tk.Frame(self)
+        # self.left_frame.grid(row=0, column=0, sticky="nsew")
+
+        # self.right_frame = tk.Frame(self)
+        # self.right_frame.grid(row=0, column=1, sticky="nsew")
+
+        tk.Button(self, text="Start Training", command=self.show_train_frame).pack()
         # Hyperparameter settings
         tk.Label(self, text="Hyperparameter Tuning", font=("Arial", 14)).pack(pady=10)
         
@@ -64,65 +78,81 @@ class TrainModelScreen(tk.Toplevel):
         self.canvas.get_tk_widget().pack(pady=10)
 
         # For storing metric data
-        self.accuracy_data = []
-        self.loss_data = []
+        self.train_accuracy_data = []
+        self.train_loss_data = []
 
     def start_training(self):
-        """Simulate model training with real-time progress and metrics update."""
-        self.progress["value"] = 0
-        max_value = self.epochs.get() * 10  # Simulated steps per epoch
-        self.progress["maximum"] = max_value
+        pass
+    #     """Simulate model training with real-time progress and metrics update."""
+    #     self.progress["value"] = 0
+    #     max_value = self.epochs.get() * 10  # Simulated steps per epoch
+    #     self.progress["maximum"] = max_value
 
-        # Reset data for a new training session
-        self.accuracy_data.clear()
-        self.loss_data.clear()
-        self.ax_acc.clear()
-        self.ax_loss.clear()
-        self.ax_acc.set_title("Accuracy over Epochs")
-        self.ax_loss.set_title("Loss over Epochs")
+    #     # Reset data for a new training session
+    #     self.train_accuracy_data.clear()
+    #     self.train_loss_data.clear()
         
-        self.start_button["state"] = tk.DISABLED
-        self.save_button["state"] = tk.DISABLED
+    #     self.ax_acc.clear()
+    #     self.ax_loss.clear()
+    #     self.ax_acc.set_title("Accuracy over Epochs")
+    #     self.ax_loss.set_title("Loss over Epochs")
+        
+    #     self.start_button["state"] = tk.DISABLED
+    #     self.save_button["state"] = tk.DISABLED
 
-        # Simulated training loop
-        for i in range(1, max_value + 1):
-            # Update progress bar
-            self.progress["value"] = i
-            self.update_training_metrics(i, max_value)
-            self.update_validation_metrics(i, max_value)
-            self.plot_metrics(i // 10)  # Plot metrics per epoch
-            self.update_idletasks()
-            self.after(100)
+    #     # Simulated training loop
+    #     for step in range(1, max_value + 1):
+    #         # Update progress bar
+    #         self.progress["value"] = step
+    #         self.update_training_metrics(step, max_value)
+    #         self.update_validation_metrics(step, max_value)
+    #         self.plot_metrics(step // 10)  # Plot metrics per epoch
+    #         self.update_idletasks()
+    #         time.sleep(0.1)  # Simulate training time for each step
 
-        messagebox.showinfo("Training Complete", "Model training is complete!")
-        self.start_button["state"] = tk.NORMAL
-        self.save_button["state"] = tk.NORMAL
+    #     messagebox.showinfo("Training Complete", "Model training is complete!")
+    #     self.start_button["state"] = tk.NORMAL
+    #     self.save_button["state"] = tk.NORMAL
 
     def update_training_metrics(self, step, max_steps):
-        # Simulated accuracy and loss
-        accuracy = round(random.uniform(0.8, 1.0), 4)
-        loss = round(random.uniform(0.1, 0.5), 4)
+        pass
+    #     # Simulated accuracy and loss
+    #     accuracy = round(random.uniform(0.8, 1.0), 4)
+    #     loss = round(random.uniform(0.1, 0.5), 4)
         
-        # Store for plotting
-        if step % 10 == 0:
-            self.accuracy_data.append(accuracy)
-            self.loss_data.append(loss)
+    #     # Store for plotting
+    #     if step % 10 == 0:
+    #         self.train_accuracy_data.append(accuracy)
+    #         self.train_loss_data.append(loss)
 
     def update_validation_metrics(self, step, max_steps):
-        # Simulated validation metrics (adjust as needed for real metrics)
-        val_accuracy = round(random.uniform(0.75, 0.95), 4)
-        val_loss = round(random.uniform(0.15, 0.45), 4)
+        pass
+    #     # Simulated validation metrics (adjust as needed for real metrics)
+    #     val_accuracy = round(random.uniform(0.75, 0.95), 4)
+    #     val_loss = round(random.uniform(0.15, 0.45), 4)
 
     def plot_metrics(self, epoch):
-        # Plot updated data on matplotlib figure
-        self.ax_acc.plot(range(1, epoch + 1), self.accuracy_data, label="Training Accuracy", color="b")
-        self.ax_loss.plot(range(1, epoch + 1), self.loss_data, label="Training Loss", color="r")
+        pass
+    #     # Plot updated data on matplotlib figure
+    #     self.ax_acc.clear()  # Clear old plot
+    #     self.ax_loss.clear()  # Clear old plot
         
-        # Refresh the canvas to display updated charts
-        self.canvas.draw()
+    #     self.ax_acc.plot(range(1, epoch + 1), self.train_accuracy_data, label="Training Accuracy", color="b")
+    #     self.ax_loss.plot(range(1, epoch + 1), self.train_loss_data, label="Training Loss", color="r")
+        
+    #     # Refresh the canvas to display updated charts
+    #     self.ax_acc.set_title("Accuracy over Epochs")
+    #     self.ax_loss.set_title("Loss over Epochs")
+    #     self.ax_acc.set_ylabel("Accuracy")
+    #     self.ax_loss.set_ylabel("Loss")
+    #     self.ax_loss.set_xlabel("Epoch")
+    #     self.canvas.draw()
 
     def save_model(self):
-        try:
-            messagebox.showinfo("Save Model", "Model saved successfully!")
-        except Exception as e:
-            messagebox.showerror("Save Model", f"Failed to save model: {e}")
+        pass
+    #     try:
+    #         # This would be where you'd actually save your model in a real case.
+    #         # Example: model.save('your_model.h5')
+    #         messagebox.showinfo("Save Model", "Model saved successfully!")
+    #     except Exception as e:
+    #         messagebox.showerror("Save Model", f"Failed to save model: {e}")
