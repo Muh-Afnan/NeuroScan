@@ -61,13 +61,14 @@ class TrainModel:
     def __init__(self, main_obj, ui_callback=None):
         self.main_obj = main_obj
         self.ui_callback = ui_callback  # Optional callback to update UI
+        self.model=0
 
     def train_model(self, learning_rate, batch_size, epochs, conf_threshold, nms_threshold, momentum, weight_decay):
         # Initialize YOLO model
-        model = YOLO("yolov8n.pt")
+        self.model = YOLO("yolov8n.pt")
 
         # Run YOLOv8 training with additional hyperparameters
-        results = model.train(
+        results = self.model.train(
             data=self.main_obj.yaml_path,  # Path to YAML file
             epochs=epochs,                 # Number of training epochs
             imgsz=139,                     # Image size
@@ -79,8 +80,12 @@ class TrainModel:
             iou=nms_threshold,             # NMS threshold
             name="tumor_detection_model"
         )
-
+        
         print("Training complete.")
+
+    def save_model(self):
+        model_path = self.main_obj.dataset_path
+        self.model.save(model_path)
 
         # Notify completion and pass results back to UI if needed
         # if self.ui_callback:

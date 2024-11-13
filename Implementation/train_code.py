@@ -6,12 +6,29 @@ import tensorflow as tf
 # from tensorflow.keras import layers, Model
 import random
 import shutil
+import yaml
+
 
 class load_dataset():
     def __init__(self, train_frame):
         self.train_frame = train_frame
         self.mainapp_obj = train_frame.mainapp_obj
         self.select_directory()
+    
+    def create_yaml_file(self, yaml_filename="tumor_detection.yaml"):
+
+        yaml_content = {
+            "path": self.mainapp_obj.dataset_path,                           
+            "train": os.path.join(self.mainapp_obj.training_dir,'images'),                   
+            "val": os.path.join(self.mainapp_obj.validation_dir,'images'),                     
+            "nc": 3,                                
+            "names": ["No Tumor", "Mild Tumor", "Severe Tumor"] 
+        }
+
+        yaml_path = os.path.join(self.mainapp_obj.dataset_path, yaml_filename)
+        with open(yaml_path, "w") as file:
+            yaml.dump(yaml_content,file, default_flow_style=False)
+
 
     def select_directory(self):
 
@@ -22,8 +39,7 @@ class load_dataset():
             self.mainapp_obj.training_dir = os.path.join(self.mainapp_obj.dataset_path, 'Training_Dataset')
             self.mainapp_obj.validation_dir = os.path.join(self.mainapp_obj.dataset_path, 'Validation_Dataset')
             self.mainapp_obj.testing_dir = os.path.join(self.mainapp_obj.dataset_path,'Testing_Dataset')
-
-        self.dataset_split()
+            self.dataset_split()
 
     def dataset_split(self):
         # Define the paths for images and labels directories
@@ -88,5 +104,8 @@ class load_dataset():
         move_file(training_images, self.mainapp_obj.training_dir)
         move_file(validation_images, self.mainapp_obj.validation_dir)
         move_file(testing_images, self.mainapp_obj.testing_dir)
+
+        self.create_yaml_file(yaml_filename="tumor_detection.yaml")
+        
 
         messagebox.showinfo("Success","Dataset split completed successfully.")

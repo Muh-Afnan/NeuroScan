@@ -24,7 +24,8 @@ class App(tk.Tk):
         self.training_dir = os.path.join(self.dataset_path, 'Training_Dataset')
         self.validation_dir = os.path.join(self.dataset_path, 'Validation_Dataset')
         self.testing_dir = os.path.join(self.dataset_path,'Testing_Dataset')
-        self.yaml_path = ""
+        self.yaml_path = self.dataset_path
+        # test
 
 
 
