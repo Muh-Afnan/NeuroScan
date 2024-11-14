@@ -1,7 +1,7 @@
 names:
 - No Tumor
-- Mild Tumor
-- Severe Tumor
+- Benign tumor
+- Malignant tumor
 nc: 3
 path: D:/Project/NeuroScan/dataset\Models
 train: D:/Project/NeuroScan/dataset\Training_Dataset\images

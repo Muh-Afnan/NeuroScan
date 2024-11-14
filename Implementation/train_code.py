@@ -2,8 +2,6 @@ import os
 import numpy as np
 import cv2 as cv2
 from tkinter import filedialog, messagebox
-import tensorflow as tf
-# from tensorflow.keras import layers, Model
 import random
 import shutil
 import yaml

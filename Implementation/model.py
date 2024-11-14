@@ -26,7 +26,6 @@ class TrainModel:
             iou=nms_threshold,             # NMS threshold
             name="tumor_detection_model"
         )
-        
         print("Training complete.")
 
     def save_model(self):
