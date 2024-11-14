@@ -12,7 +12,7 @@ class modeltrainingscreen(tk.Frame):
         self.master = master
         self.dataset_path = self.master.dataset_path
         self.show_train_frame = show_train_frame
-        # self.model = TrainModel(master)
+        self.yolomodel = TrainModel(self.master)
         self.create_widget()
 
     # 
@@ -79,10 +79,17 @@ class modeltrainingscreen(tk.Frame):
 
 
     def start_training(self):
-        pass
+        epochs = self.epochs.get()
+        batch_size = self.batch_size.get()
+        lr0=self.learning_rate.get()
+        momentum = self.momentum.get()
+        weight_decay = self.weight_decay.get()
+        conf = self.conf_threshold.get()
+        iou = self.nms_threshold.get()
+        self.yolomodel.train_model(epochs,batch_size,lr0,momentum,weight_decay,conf,iou)
 
     def save_model(self):
-        pass
+        self.yolomodel.save_model()
 
         # # Matplotlib figure for accuracy and loss
         # self.fig, (self.ax_acc, self.ax_loss) = plt.subplots(2, 1, figsize=(5, 5))
@@ -172,4 +179,5 @@ class modeltrainingscreen(tk.Frame):
     #     self.ax_loss.set_ylabel("Loss")
     #     self.ax_loss.set_xlabel("Epoch")
     #     self.canvas.draw()
+    
 

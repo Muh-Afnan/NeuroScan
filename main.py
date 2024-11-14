@@ -26,9 +26,8 @@ class App(tk.Tk):
         self.validation_dir = ""
         self.testing_dir = ""
         self.model_path = ""
-        self.yaml_path = ""
+        self.yaml_path = "D:/Project/NeuroScan/dataset/Models/Brain_Tumor_Detection.yaml"
         self.saved_model_path = ""
-
         self.detect_tumor = ""
 
         # self.training_dir = os.path.join(self.dataset_path, 'Training_Dataset')
