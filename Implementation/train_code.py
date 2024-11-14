@@ -18,14 +18,14 @@ class load_dataset():
     def create_yaml_file(self, yaml_filename="tumor_detection.yaml"):
 
         yaml_content = {
-            "path": self.mainapp_obj.dataset_path,                           
+            "path": self.mainapp_obj.yaml_path,                           
             "train": os.path.join(self.mainapp_obj.training_dir,'images'),                   
             "val": os.path.join(self.mainapp_obj.validation_dir,'images'),                     
             "nc": 3,                                
             "names": ["No Tumor", "Mild Tumor", "Severe Tumor"] 
         }
 
-        yaml_path = os.path.join(self.mainapp_obj.dataset_path, yaml_filename)
+        yaml_path = os.path.join(self.mainapp_obj.yaml_path, yaml_filename)
         with open(yaml_path, "w") as file:
             yaml.dump(yaml_content,file, default_flow_style=False)
 
@@ -39,6 +39,10 @@ class load_dataset():
             self.mainapp_obj.training_dir = os.path.join(self.mainapp_obj.dataset_path, 'Training_Dataset')
             self.mainapp_obj.validation_dir = os.path.join(self.mainapp_obj.dataset_path, 'Validation_Dataset')
             self.mainapp_obj.testing_dir = os.path.join(self.mainapp_obj.dataset_path,'Testing_Dataset')
+
+            self.mainapp_obj.model_path = os.path.join(self.mainapp_obj.dataset_path,"Models")
+            self.mainapp_obj.yaml_path = self.mainapp_obj.model_path
+            self.mainapp_obj.saved_model_path = os.path.join(self.mainapp_obj.model_path,"tumor_detection_model.pt")
             self.dataset_split()
 
     def dataset_split(self):
@@ -104,7 +108,7 @@ class load_dataset():
         move_file(training_images, self.mainapp_obj.training_dir)
         move_file(validation_images, self.mainapp_obj.validation_dir)
         move_file(testing_images, self.mainapp_obj.testing_dir)
-
+    
         self.create_yaml_file(yaml_filename="tumor_detection.yaml")
         
 

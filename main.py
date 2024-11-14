@@ -6,6 +6,7 @@ from gui.main_frame import MainScreen  # MainScreen import karte hain (Main scre
 from gui.recover_password_frame import RecoverPasswordFrame  # RecoverPasswordFrame import karte hain (Password recovery ke liye)
 from gui.train_frame import trainmodelframe  # TrainModelFrame import karte hain (Model training ke liye)
 from gui.model_training_frame import modeltrainingscreen
+from gui.detect_tumor import DetectTumor
 
 class App(tk.Tk):
     def __init__(self):
@@ -21,12 +22,21 @@ class App(tk.Tk):
 
         self.dataset_path = ""
 
-        self.training_dir = os.path.join(self.dataset_path, 'Training_Dataset')
-        self.validation_dir = os.path.join(self.dataset_path, 'Validation_Dataset')
-        self.testing_dir = os.path.join(self.dataset_path,'Testing_Dataset')
-        self.yaml_path = self.dataset_path
-        # test
+        self.training_dir = ""
+        self.validation_dir = ""
+        self.testing_dir = ""
+        self.model_path = ""
+        self.yaml_path = ""
+        self.saved_model_path = ""
 
+        self.detect_tumor = ""
+
+        # self.training_dir = os.path.join(self.dataset_path, 'Training_Dataset')
+        # self.validation_dir = os.path.join(self.dataset_path, 'Validation_Dataset')
+        # self.testing_dir = os.path.join(self.dataset_path,'Testing_Dataset')
+        # self.model_path = os.path.join(self.dataset_path,"Models")
+        # self.yaml_path = self.model_path
+        # self.saved_model_path = os.path.join(self.model_path,"tumor_detection_model.pt")
 
 
         self.image_paths = []
@@ -66,7 +76,7 @@ class App(tk.Tk):
         `self.show_train_frame` ko as a parameter pass kiya gaya hai taake training frame pe switch kiya ja sake.
         """
         self.clear_screen()
-        self.pack_screen(MainScreen(self,self.show_train_frame))
+        self.pack_screen(MainScreen(self,self.show_train_frame,self.show_detect_tumor))
 
     def show_recover_password(self):
         """
@@ -89,6 +99,10 @@ class App(tk.Tk):
     def show_model_training_frame(self):
         self.clear_screen()
         self.pack_screen(modeltrainingscreen(self, self.show_train_frame))
+
+    def show_detect_tumor(self):
+        self.clear_screen()
+        self.pack_screen(DetectTumor(self, self.show_main_screen))
 
     def pack_screen(self, frame):
         """
