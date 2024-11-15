@@ -47,4 +47,21 @@ class TrainModel:
         results = model(image)
         labels = ["No Tumor", "Benign Tumor", "Malignant Tumor"]
         image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        return image_rgb, results, labels
+
+        processed_results = []
+        for result in results:
+            if hasattr(result, 'boxes'):
+                for box in result.boxes:
+                    x, y, w, h = box.xywh[0].numpy()  # Get bounding box coordinates in xywh format
+                    confidence = box.conf[0].item()  # Get confidence score
+                    label_index = int(box.cls[0].item())  # Get class index
+                    label = labels[label_index]  # Map to label
+
+                    # Store processed result
+                    processed_results.append({
+                        "bounding_box": (x, y, w, h),
+                        "confidence": confidence,
+                        "label": label
+                    })
+
+        return image_rgb, processed_results , labels

@@ -27,7 +27,8 @@ class App(tk.Tk):
         self.testing_dir = ""
         self.model_path = ""
         self.yaml_path = ""
-        self.saved_model_path = "D:/Machine Learning Projects/NeuroScan/dataset/Model/tumor_detection_model.pt"
+        # self.saved_model_path = "D:/Machine Learning Projects/NeuroScan/dataset/Model/tumor_detection_model.pt"
+        self.saved_model_path = "D:/Project/NeuroScan/dataset/Model/tumor_detection_model.pt"
         self.detect_tumor_image = ""
 
         self.image_paths = []

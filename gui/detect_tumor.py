@@ -58,20 +58,41 @@ class DetectTumor(tk.Frame):
 
     def display_detection(self):
         model = TrainModel(self.main_obj)
-        image_rgb, results, labels = model.predict()
 
-        self.result_label.config(text=labels[0])
+        # image_rgb, results, labels = model.predict()
 
-        # Check if results have any bounding boxes
-        if results and hasattr(results, 'boxes'):
-            for result in results:
-                # Extract bounding box and label
-                x, y, w, h = result['bounding_box']
-                confidence = result['confidence']
-                label_index = result['label']
-                label_text = f"{labels[label_index]}: {confidence:.2f}"
+        # self.result_label.config(text=labels)
 
-                # Draw bounding box on canvas
-                self.canvas.create_rectangle(x, y, x + w, y + h, outline="red", width=2)
-                self.canvas.create_text(x, y - 10, anchor=tk.NW, text=label_text, fill="red", font=("Arial", 10, "bold"))
+        # # Check if results have any bounding boxes
+        # if results and hasattr(results, 'boxes'):
+        #     for result in results:
+        #         # Extract bounding box and label
+        #         x, y, w, h = result['bounding_box']
+        #         confidence = result['confidence']
+        #         label_index = result['label']
+        #         label_text = f"{labels[label_index]}: {confidence:.2f}"
+
+        #         # Draw bounding box on canvas
+        #         self.canvas.create_rectangle(x, y, x + w, y + h, outline="red", width=2)
+        #         self.canvas.create_text(x, y - 10, anchor=tk.NW, text=label_text, fill="red", font=("Arial", 10, "bold"))
+        image_rgb, processed_results, labels = model.predict()
+
+        # Convert image to a Tkinter-compatible format
+        pil_image = Image.fromarray(image_rgb)
+        tk_image = ImageTk.PhotoImage(pil_image)
+        self.canvas.create_image(0, 0, anchor=tk.NW, image=tk_image)
+        self.canvas.image = tk_image  # Keep a reference
+
+        # Update result label text
+        self.result_label.config(text="Detections: " + ", ".join(set([res["label"] for res in processed_results])))
+
+        # Draw bounding boxes on the canvas
+        for result in processed_results:
+            x, y, w, h = result["bounding_box"]
+            confidence = result["confidence"]
+            label_text = f"{result['label']}: {confidence:.2f}"
+
+            # Draw rectangle and label on canvas
+            self.canvas.create_rectangle(x, y, x + w, y + h, outline="red", width=2)
+            self.canvas.create_text(x, y - 10, anchor=tk.NW, text=label_text, fill="red", font=("Arial", 10, "bold"))
         
