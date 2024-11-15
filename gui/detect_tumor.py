@@ -1,6 +1,6 @@
 import tkinter as tk
 from Implementation.model import TrainModel
-from PIL import ImageTk
+from PIL import Image, ImageTk
 import cv2 as cv2
 
 class DetectTumor(tk.Frame):
@@ -13,30 +13,54 @@ class DetectTumor(tk.Frame):
     def create_weidgets(self):
         self.center_frame = tk.Frame(self)
         self.center_frame.pack(expand=True)
+
+        heading_label = tk.Label(self.center_frame, text="Detect Tumor", font=("Arial", 20, "bold"))
+        heading_label.pack(pady=(10,5))
+
         self.back_button = tk.Button(self.center_frame, text="Back", command=self.callback_mainscreen)
-        self.back_button.grid(row=0, column=2, padx=10, pady=10, sticky="w")
+        self.back_button.pack()
 
-        self.selectimage = tk.Button(self.center_frame, text="Select Image", command=self.select_image)
-        self.selectimage.grid(row=2, column=1, padx=10, pady=10)
+        self.canvas = tk.Canvas(self.center_frame, width= 139, height = 132)
+        self.canvas.pack(pady=10)
 
-        self.predict = tk.Button(self.center_frame, text="Check Tumor", command=self.display_detection)
-        self.predict.grid(row=3, column=0, padx=10, pady=10)
+        self.result_label = tk.Label(self.center_frame,text = "Select your Image", font = ("Arial",14))
+        self.result_label.pack(pady=(5,15))
+
+        self.button_frame = tk.Frame(self.center_frame)
+        self.button_frame.pack(pady=(10,20))
+
+        self.clear_button = tk.Button(self.button_frame, text = "Clear", command = self.clear_image)
+        self.clear_button.grid(row=0, column=0, padx=5)
+
+        self.selectimage = tk.Button(self.button_frame, text="Select Image", command=self.select_image)
+        self.selectimage.grid(row=0, column=1, padx=5)
+
+        self.predict = tk.Button(self.button_frame, text="Check Tumor", command=self.display_detection)
+        self.predict.grid(row=0, column=2, padx=5)
 
     def select_image(self):
-        image_file = tk.filedialog.askopenfile(title="Select Image for Tumor Detection")
-        self.main_obj.detect_tumor = image_file
+        image_file = tk.filedialog.askopenfilename(title="Select Image for Tumor Detection")
+        if image_file:
+            self.main_obj.detect_tumor = image_file
+            image = cv2.imread(image_file)
+            image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+            pil_image = Image.fromarray(image_rgb)
+            pil_image = pil_image.resize((139,132))
+            self.tk_image = ImageTk.PhotoImage(pil_image)
+            self.canvas.create_image(0,0, anchor = tk.NW, image=self.tk_image)
+            self.result_label.config(text="Image Selected")
+
+    def clear_image(self):
+        self.canvas.delete("all")
+        self.result_label.config(text = "Select your Image")
+        self.main_obj.detect_tumor_image = None
+
 
     def display_detection(self):
         model = TrainModel(self.main_obj)
-        image_rgb, results, lables = model.predict()
-        tk_image = ImageTk.PhotoImage(image=cv2.cvtColor(image_rgb, cv2.COLOR_RGB2RGBA))
+        image_rgb, results, labels = model.predict()
 
-        canvas = tk.Canvas(self.center_frame, width=image_rgb.width, height=image_rgb.height)
-        canvas.pack()
-         # Display image on canvas
-        canvas.create_image(0, 0, anchor=tk.NW, image=tk_image)
-        canvas.image = tk_image  # Keep a reference to prevent garbage collection
-
+        self.result_label.config(text=labels[0])
 
         # Check if results have any bounding boxes
         if results and hasattr(results, 'boxes'):
@@ -45,20 +69,9 @@ class DetectTumor(tk.Frame):
                 x, y, w, h = result['bounding_box']
                 confidence = result['confidence']
                 label_index = result['label']
-                label_text = f"{lables[label_index]}: {confidence:.2f}"
+                label_text = f"{labels[label_index]}: {confidence:.2f}"
 
                 # Draw bounding box on canvas
-                canvas.create_rectangle(x, y, x + w, y + h, outline="red", width=2)
-                canvas.create_text(x, y - 10, anchor=tk.NW, text=label_text, fill="red", font=("Arial", 10, "bold"))
-        else:
-            # If no bounding box found, display a message
-            canvas.create_text(
-                tk_image.width() / 2,
-                tk_image.height() / 2,
-                text="No Tumor Detected",
-                fill="green",
-                font=("Arial", 20, "bold")
-            )
-
-
+                self.canvas.create_rectangle(x, y, x + w, y + h, outline="red", width=2)
+                self.canvas.create_text(x, y - 10, anchor=tk.NW, text=label_text, fill="red", font=("Arial", 10, "bold"))
         

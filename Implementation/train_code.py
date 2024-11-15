@@ -13,16 +13,16 @@ class load_dataset():
         self.mainapp_obj = train_frame.mainapp_obj
         self.select_directory()
     
-    def create_yaml_file(self, yaml_filename="tumor_detection.yaml"):
+    def create_yaml_file(self, yaml_filename="Brain_Tumor_Detection.yaml"):
         yaml_content = {
-            "path": self.mainapp_obj.yaml_path,                           
+            "path": self.mainapp_obj.dataset_path,                           
             "train": os.path.join(self.mainapp_obj.training_dir,'images'),                   
             "val": os.path.join(self.mainapp_obj.validation_dir,'images'),                     
             "nc": 3,                                
             "names": ["No Tumor", "Benign tumor", "Malignant tumor"] 
         }
 
-        yaml_path = os.path.join(self.mainapp_obj.yaml_path, yaml_filename)
+        yaml_path = self.mainapp_obj.yaml_path
         with open(yaml_path, "w") as file:
             yaml.dump(yaml_content,file, default_flow_style=False)
 
@@ -33,14 +33,13 @@ class load_dataset():
         self.mainapp_obj.dataset_path = dataset_folder
 
         if os.path.exists(self.mainapp_obj.dataset_path) and os.listdir(self.mainapp_obj.dataset_path):
-            self.mainapp_obj.training_dir = os.path.join(self.mainapp_obj.dataset_path, 'Training_Dataset')
-            self.mainapp_obj.validation_dir = os.path.join(self.mainapp_obj.dataset_path, 'Validation_Dataset')
-            self.mainapp_obj.testing_dir = os.path.join(self.mainapp_obj.dataset_path,'Testing_Dataset')
+            self.mainapp_obj.training_dir = os.path.normpath(os.path.join(self.mainapp_obj.dataset_path, 'Training_Dataset')).replace('\\','/')
+            self.mainapp_obj.validation_dir = os.path.normpath(os.path.join(self.mainapp_obj.dataset_path, 'Validation_Dataset')).replace('\\','/')
+            self.mainapp_obj.testing_dir = os.path.normpath(os.path.join(self.mainapp_obj.dataset_path, 'Testing_Dataset')).replace('\\','/')
+            self.mainapp_obj.model_path = os.path.normpath(os.path.join(self.mainapp_obj.dataset_path, 'Model')).replace('\\','/')
 
-            self.mainapp_obj.model_path = os.path.join(self.mainapp_obj.dataset_path,"Models")
-
-            self.mainapp_obj.yaml_path = self.mainapp_obj.model_path
-            self.mainapp_obj.saved_model_path = os.path.join(self.mainapp_obj.model_path,"tumor_detection_model.pt")
+            self.mainapp_obj.yaml_path = os.path.normpath(os.path.join(self.mainapp_obj.model_path,"Brain_Tumor_Detection.yaml")).replace('\\', '/')
+            self.mainapp_obj.saved_model_path = os.path.normpath(os.path.join(self.mainapp_obj.model_path,"tumor_detection_model.pt")).replace('\\', '/')
             self.dataset_split()
 
     def dataset_split(self):
@@ -108,7 +107,13 @@ class load_dataset():
         move_file(validation_images, self.mainapp_obj.validation_dir)
         move_file(testing_images, self.mainapp_obj.testing_dir)
     
-        self.create_yaml_file(yaml_filename="tumor_detection.yaml")
-        
+        self.create_yaml_file(yaml_filename="Brain_Tumor_Detection.yaml")
+        print(f"Dataset Path{self.mainapp_obj.dataset_path}")
+        print(f"Training Dir{self.mainapp_obj.training_dir}")
+        print(f"Validation Path{self.mainapp_obj.validation_dir}")
+        print(f"Testing Path{self.mainapp_obj.testing_dir}")
+        print(f"Model Path{self.mainapp_obj.model_path}")
+        print(f"Yaml_path Path{self.mainapp_obj.yaml_path}")
+        print(f"Saved Model Path{self.mainapp_obj.saved_model_path}")        
 
         messagebox.showinfo("Success","Dataset split completed successfully.")

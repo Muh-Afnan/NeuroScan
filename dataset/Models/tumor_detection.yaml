@@ -1,8 +1,0 @@
-names:
-- No Tumor
-- Benign tumor
-- Malignant tumor
-nc: 3
-path: D:/Project/NeuroScan/dataset\Models
-train: D:/Project/NeuroScan/dataset\Training_Dataset\images
-val: D:/Project/NeuroScan/dataset\Validation_Dataset\images

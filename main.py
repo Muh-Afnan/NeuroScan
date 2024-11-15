@@ -26,17 +26,9 @@ class App(tk.Tk):
         self.validation_dir = ""
         self.testing_dir = ""
         self.model_path = ""
-        self.yaml_path = "D:/Project/NeuroScan/dataset/Models/Brain_Tumor_Detection.yaml"
-        self.saved_model_path = ""
-        self.detect_tumor = ""
-
-        # self.training_dir = os.path.join(self.dataset_path, 'Training_Dataset')
-        # self.validation_dir = os.path.join(self.dataset_path, 'Validation_Dataset')
-        # self.testing_dir = os.path.join(self.dataset_path,'Testing_Dataset')
-        # self.model_path = os.path.join(self.dataset_path,"Models")
-        # self.yaml_path = self.model_path
-        # self.saved_model_path = os.path.join(self.model_path,"tumor_detection_model.pt")
-
+        self.yaml_path = ""
+        self.saved_model_path = "D:/Machine Learning Projects/NeuroScan/dataset/Model/tumor_detection_model.pt"
+        self.detect_tumor_image = ""
 
         self.image_paths = []
         self.label_path = []
@@ -102,6 +94,10 @@ class App(tk.Tk):
     def show_detect_tumor(self):
         self.clear_screen()
         self.pack_screen(DetectTumor(self, self.show_main_screen))
+
+    def show_test_tumor(self):
+        self.clear_screen()
+        self.pack()
 
     def pack_screen(self, frame):
         """

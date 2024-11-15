@@ -15,7 +15,7 @@ class TrainModel:
         # Run YOLOv8 training with additional hyperparameters
         results = self.model.train(
             # data=self.main_obj.yaml_path,  # Path to YAML file
-            data = "D:/Project/NeuroScan/dataset/Models/Brain_Tumor_Detection.yaml",
+            data = self.main_obj.yaml_path,
             epochs=epochs,                 # Number of training epochs
             imgsz=(132,139),                     # Image size
             batch=batch_size,              # Batch size
@@ -28,6 +28,12 @@ class TrainModel:
         )
         print("Training complete.")
 
+    def generate_confusion_matrix(self):
+        return self.model.get_confusion_matrix()
+    
+    def generate_f1_scroe(self):
+        return self.model.get_f1_curve()
+
     def save_model(self):
         model_path = self.main_obj.saved_model_path
         self.model.save(model_path)
@@ -36,7 +42,9 @@ class TrainModel:
         model_path = self.main_obj.saved_model_path
         model = YOLO(model_path)
         image = cv2.imread(self.main_obj.detect_tumor)
+        if image is None:
+            raise FileNotFoundError(f"Image at path '{self.main_obj.detect_tumor}' could not be loaded.")
         results = model(image)
-        labels = ["No Tumor", "Mild Tumor", "Severe Tumor"]
+        labels = ["No Tumor", "Benign Tumor", "Malignant Tumor"]
         image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         return image_rgb, results, labels
