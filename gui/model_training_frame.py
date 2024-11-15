@@ -45,6 +45,66 @@ class modeltrainingscreen(tk.Frame):
         self.learning_rate = tk.DoubleVar(value=0.001)
         tk.Entry(right_frame, textvariable=self.learning_rate).grid(row=1, column=1, padx=5, pady=5, sticky="w")
 
+         # Create a parent frame to center the widgets
+        self.center_frame = tk.Frame(self)
+        self.center_frame.pack(expand=True)  # expand will center the frame both horizontally and vertically
+
+        # Back Button
+        tk.Button(self.center_frame, text="Back", command=self.show_train_frame).grid(row=0, column=0, padx=10, pady=10, sticky="w")
+        
+        # Hyperparameter settings title
+        tk.Label(self.center_frame, text="Hyperparameter Tuning", font=("Arial", 14)).grid(row=1, column=0, columnspan=2, pady=10)
+        
+        # Learning Rate
+        tk.Label(self.center_frame, text="Learning Rate:").grid(row=2, column=0, sticky="e", padx=5, pady=5)
+        self.learning_rate = tk.DoubleVar(value=0.001)
+        tk.Entry(self.center_frame, textvariable=self.learning_rate).grid(row=2, column=1, padx=5, pady=5, sticky="w")
+
+        # Batch Size
+        tk.Label(self.center_frame, text="Batch Size:").grid(row=3, column=0, sticky="e", padx=5, pady=5)
+        self.batch_size = tk.IntVar(value=8)
+        tk.Entry(self.center_frame, textvariable=self.batch_size).grid(row=3, column=1, padx=5, pady=5, sticky="w")
+
+        # Epochs
+        tk.Label(self.center_frame, text="Epochs:").grid(row=4, column=0, sticky="e", padx=5, pady=5)
+        self.epochs = tk.IntVar(value=10)
+        tk.Entry(self.center_frame, textvariable=self.epochs).grid(row=4, column=1, padx=5, pady=5, sticky="w")
+
+        # Confidence Threshold
+        tk.Label(self.center_frame, text="Confidence Threshold:").grid(row=5, column=0, sticky="e", padx=5, pady=5)
+        self.conf_threshold = tk.DoubleVar(value=0.5)
+        tk.Entry(self.center_frame, textvariable=self.conf_threshold).grid(row=5, column=1, padx=5, pady=5, sticky="w")
+
+        # NMS Threshold
+        tk.Label(self.center_frame, text="NMS Threshold:").grid(row=6, column=0, sticky="e", padx=5, pady=5)
+        self.nms_threshold = tk.DoubleVar(value=0.4)
+        tk.Entry(self.center_frame, textvariable=self.nms_threshold).grid(row=6, column=1, padx=5, pady=5, sticky="w")
+
+        # Momentum
+        tk.Label(self.center_frame, text="Momentum:").grid(row=7, column=0, sticky="e", padx=5, pady=5)
+        self.momentum = tk.DoubleVar(value=0.937)
+        tk.Entry(self.center_frame, textvariable=self.momentum).grid(row=7, column=1, padx=5, pady=5, sticky="w")
+
+        # Weight Decay
+        tk.Label(self.center_frame, text="Weight Decay:").grid(row=8, column=0, sticky="e", padx=5, pady=5)
+        self.weight_decay = tk.DoubleVar(value=0.0005)
+        tk.Entry(self.center_frame, textvariable=self.weight_decay).grid(row=8, column=1, padx=5, pady=5, sticky="w")
+
+        # Training Progress title
+        tk.Label(self.center_frame, text="Training Progress", font=("Arial", 14)).grid(row=9, column=0, columnspan=2, pady=10)
+        
+        # Progress bar
+        self.progress = ttk.Progressbar(self.center_frame, orient="horizontal", length=300, mode="determinate")
+        self.progress.grid(row=10, column=0, columnspan=2, padx=10, pady=10)
+        
+        # Start Training Button
+        self.start_button = tk.Button(self.center_frame, text="Start Training", command=self.start_training)
+        self.start_button.grid(row=11, column=0, padx=10, pady=10, sticky="e")
+        
+        # Save Model Button
+        self.save_button = tk.Button(self.center_frame, text="Save Model", command=self.save_model)
+        self.save_button.grid(row=11, column=1, padx=10, pady=10, sticky="w")
+
         # Progress bar
         self.progress = ttk.Progressbar(right_frame, orient="horizontal", length=300, mode="determinate")
         self.progress.grid(row=20, column=0, columnspan=2, padx=10, pady=10)
