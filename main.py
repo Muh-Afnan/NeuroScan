@@ -18,7 +18,7 @@ class App(tk.Tk):
         """
         super().__init__() 
         self.title("NeuroScan App")  
-        self.geometry("800x600")
+        self.geometry("1080x720")
 
         self.dataset_path = ""
 
