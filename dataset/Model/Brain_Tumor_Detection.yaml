@@ -3,6 +3,6 @@ names:
 - Benign tumor
 - Malignant tumor
 nc: 3
-path: D:/Machine Learning Projects/NeuroScan/dataset
-train: D:/Machine Learning Projects/NeuroScan/dataset/Training_Dataset\images
-val: D:/Machine Learning Projects/NeuroScan/dataset/Validation_Dataset\images
+path: D:/Project/NeuroScan/dataset
+train: D:/Project/NeuroScan/dataset/Training_Dataset\images
+val: D:/Project/NeuroScan/dataset/Validation_Dataset\images

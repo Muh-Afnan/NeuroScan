@@ -51,13 +51,6 @@ class MainScreen(tk.Frame):
         self.button_logout = tk.Button(button_frame, text="Logout", **button_style_large, command=self.logout)
         self.button_logout.grid(row=1, column=1, padx=10, pady=10)
 
-    # def train_model(self):
-    #     """
-    #     Train model button click hone par call hota hai.
-    #     Is method ko future implementation ke liye uncomment kar sakte hain.
-    #     """
-    #     self.master.clear_screen()
-    #     self.master.pack_screen(train_model.train_model(self.master))
 
     def test_model(self):
         """
@@ -65,27 +58,6 @@ class MainScreen(tk.Frame):
         Yeh method ek info message show karti hai jo model testing ke process ko indicate karta hai.
         """
         messagebox.showinfo("Test Model", "Testing model...")
-
-    def generate_matrix(self):
-        """
-        Generate Confusion Matrix button click hone par call hota hai.
-        Yeh method ek info message show karti hai jo confusion matrix generate karne ke process ko indicate karta hai.
-        """
-        messagebox.showinfo("Generate Confusion Matrix", "Generating confusion matrix...")
-
-    def adjust_metrics(self):
-        """
-        Adjust Metrics button click hone par call hota hai.
-        Yeh method ek info message show karti hai jo metrics adjust karne ke process ko indicate karta hai.
-        """
-        messagebox.showinfo("Adjust Metrics", "Adjusting metrics...")
-
-    def detect_tumor(self):
-        """
-        Detect Tumor button click hone par call hota hai.
-        Yeh method ek info message show karti hai jo tumor detection ke process ko indicate karta hai.
-        """
-        messagebox.showinfo("Detect Tumor", "Detecting tumor...")
 
     def logout(self):
         """
