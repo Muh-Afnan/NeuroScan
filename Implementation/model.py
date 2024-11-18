@@ -30,86 +30,86 @@ class TrainModel:
         )
         print("Training complete.")
 
-    def generate_confusion_matrix(self):
-        # Assuming `self.model.val()` returns the validation results with true labels and predictions
-        val_results = self.model.val()  
-        y_true = val_results["labels"]
-        y_pred = val_results["preds"]
+    # def generate_confusion_matrix(self):
+    #     # Assuming `self.model.val()` returns the validation results with true labels and predictions
+    #     val_results = self.model.val()  
+    #     y_true = val_results["labels"]
+    #     y_pred = val_results["preds"]
 
-        # Generate confusion matrix
-        cm = confusion_matrix(y_true, y_pred)
-        plt.figure(figsize=(8, 6))
-        plt.imshow(cm, interpolation='nearest', cmap=plt.cm.Blues)
-        plt.title("Confusion Matrix")
-        plt.colorbar()
-        tick_marks = np.arange(len(self.main_obj.class_labels))
-        plt.xticks(tick_marks, self.main_obj.class_labels, rotation=45)
-        plt.yticks(tick_marks, self.main_obj.class_labels)
-        plt.xlabel("Predicted Label")
-        plt.ylabel("True Label")
-        plt.show()
+    #     # Generate confusion matrix
+    #     cm = confusion_matrix(y_true, y_pred)
+    #     plt.figure(figsize=(8, 6))
+    #     plt.imshow(cm, interpolation='nearest', cmap=plt.cm.Blues)
+    #     plt.title("Confusion Matrix")
+    #     plt.colorbar()
+    #     tick_marks = np.arange(len(self.main_obj.class_labels))
+    #     plt.xticks(tick_marks, self.main_obj.class_labels, rotation=45)
+    #     plt.yticks(tick_marks, self.main_obj.class_labels)
+    #     plt.xlabel("Predicted Label")
+    #     plt.ylabel("True Label")
+    #     plt.show()
 
-    def generate_f1_curve(self):
-        # Assuming `self.model.metrics()` provides F1 scores over epochs
-        f1_scores = self.model.metrics()["f1"]
-        epochs = range(1, len(f1_scores) + 1)
+    # def generate_f1_curve(self):
+    #     # Assuming `self.model.metrics()` provides F1 scores over epochs
+    #     f1_scores = self.model.metrics()["f1"]
+    #     epochs = range(1, len(f1_scores) + 1)
 
-        plt.figure(figsize=(8, 6))
-        plt.plot(epochs, f1_scores, label="F1 Score", color="blue")
-        plt.xlabel("Epochs")
-        plt.ylabel("F1 Score")
-        plt.title("F1 Score Curve")
-        plt.legend()
-        plt.show()
+    #     plt.figure(figsize=(8, 6))
+    #     plt.plot(epochs, f1_scores, label="F1 Score", color="blue")
+    #     plt.xlabel("Epochs")
+    #     plt.ylabel("F1 Score")
+    #     plt.title("F1 Score Curve")
+    #     plt.legend()
+    #     plt.show()
 
-    def generate_pr_curve(self):
-        val_results = self.model.val()
-        y_true = val_results["labels"]
-        y_scores = val_results["scores"]
+    # def generate_pr_curve(self):
+    #     val_results = self.model.val()
+    #     y_true = val_results["labels"]
+    #     y_scores = val_results["scores"]
 
-        precision, recall, _ = precision_recall_curve(y_true, y_scores)
+    #     precision, recall, _ = precision_recall_curve(y_true, y_scores)
 
-        plt.figure(figsize=(8, 6))
-        plt.plot(recall, precision, label="PR Curve", color="green")
-        plt.xlabel("Recall")
-        plt.ylabel("Precision")
-        plt.title("Precision-Recall Curve")
-        plt.legend()
-        plt.show()
+    #     plt.figure(figsize=(8, 6))
+    #     plt.plot(recall, precision, label="PR Curve", color="green")
+    #     plt.xlabel("Recall")
+    #     plt.ylabel("Precision")
+    #     plt.title("Precision-Recall Curve")
+    #     plt.legend()
+    #     plt.show()
 
-    def generate_precision_curve(self):
-        # Assuming `self.model.metrics()` provides precision scores at different confidence thresholds
-        precisions = self.model.metrics()["precision"]
-        confidence = self.model.metrics()["confidence"]
+    # def generate_precision_curve(self):
+    #     # Assuming `self.model.metrics()` provides precision scores at different confidence thresholds
+    #     precisions = self.model.metrics()["precision"]
+    #     confidence = self.model.metrics()["confidence"]
 
-        plt.figure(figsize=(8, 6))
-        plt.plot(confidence, precisions, label="Precision", color="orange")
-        plt.xlabel("Confidence Threshold")
-        plt.ylabel("Precision")
-        plt.title("Precision Curve")
-        plt.legend()
-        plt.show()
+    #     plt.figure(figsize=(8, 6))
+    #     plt.plot(confidence, precisions, label="Precision", color="orange")
+    #     plt.xlabel("Confidence Threshold")
+    #     plt.ylabel("Precision")
+    #     plt.title("Precision Curve")
+    #     plt.legend()
+    #     plt.show()
 
-    def generate_recall_curve(self):
-        # Assuming `self.model.val()` returns the validation results as a DetMetrics object
-        val_results = self.model.val()
+    # def generate_recall_curve(self):
+    #     # Assuming `self.model.val()` returns the validation results as a DetMetrics object
+    #     val_results = self.model.val()
 
-        # Accessing the labels and predictions from the DetMetrics object
-        y_true = val_results.labels  # This assumes the `labels` attribute exists in DetMetrics
-        y_pred = val_results.pred  # This assumes the `pred` attribute exists in DetMetrics
+    #     # Accessing the labels and predictions from the DetMetrics object
+    #     y_true = val_results.labels  # This assumes the `labels` attribute exists in DetMetrics
+    #     y_pred = val_results.pred  # This assumes the `pred` attribute exists in DetMetrics
 
-        # Generate confusion matrix
-        cm = confusion_matrix(y_true, y_pred)
-        plt.figure(figsize=(8, 6))
-        plt.imshow(cm, interpolation='nearest', cmap=plt.cm.Blues)
-        plt.title("Confusion Matrix")
-        plt.colorbar()
-        tick_marks = np.arange(len(self.main_obj.class_labels))
-        plt.xticks(tick_marks, self.main_obj.class_labels, rotation=45)
-        plt.yticks(tick_marks, self.main_obj.class_labels)
-        plt.xlabel("Predicted Label")
-        plt.ylabel("True Label")
-        plt.show()
+    #     # Generate confusion matrix
+    #     cm = confusion_matrix(y_true, y_pred)
+    #     plt.figure(figsize=(8, 6))
+    #     plt.imshow(cm, interpolation='nearest', cmap=plt.cm.Blues)
+    #     plt.title("Confusion Matrix")
+    #     plt.colorbar()
+    #     tick_marks = np.arange(len(self.main_obj.class_labels))
+    #     plt.xticks(tick_marks, self.main_obj.class_labels, rotation=45)
+    #     plt.yticks(tick_marks, self.main_obj.class_labels)
+    #     plt.xlabel("Predicted Label")
+    #     plt.ylabel("True Label")
+    #     plt.show()
 
 
     def save_model(self):

@@ -131,7 +131,7 @@
 
 import tkinter as tk
 from tkinter import ttk, messagebox
-import random
+import os
 import time
 from Implementation.model import TrainModel
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -168,8 +168,9 @@ class modeltrainingscreen(tk.Frame):
         self.metric_dropdown = ttk.OptionMenu(
             left_frame, self.metric_option, "Select Metric",
             "Confusion Matrix", "F1 Curve", "PR Curve", "P Curve", "R Curve",
-            command=self.update_canvas  # Callback to update canvas
+            command=self.show_metrices  # Callback to update canvas
         )
+
         self.metric_dropdown.pack(pady=10)
 
         # Right Frame: Hyperparameter Tuning Section
@@ -224,50 +225,73 @@ class modeltrainingscreen(tk.Frame):
         # Save Model Button
         self.save_button = tk.Button(right_frame, text="Save Model", command=self.save_model)
         self.save_button.grid(row=11, column=1, padx=10, pady=10, sticky="w")
+    
+    def latest_model(self):
+        self.metrices_path = "D:/Machine Learning Projects/NeuroScan/runs/detect"
+        self.last_model = os.path.basename(self.metrices_path)
+        return self.last_model
+    
+    def show_metrices(self,selected_metric):
+        path = self.latest_model()
+        if selected_metric == "Confusion Matrix":
+            self.output_canvas.clear()
+            metric_path = os.path.normpath(os.path.join(path, "confusion_matrix.png"))
+            # Load the image
+            metric_image = tk.PhotoImage(file=metric_path)  # Replace with your image path
 
-    def update_canvas(self, selected_metric):
-        # Clear previous plot
-        self.ax.clear()
+            # Display the image on the canvas
+            self.output_canvas.create_image(0, 0, anchor=tk.NW, image=metric_image)
+            self.output_canvas.create_image = metric_image
 
-        try:
-            if selected_metric == "Confusion Matrix":
-                # Generate and display confusion matrix
-                matrix = self.yolomodel.generate_confusion_matrix()
-                self.ax.imshow(matrix, cmap="Blues")
-                self.ax.set_title("Confusion Matrix")
-            elif selected_metric == "F1 Curve":
-                # Plot F1 curve
-                f1_scores = self.yolomodel.generate_f1_score()
-                self.ax.plot(f1_scores)
-                self.ax.set_title("F1 Curve")
-                self.ax.set_xlabel("Thresholds")
-                self.ax.set_ylabel("F1 Score")
-            elif selected_metric == "PR Curve":
-                # Plot Precision-Recall curve
-                precision, recall, _ = self.yolomodel.generate_pr_curve()
-                self.ax.plot(recall, precision)
-                self.ax.set_title("Precision-Recall Curve")
-                self.ax.set_xlabel("Recall")
-                self.ax.set_ylabel("Precision")
-            elif selected_metric == "P Curve":
-                # Plot Precision curve
-                precision = self.yolomodel.generate_p_curve()
-                self.ax.plot(precision)
-                self.ax.set_title("Precision Curve")
-                self.ax.set_xlabel("Thresholds")
-                self.ax.set_ylabel("Precision")
-            elif selected_metric == "R Curve":
-                # Plot Recall curve
-                recall = self.yolomodel.generate_r_curve()
-                self.ax.plot(recall)
-                self.ax.set_title("Recall Curve")
-                self.ax.set_xlabel("Thresholds")
-                self.ax.set_ylabel("Recall")
+    # Keep a reference to the image to prevent garbage collection
 
-            self.output_canvas.draw()
 
-        except AttributeError:
-            messagebox.showerror("Error", "Please train the model first to view the metrics.")
+
+
+    # def update_canvas(self, selected_metric):
+    #     # Clear previous plot
+    #     self.ax.clear()
+
+
+    #     try:
+    #         if selected_metric == "Confusion Matrix":
+    #             # Generate and display confusion matrix
+    #             matrix = self.yolomodel.generate_confusion_matrix()
+    #             self.ax.imshow(matrix, cmap="Blues")
+    #             self.ax.set_title("Confusion Matrix")
+    #         elif selected_metric == "F1 Curve":
+    #             # Plot F1 curve
+    #             f1_scores = self.yolomodel.generate_f1_score()
+    #             self.ax.plot(f1_scores)
+    #             self.ax.set_title("F1 Curve")
+    #             self.ax.set_xlabel("Thresholds")
+    #             self.ax.set_ylabel("F1 Score")
+    #         elif selected_metric == "PR Curve":
+    #             # Plot Precision-Recall curve
+    #             precision, recall, _ = self.yolomodel.generate_pr_curve()
+    #             self.ax.plot(recall, precision)
+    #             self.ax.set_title("Precision-Recall Curve")
+    #             self.ax.set_xlabel("Recall")
+    #             self.ax.set_ylabel("Precision")
+    #         elif selected_metric == "P Curve":
+    #             # Plot Precision curve
+    #             precision = self.yolomodel.generate_p_curve()
+    #             self.ax.plot(precision)
+    #             self.ax.set_title("Precision Curve")
+    #             self.ax.set_xlabel("Thresholds")
+    #             self.ax.set_ylabel("Precision")
+    #         elif selected_metric == "R Curve":
+    #             # Plot Recall curve
+    #             recall = self.yolomodel.generate_r_curve()
+    #             self.ax.plot(recall)
+    #             self.ax.set_title("Recall Curve")
+    #             self.ax.set_xlabel("Thresholds")
+    #             self.ax.set_ylabel("Recall")
+
+    #         self.output_canvas.draw()
+
+    #     except AttributeError:
+    #         messagebox.showerror("Error", "Please train the model first to view the metrics.")
 
     def start_training(self):
         epochs = self.epochs.get()

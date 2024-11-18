@@ -27,8 +27,8 @@ class App(tk.Tk):
         self.testing_dir = ""
         self.model_path = ""
         self.yaml_path = ""
-        # self.saved_model_path = "D:/Machine Learning Projects/NeuroScan/dataset/Model/tumor_detection_model.pt"
-        self.saved_model_path = "D:/Project/NeuroScan/dataset/Model/tumor_detection_model.pt"
+        self.saved_model_path = "D:/Machine Learning Projects/NeuroScan/dataset/Model/tumor_detection_model.pt"
+        # self.saved_model_path = "D:/Project/NeuroScan/dataset/Model/tumor_detection_model.pt"
         self.detect_tumor_image = ""
 
         self.image_paths = []
@@ -38,8 +38,7 @@ class App(tk.Tk):
         self.loaded_labels = []
         self.dataset = 0
 
-        self.
-        
+        self.metrices = None        
 
         self.current_frame = None  # Currently visible frame ko store karta hai
         self.show_login()  # Login screen show karata hai jab app start hoti hai
