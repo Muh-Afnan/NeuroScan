@@ -61,7 +61,7 @@ class load_dataset():
         os.makedirs(self.mainapp_obj.training_dir, exist_ok=True)
         os.makedirs(self.mainapp_obj.validation_dir, exist_ok=True)
         os.makedirs(self.mainapp_obj.testing_dir, exist_ok=True)
-        os.makedirs(self.mainapp_obj.model_path, exist_ok=True)
+        # os.makedirs(self.mainapp_obj.model_path, exist_ok=True)
 
 
         # Calculate dataset splits

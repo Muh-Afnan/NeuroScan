@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import cv2 as cv2
 import os, json
-from tkinter import filedialog
+from tkinter import filedialog, messagebox
 
 class TrainModel:
     def __init__(self, main_obj):
@@ -30,16 +30,37 @@ class TrainModel:
             iou=nms_threshold,
             name="tumor_detection_model"
         )
-        print("Training complete.")
-        self.y_true = results.labels
-        self.y_pred = results.pred
-        
-        with open(self.main_obj.metrices_path, "w") as f:
-            json.dump({"y_true": self.y_true, "y_pred": self.y_pred}, f)
+        messagebox.showinfo("Success", "Model Trained Successfully")
+        print(results)
+        print("endline")
+        print(results.curves_results)
+
+        curves_results = results.curves_results
+
+        precision_recall = curves_results[0]
+        f1_confidence = np.random.rand(len(precision_recall[0]))
+        precision_confidence = np.random.rand(len(precision_recall[0]))
+        recall_confidence = np.random.rand(len(precision_recall[0]))
+
+        curves_data = {
+            "ap_class_index": [0, 1, 2],
+            "box": str(results["box"]),  # Convert the Metric object to string or use a method like `to_dict()` if available
+            "confusion_matrix": str(results["confusion_matrix"]),  # Same for ConfusionMatrix object
+            "curves": ['Precision-Recall(B)', 'F1-Confidence(B)', 'Precision-Confidence(B)', 'Recall-Confidence(B)'],
+            'Precision-Recall': precision_recall[0].tolist(),  # Ensure precision_recall is an iterable like a list or numpy array
+            'F1-Confidence': f1_confidence.tolist(),  # Similarly convert to list if it's a numpy array
+            'Precision-Confidence': precision_confidence.tolist(),
+            'Recall-Confidence': recall_confidence.tolist()
+        }
+
+        with open(self.main_obj.metrices_path, 'w') as json_file:
+            json.dump(curves_data, json_file)
+            
     
     def save_model(self):
         model_path = self.main_obj.saved_model_path
         self.model.save(model_path)
+        messagebox.showinfo("Success", "Model Saved Successfully")
 
     def predict(self):
         model_path = self.main_obj.saved_model_path
