@@ -1,6 +1,6 @@
 import tkinter as tk  # Tkinter library ko import karte hain jo GUI banane ke liye use hoti hai
-from tkinter import ttk  # ttk module ko import karte hain jo additional GUI widgets provide karta hai
-import database.query as Query  # Database queries ke liye custom Query module ko import karte hain
+from tkinter import ttk, messagebox  # ttk module ko import karte hain jo additional GUI widgets provide karta hai
+# import database.query as Query  # Database queries ke liye custom Query module ko import karte hain
 
 class LoginFrame(tk.Frame):
     def __init__(self, master, show_register_callback, show_main_screen_callback, show_recover_password_callback):
@@ -72,11 +72,8 @@ class LoginFrame(tk.Frame):
         username = self.entry_username.get()  # Username field se user ka input lete hain
         password = self.entry_password.get()  # Password field se user ka input lete hain
 
-        # Logging Authentication check karta hai (commented out)
-        # if Query.login_query(username, password):
-        #     self.show_main_screen_callback()
-        # else:
-        #     tk.messagebox.showinfo("Error","Username or Password Error. Please Try Again")
-
-        # For now, directly show main screen for testing
-        self.show_main_screen_callback()  # Login successful hone par main screen show karte hain
+        login_obj = self.master.userdb.login(username, password)
+        if login_obj['status']:
+            messagebox.showinfo("Success", login_obj['msg'])
+            self.show_main_screen_callback()
+        else: messagebox.showerror("Error", login_obj['msg'])

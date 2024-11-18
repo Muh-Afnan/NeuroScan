@@ -5,6 +5,19 @@ __pycache__/
 
 # C extensions
 *.so
+# Ignore the database file
+my_database.sqlite
+
+# Ignore the dataset folder and its contents
+dataset/
+
+# Ignore the runs folder and its contents
+runs/
+
+my_database
+my_database.sqlite
+dataset/
+runs/
 
 # Distribution / packaging
 .Python

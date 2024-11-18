@@ -7,6 +7,7 @@ from gui.recover_password_frame import RecoverPasswordFrame  # RecoverPasswordFr
 from gui.train_frame import trainmodelframe  # TrainModelFrame import karte hain (Model training ke liye)
 from gui.model_training_frame import modeltrainingscreen
 from gui.detect_tumor import DetectTumor
+from database.user_table import UserDatabase
 
 class App(tk.Tk):
     def __init__(self):
@@ -26,9 +27,18 @@ class App(tk.Tk):
         self.validation_dir = ""
         self.testing_dir = ""
         self.model_path = ""
-        self.yaml_path = ""
-        self.saved_model_path = "D:/Machine Learning Projects/NeuroScan/dataset/Model/tumor_detection_model.pt"
+        
+        self.path = "C:/"
+        self.path = os.path.normpath(os.path.join(self.path, "NeuroScan Config")).replace("\\","/")
+        if not os.path.exists(self.path):
+            os.mkdir(self.path)
+        
+        # # self.saved_model_path = "D:/Machine Learning Projects/NeuroScan/dataset/Model/tumor_detection_model.pt"
         # self.saved_model_path = "D:/Project/NeuroScan/dataset/Model/tumor_detection_model.pt"
+        self.saved_model_path = os.path.normpath(os.path.join(self.path, "tumor_detection_model.pt")).replace("\\", "/")
+        self.yaml_path = os.path.normpath(os.path.join(self.path,"Brain_Tumor_Detection.yaml")).replace('\\', '/')
+        self.metrices_path = os.path.normpath(os.path.join(self.path,"yolo_data.json")).replace('\\', '/')
+
         self.detect_tumor_image = ""
 
         self.image_paths = []
@@ -42,6 +52,8 @@ class App(tk.Tk):
 
         self.current_frame = None  # Currently visible frame ko store karta hai
         self.show_login()  # Login screen show karata hai jab app start hoti hai
+
+        self.userdb = UserDatabase()
 
     def show_login(self):
         """

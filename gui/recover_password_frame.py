@@ -29,37 +29,35 @@ class RecoverPasswordFrame(tk.Frame):
         self.entry_username.pack(pady=10)
 
         # Security question ke liye label create karte hain
-        self.label_security_question = tk.Label(self, text="Select your security question")
-        self.label_security_question.pack(pady=10)
+        # self.label_security_question = tk.Label(self, text="Select your security question")
+        # self.label_security_question.pack(pady=10)
 
-        # Security questions ka list banate hain jo user choose kar sakta hai
-        self.security_questions = [
-            "What is your pet's name?",
-            "What is your mother's maiden name?",
-            "What was your first car?",
-            "What elementary school did you attend?",
-            "What is your favorite food?"
-        ]
+        # # Security questions ka list banate hain jo user choose kar sakta hai
+        # self.security_questions = [
+        #     "What is your pet's name?",
+        #     "What is your mother's maiden name?",
+        #     "What was your first car?",
+        #     "What elementary school did you attend?",
+        #     "What is your favorite food?"
+        # ]
 
-        # Combobox create karte hain jahan security questions ka list dikhaya jayega
-        self.default_val = tk.StringVar()
-        self.default_val.set("Select a question")  # Default value set karte hain
-        self.question_drop_down = tk.OptionMenu(self, self.default_val, *self.security_questions)
-        self.question_drop_down.pack(pady=10)
+        # # Combobox create karte hain jahan security questions ka list dikhaya jayega
+        # self.default_val = tk.StringVar()
+        # self.default_val.set("Select a question")  # Default value set karte hain
+        # self.question_drop_down = tk.OptionMenu(self, self.default_val, *self.security_questions)
+        # self.question_drop_down.pack(pady=10)
         
-        # Security answer ke liye label create karte hain
-        self.label_security_answer = tk.Label(self, text="Answer")
-        self.label_security_answer.pack(pady=10)
+        # self.label_security_answer = tk.Label(self, text="Answer")
+        # self.label_security_answer.pack(pady=10)
 
-        # Security answer input field create karte hain jahan user apna answer enter karega
-        self.entry_security_answer = ttk.Entry(self)
-        self.entry_security_answer.pack(pady=10)
+        # self.entry_security_answer = ttk.Entry(self)
+        # self.entry_security_answer.pack(pady=10)
 
         # Button styles define karte hain
         button_style_small = {"font": ("Arial", 10), "width": 15, "height": 1, "padx": 5, "pady": 5}
 
         # Recover Password button create karte hain, command parameter se recover_password method call hoti hai
-        self.button_recover = tk.Button(self, text="Recover Password", **button_style_small,
+        self.button_recover = tk.Button(self, text="Get User", **button_style_small,
                                         command=self.recover_password)
         self.button_recover.pack(pady=10)
 
@@ -68,14 +66,57 @@ class RecoverPasswordFrame(tk.Frame):
                                               command=self.show_login_callback)
         self.button_back_to_login.pack(pady=10)
 
+    def show_answer(self, question):
+
+        self.button_recover.destroy()
+        self.button_back_to_login.destroy()
+
+        self.label_security_answer = tk.Label(self, text=question)
+        self.label_security_answer.pack(pady=5)
+
+        self.entry_security_answer = ttk.Entry(self)
+        self.entry_security_answer.pack(pady=10)
+
+
+        self.new_password_label = tk.Label(self, text="New Password")
+        self.new_password_label.pack(pady=10)
+
+        self.entry_new_password = ttk.Entry(self, show="*")
+        self.entry_new_password.pack(pady=10)
+
+        button_style_small = {"font": ("Arial", 10), "width": 15, "height": 1, "padx": 5, "pady": 5}
+        self.button_recover = tk.Button(self, text="Change Password", **button_style_small,
+                                        command=self.change_password)
+        self.button_recover.pack(pady=10)
+
+        # Back to Login button create karte hain, command parameter se show_login_callback method call hoti hai
+        self.button_back_to_login = tk.Button(self, text="Back to Login", **button_style_small,
+                                              command=self.show_login_callback)
+        self.button_back_to_login.pack(pady=10)
+
+
     def recover_password(self):
         """
         Recover Password button click hone par call hoti hai.
         Yeh method user se input le kar password recovery ke liye placeholder logic implement karti hai.
         """
         username = self.entry_username.get()  # Username ko get karte hain
-        security_question = self.default_val.get()  # Security question ko get karte hain
-        print(security_question)  # Debug purpose ke liye print karte hain
-        security_answer = self.entry_security_answer.get()  # Security answer ko get karte hain
+        # security_question = self.default_val.get()  # Security question ko get karte hain
+        # security_answer = self.entry_security_answer.get()  # Security answer ko get karte hain
 
-        # Placeholder logic for password
+        return_obj = self.master.userdb.get_security_question(username)
+        if return_obj['status']:
+            self.show_answer(return_obj['msg'])
+        else: messagebox.showerror("Error", return_obj['msg'])
+
+
+    def change_password(self):
+        username = self.entry_username.get()
+        security_answer = self.entry_security_answer.get()
+        new_password = self.entry_new_password.get()
+
+        return_obj = self.master.userdb.change_password_by_answer(username, security_answer, new_password)
+        if return_obj['status']:
+            messagebox.showinfo("Success", return_obj['msg'])
+            self.show_login_callback()
+        else: messagebox.showerror("Error", return_obj['msg'])

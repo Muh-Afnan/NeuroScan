@@ -64,5 +64,6 @@ class MainScreen(tk.Frame):
         Logout button click hone par call hota hai.
         Yeh method current screen ko hide karti hai aur login screen dikhane ke liye master window ka method call karti hai.
         """
+        self.master.userdb.logout()
         self.pack_forget()  # Current screen ko hide karti hai
         self.master.show_login()  # Login screen dikhane ke liye master window ka method call karti hai

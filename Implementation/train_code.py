@@ -38,8 +38,7 @@ class load_dataset():
             self.mainapp_obj.testing_dir = os.path.normpath(os.path.join(self.mainapp_obj.dataset_path, 'Testing_Dataset')).replace('\\','/')
             self.mainapp_obj.model_path = os.path.normpath(os.path.join(self.mainapp_obj.dataset_path, 'Model')).replace('\\','/')
 
-            self.mainapp_obj.yaml_path = os.path.normpath(os.path.join(self.mainapp_obj.model_path,"Brain_Tumor_Detection.yaml")).replace('\\', '/')
-            self.mainapp_obj.saved_model_path = os.path.normpath(os.path.join(self.mainapp_obj.model_path,"tumor_detection_model.pt")).replace('\\', '/')
+            
             self.dataset_split()
 
     def dataset_split(self):

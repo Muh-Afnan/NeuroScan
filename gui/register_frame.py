@@ -1,6 +1,5 @@
 import tkinter as tk  # Tkinter library ko import karte hain jo GUI (Graphical User Interface) banane ke liye use hoti hai
-from tkinter import ttk  # ttk module ko import karte hain jo additional widgets aur styling options provide karta hai
-
+from tkinter import ttk, messagebox  # ttk module ko import karte hain jo additional widgets aur styling options provide karta hai
 class RegisterFrame(tk.Frame):  # RegisterFrame class define karte hain jo tk.Frame se inherit karti hai
     def __init__(self, master, show_login_callback):
         """
@@ -83,7 +82,16 @@ class RegisterFrame(tk.Frame):  # RegisterFrame class define karte hain jo tk.Fr
         username = self.entry_username.get()  # Username field se user ka input lete hain
         password = self.entry_password.get()  # Password field se user ka input lete hain
         selected_question = self.default_val.get()  # Selected security question ko retrieve karte hain
-        print(selected_question)  # Abhi ke liye sirf selected question ko print karte hain
+        answer = self.entry_security_answer.get()
+        return_obj = self.master.userdb.insert_user(username, password, selected_question, answer)
+        if return_obj['status']:
+            messagebox.showinfo("Success", return_obj['msg'])
+        else: messagebox.showerror("Error", return_obj['msg'])
+
+        self.entry_username.delete(0, 'end')
+        self.entry_password.delete(0, 'end')
+        self.entry_security_answer.delete(0, 'end')
+        self.default_val.set("Select a question")
 
         # Future implementation: User ko register karne ke baad login screen dikhani hai
         # self.show_login_callback()
