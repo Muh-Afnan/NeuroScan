@@ -14,6 +14,9 @@ dataset/
 # Ignore the runs folder and its contents
 runs/
 
+.idea
+.idea/
+
 my_database
 my_database.sqlite
 dataset/
