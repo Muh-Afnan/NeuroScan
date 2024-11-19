@@ -96,7 +96,7 @@ class App(tk.Tk):
         """
         Yeh method model training screen ko display karta hai.
         Pehle screen clear ki jati hai, phir `trainmodelframe` ko pack kiya jata hai.
-        `self.show_main_screen` ko as a parameter pass kiya gaya hai taake main screen pe wapas ja sake.
+        `self.show_main_screen` ko as a parameter pass kiya gaya hai taake main screen pe wapas ja sake..
         """
         self.clear_screen()
         self.pack_screen(trainmodelframe(self, self.show_main_screen, self.show_model_training_frame))
