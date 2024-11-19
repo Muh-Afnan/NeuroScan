@@ -7,7 +7,7 @@ import numpy as np
 from Implementation.model import TrainModel
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from sklearn.metrics import confusion_matrix, precision_recall_curve, f1_score
+# from sklearn.metrics import confusion_matrix, precision_recall_curve, f1_score
 from PIL import Image, ImageTk
 
 class modeltrainingscreen(tk.Frame):
@@ -35,7 +35,7 @@ class modeltrainingscreen(tk.Frame):
 
         # Left Frame: Output Canvas and Dropdown
         # self.figure, self.ax = plt.subplots()  # Initialize figure and axis
-        self.output_canvas = tk.Canvas(self.left_frame, width=667, height = 500 )
+        self.output_canvas = tk.Canvas(self.left_frame, width=667, height = 500,borderwidth=1)
         self.output_canvas.pack(pady=20)
         # Dropdown to select metric
         self.metric_option = tk.StringVar(value="Select Metric")
@@ -100,155 +100,169 @@ class modeltrainingscreen(tk.Frame):
         self.save_button = tk.Button(right_frame, text="Save Model", command=self.save_model)
         self.save_button.grid(row=11, column=1, padx=10, pady=10, sticky="w")
     
-    # def latest_model(self):
-    #     self.metrices_path = "D:/Project/NeuroScan/runs/detect"
+    def latest_model(self):
+        # self.metrices_path = "D:/Project/NeuroScan/runs/detect"
+        self.metrices_path = "D:/Machine Learning Projects/NeuroScan/runs/detect"
         
-    #     # Check if the path exists
-    #     if not os.path.exists(self.metrices_path):
-    #         print(f"Error: The path {self.metrices_path} does not exist.")
-    #         return None
+        # Check if the path exists
+        if not os.path.exists(self.metrices_path):
+            print(f"Error: The path {self.metrices_path} does not exist.")
+            return None
         
-    #     # List all subdirectories inside the 'detect' folder
-    #     all_folders = [f for f in os.listdir(self.metrices_path) if os.path.isdir(os.path.join(self.metrices_path, f))]
+        # List all subdirectories inside the 'detect' folder
+        all_folders = [f for f in os.listdir(self.metrices_path) if os.path.isdir(os.path.join(self.metrices_path, f))]
         
-    #     # Sort the folders based on the numeric value at the end of the folder name
-    #     def extract_numeric_part(folder_name):
-    #         match = re.search(r'(\d+)$', folder_name)
-    #         return int(match.group(1)) if match else 0
+        # Sort the folders based on the numeric value at the end of the folder name
+        def extract_numeric_part(folder_name):
+            match = re.search(r'(\d+)$', folder_name)
+            return int(match.group(1)) if match else 0
         
-    #     all_folders.sort(key=extract_numeric_part)
+        all_folders.sort(key=extract_numeric_part)
         
-    #     if all_folders:
-    #         # Get the most recent model folder (the last one after sorting)
-    #         latest_folder = all_folders[-1]
-    #         return os.path.join(self.metrices_path, latest_folder)
-    #     return None
+        if all_folders:
+            # Get the most recent model folder (the last one after sorting)
+            latest_folder = all_folders[-1]
+            return os.path.join(self.metrices_path, latest_folder)
+        return None
 
+    def canvas_plot(self, plot):
+        self.output_canvas.delete("all")
+        # Load the metric image using PIL
+        metric_path = os.path.normpath(os.path.join(self.raw_path, plot)).replace("\\", "/")
+        if os.path.exists(metric_path):
+            metric_image = Image.open(metric_path)  # Open the image using PIL
+            metric_image = metric_image.resize((667, 500), Image.Resampling.LANCZOS)
+            metric_image = ImageTk.PhotoImage(metric_image)  # Convert to Tkinter-compatible image
+            self.output_canvas.create_image(0,0,anchor = "nw",image = metric_image)
+            self.output_canvas.image = metric_image
+        else:
+            messagebox.showerror("Error", "Confusion Matrix image not found.")
+
+    def show_metrices(self, selected_metric):
+        self.raw_path = self.latest_model()
+        if not self.raw_path:
+            messagebox.showerror("Error", "No model found.")
+            return
+        else:
+            if selected_metric == "Confusion Matrix":
+                self.canvas_plot("confusion_matrix.png")
+            elif selected_metric == "F1 Curve":
+                self.canvas_plot("F1_curve.png")
+            elif selected_metric == "P Curve":
+                self.canvas_plot("P_curve.png")
+            elif selected_metric == "PR Curve":
+                self.canvas_plot("PR_curve.png")
+            elif selected_metric == "R Curve":
+                self.canvas_plot("R_curve.png")
+            else:
+                return
+
+    # def _embed_plot(self, figure):
+    #     for widget in self.output_canvas.winfo_children():
+    #         widget.destroy()
+
+    #     figure.set_size_inches(6, 4)
+    #     canvas = FigureCanvasTkAgg(figure, master=self.output_canvas)
+    #     canvas_widget = canvas.get_tk_widget()
+    #     canvas_widget.pack(fill="both", expand=True)
+    #     canvas_widget.config(width=600, height=400)
+    #     canvas.draw()
+    
     # def show_metrices(self, selected_metric):
-    #     raw_path = self.latest_model()
-    #     if not raw_path:
+    #     # raw_path = self.latest_model()
+    #     if not self.master.metrices_path:
     #         messagebox.showerror("Error", "No model found.")
     #         return
     #     else:
     #         if selected_metric == "Confusion Matrix":
     #             self.output_canvas.delete("all")
-    #             # Load the metric image using PIL
-    #             metric_path = os.path.normpath(os.path.join(raw_path, "confusion_matrix.png")).replace("\\", "/")
-    #             if os.path.exists(metric_path):
-    #                 metric_image = Image.open(metric_path)  # Open the image using PIL
-    #                 metric_image = metric_image.resize((667, 500), Image.Resampling.LANCZOS)
-    #                 metric_image = ImageTk.PhotoImage(metric_image)  # Convert to Tkinter-compatible image
-    #                 self.output_canvas.create_image(0,0,anchor = "nw",image = metric_image)
-    #                 self.output_canvas.image = metric_image
-    #             else:
-    #                 messagebox.showerror("Error", "Confusion Matrix image not found.")
+    #             self.plot_confusion_matrix()
+    #         elif selected_metric == "F1 Curve":
+    #             self.output_canvas.delete("all")
+    #             self.f1_curve()
+    #         elif selected_metric == "PR Curve":
+    #             self.output_canvas.delete("all")
+    #             self.precision_recall_plot()
+    #         elif selected_metric == "P Curve":
+    #             self.output_canvas.delete("all")
+    #             self.plot_precision_curve()
+    #         elif selected_metric == "R Curve":
+    #             self.output_canvas.delete("all")
+    #             self.plot_recall_curve()
     
-    def _embed_plot(self, figure):
-        for widget in self.output_canvas.winfo_children():
-            widget.destroy()
-
-        figure.set_size_inches(6, 4)
-        canvas = FigureCanvasTkAgg(figure, master=self.output_canvas)
-        canvas_widget = canvas.get_tk_widget()
-        canvas_widget.pack(fill="both", expand=True)
-        canvas_widget.config(width=600, height=400)
-        canvas.draw()
-    
-    def show_metrices(self, selected_metric):
-        # raw_path = self.latest_model()
-        if not self.master.metrices_path:
-            messagebox.showerror("Error", "No model found.")
-            return
-        else:
-            if selected_metric == "Confusion Matrix":
-                self.output_canvas.delete("all")
-                self.plot_confusion_matrix()
-            elif selected_metric == "F1 Curve":
-                self.output_canvas.delete("all")
-                self.f1_curve()
-            elif selected_metric == "PR Curve":
-                self.output_canvas.delete("all")
-                self.precision_recall_plot()
-            elif selected_metric == "P Curve":
-                self.output_canvas.delete("all")
-                self.plot_precision_curve()
-            elif selected_metric == "R Curve":
-                self.output_canvas.delete("all")
-                self.plot_recall_curve()
-    
-    def load_data(self):
-        with open(self.master.metrices_path, 'r') as json_file:
-            curves_data = json.load(json_file)
+    # def load_data(self):
+    #     with open(self.master.metrices_path, 'r') as json_file:
+    #         curves_data = json.load(json_file)
         
         
-        self.precision_recall = curves_data['Precision-Recall']
-        self.f1_confidence = curves_data['F1-Confidence']
-        self.precision_confidence = curves_data['Precision-Confidence']
-        self.recall_confidence = curves_data['Recall-Confidence']
+    #     self.precision_recall = curves_data['Precision-Recall']
+    #     self.f1_confidence = curves_data['F1-Confidence']
+    #     self.precision_confidence = curves_data['Precision-Confidence']
+    #     self.recall_confidence = curves_data['Recall-Confidence']
 
-    def precision_recall_plot(self):
-        self.load_data()
+    # def precision_recall_plot(self):
+    #     self.load_data()
 
-        fig, ax = plt.subplots(figsize=(10, 6))
+    #     fig, ax = plt.subplots(figsize=(10, 6))
 
-        ax.plot(self.precision_recall, self.f1_confidence, label='F1-Confidence(B)')
-        ax.plot(self.precision_recall, self.precision_confidence, label='Precision-Confidence(B)')
-        ax.plot(self.precision_recall, self.recall_confidence, label='Recall-Confidence(B)')
+    #     ax.plot(self.precision_recall, self.f1_confidence, label='F1-Confidence(B)')
+    #     ax.plot(self.precision_recall, self.precision_confidence, label='Precision-Confidence(B)')
+    #     ax.plot(self.precision_recall, self.recall_confidence, label='Recall-Confidence(B)')
 
-        ax.set_xlabel('Threshold')
-        ax.set_ylabel('Score')
-        ax.set_title('Precision-Recall Curves')
-        ax.legend(loc='best')
-        ax.grid(True)
+    #     ax.set_xlabel('Threshold')
+    #     ax.set_ylabel('Score')
+    #     ax.set_title('Precision-Recall Curves')
+    #     ax.legend(loc='best')
+    #     ax.grid(True)
 
-        self._embed_plot(fig)
+    #     self._embed_plot(fig)
 
-    def f1_curve(self):
-        self.load_data()
-        precision = self.precision_confidence
-        recall = self.recall_confidence
-        thresholds = self.precision_recall
+    # def f1_curve(self):
+    #     self.load_data()
+    #     precision = self.precision_confidence
+    #     recall = self.recall_confidence
+    #     thresholds = self.precision_recall
         
-        # Calculate F1 scores for each threshold
-        f1_scores = 2 * (np.array(precision) * np.array(recall)) / (np.array(precision) + np.array(recall))
+    #     # Calculate F1 scores for each threshold
+    #     f1_scores = 2 * (np.array(precision) * np.array(recall)) / (np.array(precision) + np.array(recall))
         
-        # Handle cases where precision + recall = 0 (avoid division by zero)
-        f1_scores = np.nan_to_num(f1_scores, nan=0.0)  # Set NaN to 0
+    #     # Handle cases where precision + recall = 0 (avoid division by zero)
+    #     f1_scores = np.nan_to_num(f1_scores, nan=0.0)  # Set NaN to 0
 
-        # Create a plot for the F1 curve
-        fig, ax = plt.subplots(figsize=(10, 6))
+    #     # Create a plot for the F1 curve
+    #     fig, ax = plt.subplots(figsize=(10, 6))
 
-        ax.plot(thresholds, f1_scores, label='F1 Score')
+    #     ax.plot(thresholds, f1_scores, label='F1 Score')
 
-        ax.set_xlabel('Threshold')
-        ax.set_ylabel('F1 Score')
-        ax.set_title('F1 Score vs Threshold')
-        ax.legend(loc='best')
-        ax.grid(True)
+    #     ax.set_xlabel('Threshold')
+    #     ax.set_ylabel('F1 Score')
+    #     ax.set_title('F1 Score vs Threshold')
+    #     ax.legend(loc='best')
+    #     ax.grid(True)
 
-        self._embed_plot(fig) 
+    #     self._embed_plot(fig) 
 
-    def plot_confusion_matrix(self):
-        self.load_data()
+    # def plot_confusion_matrix(self):
+    #     self.load_data()
 
-        fig, ax = plt.subplots(figsize=(10, 6))
+    #     fig, ax = plt.subplots(figsize=(10, 6))
 
-        # Plot the precision, recall, and F1 confidence scores at different thresholds
-        ax.plot(self.precision_recall, self.f1_confidence, label='F1-Confidence')
-        ax.plot(self.precision_recall, self.precision_confidence, label='Precision-Confidence')
-        ax.plot(self.precision_recall, self.recall_confidence, label='Recall-Confidence')
+    #     # Plot the precision, recall, and F1 confidence scores at different thresholds
+    #     ax.plot(self.precision_recall, self.f1_confidence, label='F1-Confidence')
+    #     ax.plot(self.precision_recall, self.precision_confidence, label='Precision-Confidence')
+    #     ax.plot(self.precision_recall, self.recall_confidence, label='Recall-Confidence')
 
-        # Set labels and title for the plot
-        ax.set_xlabel('Threshold')
-        ax.set_ylabel('Score')
-        ax.set_title('Precision-Recall Curves')
+    #     # Set labels and title for the plot
+    #     ax.set_xlabel('Threshold')
+    #     ax.set_ylabel('Score')
+    #     ax.set_title('Precision-Recall Curves')
         
-        # Show a legend and grid
-        ax.legend(loc='best')
-        ax.grid(True)
+    #     # Show a legend and grid
+    #     ax.legend(loc='best')
+    #     ax.grid(True)
 
-        # Display the plot
-        self._embed_plot(fig)
+    #     # Display the plot
+    #     self._embed_plot(fig)
 
     
 
