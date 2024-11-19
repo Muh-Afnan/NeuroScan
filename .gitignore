@@ -12,7 +12,7 @@ my_database.sqlite
 dataset/
 
 # Ignore the runs folder and its contents
-runs/
+# runs/
 
 .idea
 .idea/
