@@ -20,7 +20,7 @@ runs/
 my_database
 my_database.sqlite
 dataset/
-runs/
+# runs/
 
 # Distribution / packaging
 .Python
