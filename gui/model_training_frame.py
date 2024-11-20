@@ -101,8 +101,8 @@ class modeltrainingscreen(tk.Frame):
         self.save_button.grid(row=11, column=1, padx=10, pady=10, sticky="w")
     
     def latest_model(self):
-        # self.metrices_path = "D:/Project/NeuroScan/runs/detect"
-        self.metrices_path = "D:/Machine Learning Projects/NeuroScan/runs/detect"
+        self.metrices_path = "D:/Project/NeuroScan/runs/detect"
+        # self.metrices_path = "D:/Machine Learning Projects/NeuroScan/runs/detect"
         
         # Check if the path exists
         if not os.path.exists(self.metrices_path):
