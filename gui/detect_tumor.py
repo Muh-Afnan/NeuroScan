@@ -20,7 +20,7 @@ class DetectTumor(tk.Frame):
         self.back_button = tk.Button(self.center_frame, text="Back", command=self.callback_mainscreen)
         self.back_button.pack()
 
-        self.canvas = tk.Canvas(self.center_frame, width= 139, height = 132)
+        self.canvas = tk.Canvas(self.center_frame, width= 139*2, height = 132*2)
         self.canvas.pack(pady=10)
 
         self.result_label = tk.Label(self.center_frame,text = "Select your Image", font = ("Arial",14))
@@ -45,7 +45,7 @@ class DetectTumor(tk.Frame):
             image = cv2.imread(image_file)
             image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
             pil_image = Image.fromarray(image_rgb)
-            pil_image = pil_image.resize((139,132))
+            pil_image = pil_image.resize(((139*2),(132*2)))
             self.tk_image = ImageTk.PhotoImage(pil_image)
             self.canvas.create_image(0,0, anchor = tk.NW, image=self.tk_image)
             self.result_label.config(text="Image Selected")
@@ -75,7 +75,10 @@ class DetectTumor(tk.Frame):
         #         # Draw bounding box on canvas
         #         self.canvas.create_rectangle(x, y, x + w, y + h, outline="red", width=2)
         #         self.canvas.create_text(x, y - 10, anchor=tk.NW, text=label_text, fill="red", font=("Arial", 10, "bold"))
-        image_rgb, processed_results, labels = model.predict()
+        # image_rgb, processed_results, labels = model.predict()
+        image = model.predict()
+        image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
 
         # Convert image to a Tkinter-compatible format
         pil_image = Image.fromarray(image_rgb)
@@ -84,15 +87,15 @@ class DetectTumor(tk.Frame):
         self.canvas.image = tk_image  # Keep a reference
 
         # Update result label text
-        self.result_label.config(text="Detections: " + ", ".join(set([res["label"] for res in processed_results])))
+        # self.result_label.config(text="Detections: " + ", ".join(set([res["label"] for res in processed_results])))
 
         # Draw bounding boxes on the canvas
-        for result in processed_results:
-            x, y, w, h = result["bounding_box"]
-            confidence = result["confidence"]
-            label_text = f"{result['label']}: {confidence:.2f}"
+        # for result in processed_results:
+        #     x, y, w, h = result["bounding_box"]
+        #     confidence = result["confidence"]
+        #     label_text = f"{result['label']}: {confidence:.2f}"
 
-            # Draw rectangle and label on canvas
-            self.canvas.create_rectangle(x, y, x + w, y + h, outline="red", width=2)
-            self.canvas.create_text(x, y - 10, anchor=tk.NW, text=label_text, fill="red", font=("Arial", 10, "bold"))
+        #     # Draw rectangle and label on canvas
+        #     self.canvas.create_rectangle(x, y, x + w, y + h, outline="red", width=2)
+        #     self.canvas.create_text(x, y - 10, anchor=tk.NW, text=label_text, fill="red", font=("Arial", 10, "bold"))
         
