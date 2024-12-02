@@ -36,11 +36,14 @@ class MainScreen(tk.Frame):
         button_style_large = {"font": ("Arial", 14), "width": 15, "height": 2, "padx": 10, "pady": 10}
 
         # Buttons create karte hain aur unko button_frame mein arrange karte hain
-        self.button_train_model = tk.Button(button_frame, text="Train Model", **button_style_large, command=self.show_train_frame)
-        self.button_train_model.grid(row=0, column=0, padx=10, pady=10)
 
-        self.button_test_model = tk.Button(button_frame, text="Test Model", **button_style_large, command=self.test_model)
-        self.button_test_model.grid(row=0, column=1, padx=10, pady=10)
+        data = self.master.userdb.get_logged_in_user()
+        if data['user_type'] == 'admin':
+            self.button_train_model = tk.Button(button_frame, text="Train Model", **button_style_large, command=self.show_train_frame)
+            self.button_train_model.grid(row=0, column=0, padx=10, pady=10)
+
+            self.button_test_model = tk.Button(button_frame, text="Test Model", **button_style_large, command=self.test_model)
+            self.button_test_model.grid(row=0, column=1, padx=10, pady=10)
 
         # self.button_generate_matrix = tk.Button(button_frame, text="Confusion Matrix", **button_style_large, command=self.generate_matrix)
         # self.button_generate_matrix.grid(row=1, column=0, padx=10, pady=10)

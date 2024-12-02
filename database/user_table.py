@@ -1,25 +1,49 @@
 import sqlite3
 import bcrypt
-from .database import DB_NAME
+from .database import DB_PATH
 
 class UserDatabase:
     def __init__(self):
-        self.db_name = DB_NAME
+        self.db_name = DB_PATH
         self.conn = sqlite3.connect(self.db_name)
         self.cursor = self.conn.cursor()
         self.logged_in_user = None  # Store logged-in user
         self.create_table()
 
     def create_table(self):
-        self.cursor.execute('''
+        self.cursor.execute(''' 
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 username TEXT UNIQUE NOT NULL,
                 password TEXT NOT NULL,
                 label_security_question TEXT NOT NULL,
-                security_answer TEXT NOT NULL
+                security_answer TEXT NOT NULL,
+                user_type TEXT CHECK(user_type IN ('admin', 'user')) NOT NULL
             )
         ''')
+        self.conn.commit()
+
+        self.cursor.execute("SELECT COUNT(*) FROM users")
+        if self.cursor.fetchone()[0] == 0:
+            self.create_default_users()
+
+
+    def create_default_users(self):
+        # Create the hashed password
+        admin_password = bcrypt.hashpw('admin'.encode('utf-8'), bcrypt.gensalt())
+        user_password = bcrypt.hashpw('user'.encode('utf-8'), bcrypt.gensalt())
+
+        # Insert admin and user
+        self.cursor.execute('''
+            INSERT INTO users (username, password, label_security_question, security_answer, user_type)
+            VALUES (?, ?, ?, ?, ?)
+        ''', ('admin', admin_password, 'What was your first car?', 'admin', 'admin'))
+        
+        self.cursor.execute('''
+            INSERT INTO users (username, password, label_security_question, security_answer, user_type)
+            VALUES (?, ?, ?, ?, ?)
+        ''', ('user', user_password, 'What was your first car?', 'user', 'user'))
+        
         self.conn.commit()
 
     def insert_user(self, username, password, label_security_question, security_answer):
@@ -27,8 +51,9 @@ class UserDatabase:
         try:
             self.cursor.execute('''
                 INSERT INTO users (username, password, label_security_question, security_answer)
-                VALUES (?, ?, ?, ?)
-            ''', (username, hashed_password, label_security_question, security_answer))
+                INSERT INTO users (username, password, label_security_question, security_answer, user_type)
+                VALUES (?, ?, ?, ?, ?)
+            ''', (username, hashed_password, label_security_question, security_answer, "user"))
             self.conn.commit()
             return {
                 "status": True,
@@ -53,7 +78,8 @@ class UserDatabase:
                     'id': user[0],
                     'username': user[1],
                     'label_security_question': user[3],
-                    'security_answer': user[4]
+                    'security_answer': user[4],
+                    'user_type': user[5]
                 }
                 return {
                     "status": True,
