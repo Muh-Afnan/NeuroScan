@@ -82,9 +82,12 @@ class DetectTumor(tk.Frame):
 
         # Convert image to a Tkinter-compatible format
         pil_image = Image.fromarray(image_rgb)
+        pil_image = pil_image.resize(((139*2),(132*2)))
         tk_image = ImageTk.PhotoImage(pil_image)
         self.canvas.create_image(0, 0, anchor=tk.NW, image=tk_image)
         self.canvas.image = tk_image  # Keep a reference
+        # new_size = ((139*2),(132*2))
+        # image.resize(new_size, image.ANTIALIAS)
 
         # Update result label text
         # self.result_label.config(text="Detections: " + ", ".join(set([res["label"] for res in processed_results])))
