@@ -29,15 +29,17 @@ class App(tk.Tk):
         self.model_path = ""
         
         self.path = "C:/"
-        self.path = os.path.normpath(os.path.join(self.path, "NeuroScan Config")).replace("\\","/")
+        self.path = os.path.normpath(os.path.join(self.path, "NeuroScan")).replace("\\","/")
         if not os.path.exists(self.path):
             os.mkdir(self.path)
         
-        # # self.saved_model_path = "D:/Machine Learning Projects/NeuroScan/dataset/Model/tumor_detection_model.pt"
-        # self.saved_model_path = "D:/Project/NeuroScan/dataset/Model/tumor_detection_model.pt"
         self.saved_model_path = os.path.normpath(os.path.join(self.path, "tumor_detection_model.pt")).replace("\\", "/")
         self.yaml_path = os.path.normpath(os.path.join(self.path,"Brain_Tumor_Detection.yaml")).replace('\\', '/')
-        self.metrices_path = os.path.normpath(os.path.join(self.path,"yolo_data.json")).replace('\\', '/')
+        # self.metrices_path = os.path.normpath(os.path.join(self.path,"yolo_data.json")).replace('\\', '/')
+        self.metrices_path = os.path.join(self.path,"Metrices/")
+        if not os.path.exists(self.metrices_path):
+            os.mkdir(self.metrices_path)
+        self.tumor_detection_model_path = os.path.normpath(os.path.join(self.metrices_path,"tumor_detection_model")).replace('\\', '/')
 
         self.detect_tumor_image = ""
 

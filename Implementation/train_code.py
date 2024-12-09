@@ -35,8 +35,6 @@ class load_dataset():
         if os.path.exists(self.mainapp_obj.dataset_path) and os.listdir(self.mainapp_obj.dataset_path):
             self.mainapp_obj.training_dir = os.path.normpath(os.path.join(self.mainapp_obj.dataset_path, 'Training_Dataset')).replace('\\','/')
             self.mainapp_obj.validation_dir = os.path.normpath(os.path.join(self.mainapp_obj.dataset_path, 'Validation_Dataset')).replace('\\','/')
-            self.mainapp_obj.testing_dir = os.path.normpath(os.path.join(self.mainapp_obj.dataset_path, 'Testing_Dataset')).replace('\\','/')
-            self.mainapp_obj.model_path = os.path.normpath(os.path.join(self.mainapp_obj.dataset_path, 'Model')).replace('\\','/')
 
             
             self.dataset_split()
@@ -60,19 +58,17 @@ class load_dataset():
         # Create directories for train/val/test splits for images and labels
         os.makedirs(self.mainapp_obj.training_dir, exist_ok=True)
         os.makedirs(self.mainapp_obj.validation_dir, exist_ok=True)
-        os.makedirs(self.mainapp_obj.testing_dir, exist_ok=True)
         # os.makedirs(self.mainapp_obj.model_path, exist_ok=True)
 
 
         # Calculate dataset splits
         no_of_dataset = len(images)
         training_split = int(0.7 * no_of_dataset)
-        validation_split = int(0.85 * no_of_dataset)
 
         # Split images into training, validation, and testing sets
         training_images = images[:training_split]
-        validation_images = images[training_split:validation_split]
-        testing_images = images[validation_split:]
+        validation_images = images[training_split:]
+
 
         # Function to move image and corresponding label files
         def move_file(image_list, main_directory):
@@ -104,15 +100,8 @@ class load_dataset():
         # Move files into the respective train/val/test directories
         move_file(training_images, self.mainapp_obj.training_dir)
         move_file(validation_images, self.mainapp_obj.validation_dir)
-        move_file(testing_images, self.mainapp_obj.testing_dir)
     
         self.create_yaml_file(yaml_filename="Brain_Tumor_Detection.yaml")
-        print(f"Dataset Path{self.mainapp_obj.dataset_path}")
-        print(f"Training Dir{self.mainapp_obj.training_dir}")
-        print(f"Validation Path{self.mainapp_obj.validation_dir}")
-        print(f"Testing Path{self.mainapp_obj.testing_dir}")
-        print(f"Model Path{self.mainapp_obj.model_path}")
-        print(f"Yaml_path Path{self.mainapp_obj.yaml_path}")
-        print(f"Saved Model Path{self.mainapp_obj.saved_model_path}")        
+            
 
         messagebox.showinfo("Success","Dataset split completed successfully.")

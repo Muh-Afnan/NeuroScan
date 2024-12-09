@@ -41,7 +41,7 @@ class modeltrainingscreen(tk.Frame):
         self.metric_option = tk.StringVar(value="Select Metric")
         self.metric_dropdown = ttk.OptionMenu(
             self.left_frame, self.metric_option, "Select Metric",
-            "Confusion Matrix", "F1 Curve", "PR Curve", "P Curve", "R Curve",
+            "Confusion Matrix",
             command=self.show_metrices  # Callback to update canvas
         )
         self.metric_dropdown.pack(pady=10)
@@ -101,8 +101,7 @@ class modeltrainingscreen(tk.Frame):
         self.save_button.grid(row=11, column=1, padx=10, pady=10, sticky="w")
     
     def latest_model(self):
-        self.metrices_path = "C:/NeuroScan /runs/detect"
-        # self.metrices_path = "D:/Machine Learning Projects/NeuroScan/runs/detect"
+        self.metrices_path = self.master.metrices_path
         
         # Check if the path exists
         if not os.path.exists(self.metrices_path):
@@ -129,6 +128,7 @@ class modeltrainingscreen(tk.Frame):
         self.output_canvas.delete("all")
         # Load the metric image using PIL
         metric_path = os.path.normpath(os.path.join(self.raw_path, plot)).replace("\\", "/")
+        print(metric_path)
         if os.path.exists(metric_path):
             metric_image = Image.open(metric_path)  # Open the image using PIL
             metric_image = metric_image.resize((667, 500), Image.Resampling.LANCZOS)
@@ -146,177 +146,16 @@ class modeltrainingscreen(tk.Frame):
         else:
             if selected_metric == "Confusion Matrix":
                 self.canvas_plot("confusion_matrix.png")
-            elif selected_metric == "F1 Curve":
-                self.canvas_plot("F1_curve.png")
-            elif selected_metric == "P Curve":
-                self.canvas_plot("P_curve.png")
-            elif selected_metric == "PR Curve":
-                self.canvas_plot("PR_curve.png")
-            elif selected_metric == "R Curve":
-                self.canvas_plot("R_curve.png")
-            else:
-                return
-
-    # def _embed_plot(self, figure):
-    #     for widget in self.output_canvas.winfo_children():
-    #         widget.destroy()
-
-    #     figure.set_size_inches(6, 4)
-    #     canvas = FigureCanvasTkAgg(figure, master=self.output_canvas)
-    #     canvas_widget = canvas.get_tk_widget()
-    #     canvas_widget.pack(fill="both", expand=True)
-    #     canvas_widget.config(width=600, height=400)
-    #     canvas.draw()
-    
-    # def show_metrices(self, selected_metric):
-    #     # raw_path = self.latest_model()
-    #     if not self.master.metrices_path:
-    #         messagebox.showerror("Error", "No model found.")
-    #         return
-    #     else:
-    #         if selected_metric == "Confusion Matrix":
-    #             self.output_canvas.delete("all")
-    #             self.plot_confusion_matrix()
-    #         elif selected_metric == "F1 Curve":
-    #             self.output_canvas.delete("all")
-    #             self.f1_curve()
-    #         elif selected_metric == "PR Curve":
-    #             self.output_canvas.delete("all")
-    #             self.precision_recall_plot()
-    #         elif selected_metric == "P Curve":
-    #             self.output_canvas.delete("all")
-    #             self.plot_precision_curve()
-    #         elif selected_metric == "R Curve":
-    #             self.output_canvas.delete("all")
-    #             self.plot_recall_curve()
-    
-    # def load_data(self):
-    #     with open(self.master.metrices_path, 'r') as json_file:
-    #         curves_data = json.load(json_file)
-        
-        
-    #     self.precision_recall = curves_data['Precision-Recall']
-    #     self.f1_confidence = curves_data['F1-Confidence']
-    #     self.precision_confidence = curves_data['Precision-Confidence']
-    #     self.recall_confidence = curves_data['Recall-Confidence']
-
-    # def precision_recall_plot(self):
-    #     self.load_data()
-
-    #     fig, ax = plt.subplots(figsize=(10, 6))
-
-    #     ax.plot(self.precision_recall, self.f1_confidence, label='F1-Confidence(B)')
-    #     ax.plot(self.precision_recall, self.precision_confidence, label='Precision-Confidence(B)')
-    #     ax.plot(self.precision_recall, self.recall_confidence, label='Recall-Confidence(B)')
-
-    #     ax.set_xlabel('Threshold')
-    #     ax.set_ylabel('Score')
-    #     ax.set_title('Precision-Recall Curves')
-    #     ax.legend(loc='best')
-    #     ax.grid(True)
-
-    #     self._embed_plot(fig)
-
-    # def f1_curve(self):
-    #     self.load_data()
-    #     precision = self.precision_confidence
-    #     recall = self.recall_confidence
-    #     thresholds = self.precision_recall
-        
-    #     # Calculate F1 scores for each threshold
-    #     f1_scores = 2 * (np.array(precision) * np.array(recall)) / (np.array(precision) + np.array(recall))
-        
-    #     # Handle cases where precision + recall = 0 (avoid division by zero)
-    #     f1_scores = np.nan_to_num(f1_scores, nan=0.0)  # Set NaN to 0
-
-    #     # Create a plot for the F1 curve
-    #     fig, ax = plt.subplots(figsize=(10, 6))
-
-    #     ax.plot(thresholds, f1_scores, label='F1 Score')
-
-    #     ax.set_xlabel('Threshold')
-    #     ax.set_ylabel('F1 Score')
-    #     ax.set_title('F1 Score vs Threshold')
-    #     ax.legend(loc='best')
-    #     ax.grid(True)
-
-    #     self._embed_plot(fig) 
-
-    # def plot_confusion_matrix(self):
-    #     self.load_data()
-
-    #     fig, ax = plt.subplots(figsize=(10, 6))
-
-    #     # Plot the precision, recall, and F1 confidence scores at different thresholds
-    #     ax.plot(self.precision_recall, self.f1_confidence, label='F1-Confidence')
-    #     ax.plot(self.precision_recall, self.precision_confidence, label='Precision-Confidence')
-    #     ax.plot(self.precision_recall, self.recall_confidence, label='Recall-Confidence')
-
-    #     # Set labels and title for the plot
-    #     ax.set_xlabel('Threshold')
-    #     ax.set_ylabel('Score')
-    #     ax.set_title('Precision-Recall Curves')
-        
-    #     # Show a legend and grid
-    #     ax.legend(loc='best')
-    #     ax.grid(True)
-
-    #     # Display the plot
-    #     self._embed_plot(fig)
-
-    
-
-    # def plot_confusion_matrix(self):
-    #     self.load_data()
-    #     cm = confusion_matrix(self.y_true, self.y_pred)
-    #     fig, ax = plt.subplots()
-    #     cax = ax.matshow(cm, cmap='Blues')
-    #     fig.colorbar(cax)
-    #     ax.set_xlabel('Predicted')
-    #     ax.set_ylabel('True')
-    #     ax.set_title('Confusion Matrix')
-    #     self._embed_plot(fig)
-
-    # def plot_precision_recall_curve(self):
-    #     precision, recall, _ = precision_recall_curve(self.y_true, self.y_pred)
-        
-    #     plt.plot(recall, precision, marker='.', label='Precision-Recall curve')
-    #     plt.xlabel('Recall')
-    #     plt.ylabel('Precision')
-    #     plt.title('Precision-Recall Curve')
-    #     plt.legend()
-    #     self._embed_plot(plt.gcf())
-    
-    # def plot_f1_score_curve(self):
-    #     precision, recall, _ = precision_recall_curve(self.y_true, self.y_pred)
-    #     f1_scores = 2 * (precision * recall) / (precision + recall)
-        
-    #     plt.plot(recall, f1_scores, marker='.', label='F1 Score Curve')
-    #     plt.xlabel('Recall')
-    #     plt.ylabel('F1 Score')
-    #     plt.title('F1 Score Curve')
-    #     plt.legend()
-    #     self._embed_plot(plt.gcf())
-    
-    # def plot_precision_curve(self):
-    #     precision, _, _ = precision_recall_curve(self.y_true, self.y_pred)
-        
-    #     plt.plot(precision, label='Precision Curve')
-    #     plt.xlabel('Threshold')
-    #     plt.ylabel('Precision')
-    #     plt.title('Precision Curve')
-    #     plt.legend()
-    #     self._embed_plot(plt.gcf())
-    
-    # def plot_recall_curve(self):
-    #     _, recall, _ = precision_recall_curve(self.y_true, self.y_pred)
-        
-    #     plt.plot(recall, label='Recall Curve')
-    #     plt.xlabel('Threshold')
-    #     plt.ylabel('Recall')
-    #     plt.title('Recall Curve')
-    #     plt.legend()
-    #     self._embed_plot(plt.gcf())
+            # elif selected_metric == "F1 Curve":
+            #     self.canvas_plot("F1_curve.png")
+            # elif selected_metric == "P Curve":
+            #     self.canvas_plot("P_curve.png")
+            # elif selected_metric == "PR Curve":
+            #     self.canvas_plot("PR_curve.png")
+            # elif selected_metric == "R Curve":
+            #     self.canvas_plot("R_curve.png")
+            # else:
+            #     return
 
     def start_training(self):
         epochs = self.epochs.get()
