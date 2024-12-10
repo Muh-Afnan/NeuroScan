@@ -93,5 +93,3 @@ class RegisterFrame(tk.Frame):  # RegisterFrame class define karte hain jo tk.Fr
         self.entry_security_answer.delete(0, 'end')
         self.default_val.set("Select a question")
 
-        # Future implementation: User ko register karne ke baad login screen dikhani hai
-        # self.show_login_callback()

@@ -1,6 +1,5 @@
 import tkinter as tk  # Tkinter library ko import karte hain jo GUI banane ke liye use hoti hai
 from tkinter import ttk, messagebox  # ttk module ko import karte hain jo additional GUI widgets provide karta hai
-# import database.query as Query  # Database queries ke liye custom Query module ko import karte hain
 
 class LoginFrame(tk.Frame):
     def __init__(self, master, show_register_callback, show_main_screen_callback, show_recover_password_callback):

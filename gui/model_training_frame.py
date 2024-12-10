@@ -41,7 +41,7 @@ class modeltrainingscreen(tk.Frame):
         self.metric_option = tk.StringVar(value="Select Metric")
         self.metric_dropdown = ttk.OptionMenu(
             self.left_frame, self.metric_option, "Select Metric",
-            "Confusion Matrix",
+            "Confusion Matrix","F1 Curve", "P Curve", "R_curve","PR Curve",
             command=self.show_metrices  # Callback to update canvas
         )
         self.metric_dropdown.pack(pady=10)
@@ -128,7 +128,6 @@ class modeltrainingscreen(tk.Frame):
         self.output_canvas.delete("all")
         # Load the metric image using PIL
         metric_path = os.path.normpath(os.path.join(self.raw_path, plot)).replace("\\", "/")
-        print(metric_path)
         if os.path.exists(metric_path):
             metric_image = Image.open(metric_path)  # Open the image using PIL
             metric_image = metric_image.resize((667, 500), Image.Resampling.LANCZOS)
@@ -146,16 +145,16 @@ class modeltrainingscreen(tk.Frame):
         else:
             if selected_metric == "Confusion Matrix":
                 self.canvas_plot("confusion_matrix.png")
-            # elif selected_metric == "F1 Curve":
-            #     self.canvas_plot("F1_curve.png")
-            # elif selected_metric == "P Curve":
-            #     self.canvas_plot("P_curve.png")
-            # elif selected_metric == "PR Curve":
-            #     self.canvas_plot("PR_curve.png")
-            # elif selected_metric == "R Curve":
-            #     self.canvas_plot("R_curve.png")
-            # else:
-            #     return
+            elif selected_metric == "F1 Curve":
+                self.canvas_plot("F1_curve.png")
+            elif selected_metric == "P Curve":
+                self.canvas_plot("P_curve.png")
+            elif selected_metric == "PR Curve":
+                self.canvas_plot("PR_curve.png")
+            elif selected_metric == "R Curve":
+                self.canvas_plot("R_curve.png")
+            else:
+                return
 
     def start_training(self):
         epochs = self.epochs.get()

@@ -83,7 +83,7 @@ class UserDatabase:
                 }
                 return {
                     "status": True,
-                    "msg": "Succefully Login"
+                    "msg": "Successfully Login"
                 }
             else:
                 return {

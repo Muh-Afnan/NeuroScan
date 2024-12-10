@@ -1,12 +1,6 @@
 import tkinter as tk
-from tkinter import ttk, filedialog, messagebox
 from PIL import ImageTk
 from Implementation.train_code import load_dataset
-# from Implementation.backend import load_images_from_folder, augment_image
-# from gui.preprocessing_frame import PreprocessingFrame
-# from gui.augment_frame import AugmentFrame
-# from gui.model_training_frame import TrainModelScreen
-import os
 
 class trainmodelframe(tk.Frame):
     def __init__(self, mainapp, show_main_screen, show_model_training_frame):
@@ -21,10 +15,6 @@ class trainmodelframe(tk.Frame):
         self.callback_main_Screen = show_main_screen
         self.show_model_training_frame = show_model_training_frame
 
-        # # Initialize dataset path, image paths, and loaded images
-        # self.master.dataset_path = ""
-        # self.master.image_paths = []
-        # self.master.loaded_images = []
         self.create_widgets()
 
     def create_widgets(self):
