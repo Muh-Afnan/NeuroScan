@@ -67,7 +67,7 @@ class modeltrainingscreen(tk.Frame):
 
         # Confidence Threshold
         tk.Label(right_frame, text="Confidence Threshold:").grid(row=5, column=0, sticky="e", padx=5, pady=5)
-        self.conf_threshold = tk.DoubleVar(value=0.5)
+        self.conf_threshold = tk.DoubleVar(value=0.4)
         tk.Entry(right_frame, textvariable=self.conf_threshold).grid(row=5, column=1, padx=5, pady=5, sticky="w")
 
         # NMS Threshold
@@ -77,7 +77,7 @@ class modeltrainingscreen(tk.Frame):
 
         # Momentum
         tk.Label(right_frame, text="Momentum:").grid(row=7, column=0, sticky="e", padx=5, pady=5)
-        self.momentum = tk.DoubleVar(value=0.937)
+        self.momentum = tk.DoubleVar(value=0.9)
         tk.Entry(right_frame, textvariable=self.momentum).grid(row=7, column=1, padx=5, pady=5, sticky="w")
 
         # Weight Decay

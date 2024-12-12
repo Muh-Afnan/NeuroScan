@@ -71,17 +71,67 @@ class load_dataset():
 
 
         # Function to move image and corresponding label files
-        def move_file(image_list, main_directory):
+        # def move_file(image_list, main_directory):
+        #     directory_images_path = os.path.join(main_directory, 'images')
+        #     directory_labels_path = os.path.join(main_directory, 'labels')
+        #     os.makedirs(directory_images_path, exist_ok=True)
+        #     os.makedirs(directory_labels_path, exist_ok=True)
+
+        #     missing_count = 0
+
+        #     for filename in image_list:
+        #         # Define source paths for image and corresponding label
+
+        #         image_src = os.path.join(images_path, filename)
+        #         label_file = filename.rsplit('.', 1)[0] + ".txt"
+        #         label_src = os.path.join(labels_path, label_file)
+                
+        #         # Define destination paths for image and label
+        #         image_dest = os.path.join(directory_images_path, filename)
+        #         label_dest = os.path.join(directory_labels_path, label_file)
+
+        #         # Check if label file exists and move both files
+        #         if os.path.exists(label_src):
+        #             # adding padding to image
+        #             image = cv2.imread(image_src)
+        #             padding = 7
+        #             padded_image = cv2.copyMakeBorder(image, padding, 0, 0, 0, cv2.BORDER_CONSTANT, value=[0, 0, 0])
+        #             padded_image = cv2.resize(416,416)
+        #             cv2.imwrite(image_dest, padded_image)
+
+        #             # adjusting label accordingly
+        #             original_height = 132
+        #             new_height = original_height + padding
+
+        #             with open(label_src, "r") as infile, open(label_src, "w") as outfile:
+        #                 for line in infile:
+        #                     class_id, x_center, y_center, width, height = map(float, line.split())
+                            
+        #                     # Adjust y_center and height for the new image height
+        #                     y_center_new = (y_center * original_height + padding / 2) / new_height
+        #                     height_new = height * original_height / new_height
+                            
+        #                     # Write adjusted labels
+        #                     outfile.write(f"{int(class_id)} {x_center:.6f} {y_center_new:.6f} {width:.6f} {height_new:.6f}\n")
+
+        #             # shutil.move(image_src, image_dest)
+        #             shutil.move(label_src, label_dest)
+        #         else:
+        #             missing_count +=1
+        def move_file(image_list, main_directory, images_path, labels_path):
+            # Create directories for images and labels
             directory_images_path = os.path.join(main_directory, 'images')
             directory_labels_path = os.path.join(main_directory, 'labels')
             os.makedirs(directory_images_path, exist_ok=True)
             os.makedirs(directory_labels_path, exist_ok=True)
 
             missing_count = 0
+            padding = 7
+            original_height = 132
+            new_height = original_height + padding
 
             for filename in image_list:
                 # Define source paths for image and corresponding label
-
                 image_src = os.path.join(images_path, filename)
                 label_file = filename.rsplit('.', 1)[0] + ".txt"
                 label_src = os.path.join(labels_path, label_file)
@@ -92,10 +142,38 @@ class load_dataset():
 
                 # Check if label file exists and move both files
                 if os.path.exists(label_src):
-                    shutil.move(image_src, image_dest)
-                    shutil.move(label_src, label_dest)
+                    try:
+                        # Add padding to image
+                        image = cv2.imread(image_src)
+                        if image is None:
+                            print(f"Failed to load image: {image_src}")
+                            missing_count += 1
+                            continue
+
+                        padded_image = cv2.copyMakeBorder(image, padding, 0, 0, 0, cv2.BORDER_CONSTANT, value=[0, 0, 0])
+                        padded_image = cv2.resize(padded_image, (416, 416))
+                        cv2.imwrite(image_dest, padded_image)
+
+                        # Adjust label coordinates
+                        temp_label_dest = label_dest + ".temp"
+                        with open(label_src, "r") as infile, open(temp_label_dest, "w") as outfile:
+                            for line in infile:
+                                class_id, x_center, y_center, width, height = map(float, line.split())
+                                
+                                # Adjust y_center and height for the new image height
+                                y_center_new = (y_center * original_height + padding) / new_height
+                                height_new = height * original_height / new_height
+                                
+                                # Write adjusted labels
+                                outfile.write(f"{int(class_id)} {x_center:.6f} {y_center_new:.6f} {width:.6f} {height_new:.6f}\n")
+                        
+                        # Replace the original label with the updated one
+                        os.replace(temp_label_dest, label_dest)
+                    except Exception as e:
+                        print(f"Error processing {filename}: {e}")
+                        missing_count += 1
                 else:
-                    missing_count +=1
+                    missing_count += 1
 
         # Move files into the respective train/val/test directories
         move_file(training_images, self.mainapp_obj.training_dir)
