@@ -19,14 +19,15 @@ class TrainModel:
         results = self.model.train(
             data=self.main_obj.yaml_path,
             epochs=epochs,
-            imgsz=(132,139),
+            imgsz=(416,416),
             batch=batch_size,
             lr0=learning_rate,
             momentum=momentum,
             weight_decay=weight_decay,
             conf=conf_threshold,
             iou=nms_threshold,
-            name=self.main_obj.tumor_detection_model_path
+            name=self.main_obj.tumor_detection_model_path,
+            patience=10
         )
         messagebox.showinfo("Success", "Model Trained Successfully")
 
@@ -187,7 +188,7 @@ class TrainModel:
         image = cv2.imread(self.main_obj.detect_tumor)
         if image is None:
             raise FileNotFoundError(f"Image at path '{self.main_obj.detect_tumor}' could not be loaded.")
-
+        
         # Run YOLO inference
         results = model(image)
         detections = results[0].boxes  # Bounding boxes

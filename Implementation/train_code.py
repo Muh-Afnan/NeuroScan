@@ -118,7 +118,7 @@ class load_dataset():
         #             shutil.move(label_src, label_dest)
         #         else:
         #             missing_count +=1
-        def move_file(image_list, main_directory, images_path, labels_path):
+        def move_file(image_list, main_directory):
             # Create directories for images and labels
             directory_images_path = os.path.join(main_directory, 'images')
             directory_labels_path = os.path.join(main_directory, 'labels')
@@ -153,6 +153,7 @@ class load_dataset():
                         padded_image = cv2.copyMakeBorder(image, padding, 0, 0, 0, cv2.BORDER_CONSTANT, value=[0, 0, 0])
                         padded_image = cv2.resize(padded_image, (416, 416))
                         cv2.imwrite(image_dest, padded_image)
+                        print(f"Image {padded_image} is padded sucessfully")
 
                         # Adjust label coordinates
                         temp_label_dest = label_dest + ".temp"
@@ -169,6 +170,7 @@ class load_dataset():
                         
                         # Replace the original label with the updated one
                         os.replace(temp_label_dest, label_dest)
+                        print(f"Label {padded_image} is padded sucessfully")
                     except Exception as e:
                         print(f"Error processing {filename}: {e}")
                         missing_count += 1
