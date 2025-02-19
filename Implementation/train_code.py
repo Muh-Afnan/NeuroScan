@@ -185,3 +185,83 @@ class load_dataset():
             
 
         messagebox.showinfo("Success","Dataset split completed successfully.")
+
+
+
+import os
+import cv2
+import random
+import yaml
+import numpy as np
+import pandas as pd
+import multiprocessing
+from tkinter import filedialog, messagebox
+
+class LoadDataset:
+    def __init__(self, train_frame):
+        self.train_frame = train_frame
+        self.mainapp_obj = train_frame.mainapp_obj
+        self.select_directory()
+
+    def create_yaml_file(self):
+        yaml_content = {
+            "path": self.mainapp_obj.dataset_path,
+            "train": os.path.join(self.mainapp_obj.training_dir, 'images'),
+            "val": os.path.join(self.mainapp_obj.validation_dir, 'images'),
+            "nc": 3,
+            "names": ["No Tumor", "Benign tumor", "Malignant tumor"]
+        }
+        with open(self.mainapp_obj.yaml_path, "w") as file:
+            yaml.dump(yaml_content, file)
+
+    def select_directory(self):
+        self.mainapp_obj.dataset_path = filedialog.askdirectory(title="Select Dataset Folder")
+        if os.path.exists(self.mainapp_obj.dataset_path):
+            self.mainapp_obj.training_dir = os.path.join(self.mainapp_obj.dataset_path, 'Training_Dataset')
+            self.mainapp_obj.validation_dir = os.path.join(self.mainapp_obj.dataset_path, 'Validation_Dataset')
+            self.dataset_split()
+
+    def process_labels(self, lbl_src, lbl_dest, x_offset, y_offset, scale_factor):
+        df = pd.read_csv(lbl_src, sep=' ', header=None)
+        df.iloc[:, 1:] = ((df.iloc[:, 1:] * scale_factor) + [x_offset, y_offset]) / 416
+        df.to_csv(lbl_dest, sep=' ', index=False, header=False)
+
+    def move_files(self, image_list, dest_dir):
+        os.makedirs(os.path.join(dest_dir, 'images'), exist_ok=True)
+        os.makedirs(os.path.join(dest_dir, 'labels'), exist_ok=True)
+
+        def process_file(filename):
+            img_src = os.path.join(images_path, filename)
+            lbl_src = os.path.join(labels_path, filename.replace('.jpg', '.txt'))
+            img_dest = os.path.join(dest_dir, 'images', filename)
+            lbl_dest = os.path.join(dest_dir, 'labels', filename.replace('.jpg', '.txt'))
+
+            if os.path.exists(lbl_src):
+                image = cv2.imread(img_src)
+                if image is not None:
+                    height, width = image.shape[:2]
+                    padded_image = np.zeros((height, height, 3), dtype=np.uint8)
+                    padded_image[:, :width] = image
+                    padded_image = cv2.resize(padded_image, (416, 416))
+                    cv2.imwrite(img_dest, padded_image)
+
+                    scale_factor = 416 / height
+                    self.process_labels(lbl_src, lbl_dest, 0, 0, scale_factor)
+
+        with multiprocessing.Pool() as pool:
+            pool.map(process_file, image_list)
+
+    def dataset_split(self):
+        global images_path, labels_path
+        images_path = os.path.join(self.mainapp_obj.dataset_path, 'images')
+        labels_path = os.path.join(self.mainapp_obj.dataset_path, 'labels')
+        images = [img for img in os.listdir(images_path) if img.endswith(".jpg")]
+        random.shuffle(images)
+
+        train_images = images[:int(0.7 * len(images))]
+        val_images = images[int(0.7 * len(images)):] 
+
+        self.move_files(train_images, self.mainapp_obj.training_dir)
+        self.move_files(val_images, self.mainapp_obj.validation_dir)
+        self.create_yaml_file()
+        messagebox.showinfo("Success", "Dataset preprocessing and splitting completed successfully.")
