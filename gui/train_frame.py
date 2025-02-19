@@ -1,6 +1,6 @@
 import tkinter as tk
 from PIL import ImageTk
-from Implementation.train_code import load_dataset
+from Implementation.train_code import LoadDataset
 
 class trainmodelframe(tk.Frame):
     def __init__(self, mainapp, show_main_screen, show_model_training_frame):
@@ -50,12 +50,12 @@ class trainmodelframe(tk.Frame):
             return
     
         # Button to upload dataset
-        self.load_dataset = tk.Button(self.inner_frame, text="Load Dataset", **button_style_large, command=self.load_dataset)
+        self.load_dataset = tk.Button(self.inner_frame, text="Load Dataset", **button_style_large, command=self.LoadDataset)
         self.load_dataset.grid(row=3, column=0, padx=10, pady=10)
 
         # Button to select model
         self.start_training = tk.Button(self.inner_frame, text="Start Training", **button_style_large, command=self.show_model_training_frame)
         self.start_training.grid(row=3, column=1, padx=10, pady=10)
 
-    def load_dataset(self):
-        load_dataset(self)
+    def LoadDataset(self):
+        LoadDataset(self)
