@@ -57,12 +57,12 @@ class modeltrainingscreen(tk.Frame):
 
         # Batch Size
         tk.Label(right_frame, text="Batch Size:").grid(row=3, column=0, sticky="e", padx=5, pady=5)
-        self.batch_size = tk.IntVar(value=8)
+        self.batch_size = tk.IntVar(value=32)
         tk.Entry(right_frame, textvariable=self.batch_size).grid(row=3, column=1, padx=5, pady=5, sticky="w")
 
         # Epochs
         tk.Label(right_frame, text="Epochs:").grid(row=4, column=0, sticky="e", padx=5, pady=5)
-        self.epochs = tk.IntVar(value=10)
+        self.epochs = tk.IntVar(value=200)
         tk.Entry(right_frame, textvariable=self.epochs).grid(row=4, column=1, padx=5, pady=5, sticky="w")
 
         # Confidence Threshold

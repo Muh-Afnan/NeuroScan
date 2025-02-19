@@ -164,5 +164,3 @@ class UserDatabase:
 
     def close(self):
         self.conn.close()
-
-

@@ -20,44 +20,27 @@ class MainScreen(tk.Frame):
         self.configure_gui()  # GUI components ko configure karne ke liye method call karte hain
 
     def configure_gui(self):
-        """
-        Yeh method GUI components ko configure karne ke liye use hoti hai.
-        Isme labels aur buttons create aur arrange kiye jaate hain.
-        """
-        # Main title label create karte hain
-        self.label_title = tk.Label(self, text="Main Screen", font=("Arial", 24), pady=20)
-        self.label_title.pack()
-
-        # Buttons ke liye ek frame create karte hain
+        
         button_frame = tk.Frame(self)
-        button_frame.pack(pady=20)
+        button_frame.pack(pady=20, fill="x", expand=True)
 
-        # Button styles define karte hain
-        button_style_large = {"font": ("Arial", 14), "width": 15, "height": 2, "padx": 10, "pady": 10}
+        self.inner_frame = tk.Frame(button_frame)
+        self.inner_frame.pack(expand=True)
 
-        # Buttons create karte hain aur unko button_frame mein arrange karte hain
+        self.lable_title = tk.Label(self.inner_frame, text="Main Screen", font=("Arial",24), pady=20)
+        self.lable_title.grid(row=0, column=0, columnspan=3, padx=10, pady=10)
 
-        data = self.master.userdb.get_logged_in_user()
+        button_style_large = {"font": ("Arial",14), "width":15, "height":2, "padx":10, "pady":10}
+        data = self.master.userdb.get_logged_in_user()    # def configure_gui(self):
         if data['user_type'] == 'admin':
-            self.button_train_model = tk.Button(button_frame, text="Train Model", **button_style_large, command=self.show_train_frame)
-            self.button_train_model.grid(row=0, column=0, padx=10, pady=10)
+            self.button_train_model = tk.Button(self.inner_frame, text="Train Model", **button_style_large, command=self.show_train_frame)
+            self.button_train_model.grid(row=1, column=0, padx=10, pady=10)
 
-            self.button_test_model = tk.Button(button_frame, text="Test Model", **button_style_large, command=self.test_model)
-            self.button_test_model.grid(row=0, column=1, padx=10, pady=10)
+        self.button_detect_tumor = tk.Button(self.inner_frame, text="Detect Tumor", **button_style_large, command=self.show_detect_tumor)
+        self.button_detect_tumor.grid(row=1, column=1, padx=10, pady=10)
 
-        self.button_detect_tumor = tk.Button(button_frame, text="Detect Tumor", **button_style_large, command=self.show_detect_tumor)
-        self.button_detect_tumor.grid(row=1, column=0, padx=10, pady=10)
-
-        self.button_logout = tk.Button(button_frame, text="Logout", **button_style_large, command=self.logout)
-        self.button_logout.grid(row=1, column=1, padx=10, pady=10)
-
-
-    def test_model(self):
-        """
-        Test model button click hone par call hota hai.
-        Yeh method ek info message show karti hai jo model testing ke process ko indicate karta hai.
-        """
-        messagebox.showinfo("Test Model", "Testing model...")
+        self.button_logout = tk.Button(self.inner_frame, text="Logout", **button_style_large, command=self.logout)
+        self.button_logout.grid(row=1, column=2, padx=10, pady=10)
 
     def logout(self):
         """

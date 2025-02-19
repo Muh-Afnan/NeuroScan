@@ -25,6 +25,8 @@ class LoginFrame(tk.Frame):
         Yeh method GUI widgets create karta hai jo login screen par display honge.
         Widgets mein labels, entry fields, aur buttons shamil hain.
         """
+
+        self.config(bg="black")
         # Username label create karte hain aur window mein add karte hain
         self.label_username = tk.Label(self, text="Username")
         self.label_username.pack(pady=10)  # pady se vertical spacing add karte hain

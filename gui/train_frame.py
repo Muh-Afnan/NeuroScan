@@ -15,13 +15,14 @@ class trainmodelframe(tk.Frame):
         self.callback_main_Screen = show_main_screen
         self.show_model_training_frame = show_model_training_frame
 
-        self.create_widgets()
+        self.configure_gui()
 
-    def create_widgets(self):
+    def configure_gui(self):
         """
         Yeh method GUI widgets ko create aur arrange karne ke liye use hoti hai.
         Isme buttons aur labels create aur arrange kiye jaate hain.
         """
+
         # Create a frame to hold the buttons
         button_frame = tk.Frame(self)
         button_frame.pack(pady=20, fill="x", expand=True)
@@ -30,18 +31,21 @@ class trainmodelframe(tk.Frame):
         self.inner_frame = tk.Frame(button_frame)
         self.inner_frame.pack(expand=True)
 
+        self.label_title = tk.Label(self.inner_frame, text="Train Model", font=("Arial", 24), pady=20)
+        self.label_title.grid(row=0, column=0, columnspan=2, padx=10, pady=10)
+
         # Button styles define karte hain
         button_style_large = {"font": ("Arial", 14), "width": 15, "height": 2, "padx": 10, "pady": 10}
 
         # Back button to return to the main screen
         self.back_button = tk.Button(self.inner_frame, text="Back to Main", command=self.callback_main_Screen)
-        self.back_button.grid(row=0, column=1, padx=10, pady=10, sticky="e")
+        self.back_button.grid(row=1, column=1, padx=10, pady=10, sticky="e")
         self.dataset_info_label = tk.Label(self.inner_frame, text=f"Data set with {len(self.mainapp_obj.image_paths)} images and {len(self.mainapp_obj.image_paths)} labels is ready to be Loaded")
-        self.dataset_info_label.grid(row=1, column=0, columnspan=2, padx=10, pady=10)
+        self.dataset_info_label.grid(row=2, column=0, columnspan=2, padx=10, pady=10)
         # Label to show dataset information
         if len(self.mainapp_obj.image_paths) > 0:
             self.dataset_info_label = tk.Label(self.inner_frame, text="No dataset loaded")
-            self.dataset_info_label.grid(row=1, column=0, columnspan=2, padx=10, pady=10)
+            self.dataset_info_label.grid(row=2, column=0, columnspan=2, padx=10, pady=10)
 
             return
     

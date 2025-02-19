@@ -15,45 +15,49 @@ class App(tk.Tk):
         Yeh constructor method hai jo application window ko initialize karta hai.
         Ismein window ka title, size, aur kuch instance variables set kiye gaye hain.
         `self.current_frame` variable current visible frame ko store karta hai.
-        Application start hoti hi login screen show karcata hai.
+        Application start hoti hi login screen show karta hai.
         """
-        super().__init__() 
-        self.title("NeuroScan App")  
-        self.geometry("1080x720")
+        super().__init__()
 
+        self.title("NeuroScan App")
+
+        # Get screen width and height dynamically
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+        
+        self.geometry(f"{screen_width}x{screen_height}")
+        self.state('zoomed')
+        
+
+        # File Paths and Directories
         self.dataset_path = ""
-
         self.training_dir = ""
         self.validation_dir = ""
         self.testing_dir = ""
         self.model_path = ""
-        
-        self.path = "C:/"
-        self.path = os.path.normpath(os.path.join(self.path, "NeuroScan")).replace("\\","/")
+
+        self.path = os.path.normpath(os.path.join("C:/", "NeuroScan")).replace("\\","/")
         if not os.path.exists(self.path):
             os.mkdir(self.path)
-        
+
         self.saved_model_path = os.path.normpath(os.path.join(self.path, "tumor_detection_model.pt")).replace("\\", "/")
         self.yaml_path = os.path.normpath(os.path.join(self.path,"Brain_Tumor_Detection.yaml")).replace('\\', '/')
-        # self.metrices_path = os.path.normpath(os.path.join(self.path,"yolo_data.json")).replace('\\', '/')
-        self.metrices_path = os.path.join(self.path,"Metrices/")
+        self.metrices_path = os.path.join(self.path, "Metrices/")
         if not os.path.exists(self.metrices_path):
             os.mkdir(self.metrices_path)
-        self.tumor_detection_model_path = os.path.normpath(os.path.join(self.metrices_path,"tumor_detection_model")).replace('\\', '/')
+        self.tumor_detection_model_path = os.path.normpath(os.path.join(self.metrices_path, "tumor_detection_model")).replace('\\', '/')
 
+        # Variables for tumor detection
         self.detect_tumor_image = ""
-
         self.image_paths = []
         self.label_path = []
-
         self.loaded_images = []
         self.loaded_labels = []
         self.dataset = 0
-
-        self.metrices = None        
+        self.metrices = None
 
         self.current_frame = None  # Currently visible frame ko store karta hai
-        self.show_login()  # Login screen show karata hai jab app start hoti hai
+        self.show_login()  # Login screen show karta hai jab app start hoti hai
 
         self.userdb = UserDatabase()
 
