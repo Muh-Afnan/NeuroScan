@@ -1,6 +1,6 @@
 import tkinter as tk
 from PIL import ImageTk
-from Implementation.train_code import LoadDataset
+from Implementation.alpha import LoadDataset
 
 class trainmodelframe(tk.Frame):
     def __init__(self, mainapp, show_main_screen, show_model_training_frame):

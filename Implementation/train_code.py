@@ -3,136 +3,140 @@ import numpy as np
 import cv2 as cv2
 from tkinter import filedialog, messagebox
 import random
-import shutil
 import yaml
-
 
 class LoadDataset():
     def __init__(self, train_frame):
-        self.train_frame = train_frame
-        self.mainapp_obj = train_frame.mainapp_obj
-        self.select_directory()
+        self.train_frame = train_frame  # Train frame ko initialize kar rahe hain
+        self.mainapp_obj = train_frame.mainapp_obj  # Main app object ko initialize kar rahe hain
+        self.select_directory()  # Dataset folder select karne ke liye function call kar rahe hain
     
     def create_yaml_file(self, yaml_filename="Brain_Tumor_Detection.yaml"):
+        # Yaml file create karte hain
         yaml_content = {
-            "path": self.mainapp_obj.dataset_path,                           
-            "train": os.path.join(self.mainapp_obj.training_dir,'images'),                   
-            "val": os.path.join(self.mainapp_obj.validation_dir,'images'),                     
-            "nc": 3,                                
-            "names": ["No Tumor", "Benign tumor", "Malignant tumor"] 
+            "path": self.mainapp_obj.dataset_path,  # Dataset path ka reference
+            "train": os.path.join(self.mainapp_obj.training_dir,'images'),  # Training images ka path
+            "val": os.path.join(self.mainapp_obj.validation_dir,'images'),  # Validation images ka path
+            "nc": 3,  # Number of classes (tumor ki categories)
+            "names": ["No Tumor", "Benign tumor", "Malignant tumor"]  # Classes ke names
         }
 
-        yaml_path = self.mainapp_obj.yaml_path
+        yaml_path = self.mainapp_obj.yaml_path  # Yaml file ka path
         with open(yaml_path, "w") as file:
-            yaml.dump(yaml_content,file, default_flow_style=False)
+            yaml.dump(yaml_content,file, default_flow_style=False)  # Yaml file ko likh rahe hain
 
 
     def select_directory(self):
-
+        # Dataset folder select karne ke liye dialog box open kar rahe hain
         dataset_folder = filedialog.askdirectory(title="Select Dataset Folder")
-        self.mainapp_obj.dataset_path = dataset_folder
+        self.mainapp_obj.dataset_path = dataset_folder  # Dataset ka path set kar rahe hain
 
         if os.path.exists(self.mainapp_obj.dataset_path) and os.listdir(self.mainapp_obj.dataset_path):
+            # Agar dataset folder ka path sahi hai to training aur validation directories create karenge
             self.mainapp_obj.training_dir = os.path.normpath(os.path.join(self.mainapp_obj.dataset_path, 'Training_Dataset')).replace('\\','/')
             self.mainapp_obj.validation_dir = os.path.normpath(os.path.join(self.mainapp_obj.dataset_path, 'Validation_Dataset')).replace('\\','/')
 
-            
-            self.dataset_split()
+            self.dataset_split()  # Dataset ko split karne ka function call karte hain
 
     def dataset_split(self):
-        # Define the paths for images and labels directories
+        # Dataset ko train, validation aur test splits mein divide karte hain
+        images_path = os.path.join(self.mainapp_obj.dataset_path, 'images')  # Images folder ka path
+        labels_path = os.path.join(self.mainapp_obj.dataset_path, 'labels')  # Labels folder ka path
+        images = []  # Image filenames ka list
 
-        images_path = os.path.join(self.mainapp_obj.dataset_path, 'images')
-        labels_path = os.path.join(self.mainapp_obj.dataset_path, 'labels')
-        images = []
-
-        # Collect all image files
+        # Sare image files ko collect karte hain
         for image in os.listdir(images_path):
-            if image.endswith(".jpg"):
+            if image.endswith(".jpg"):  # Sirf JPG images ko select karte hain
                 images.append(image)    
 
-        random.shuffle(images)  # Shuffle images for random splitting
+        random.shuffle(images)  # Images ko randomize karte hain
 
 
-        # Create directories for train/val/test splits for images and labels
+        # Training aur validation ke liye directories create karte hain
         os.makedirs(self.mainapp_obj.training_dir, exist_ok=True)
         os.makedirs(self.mainapp_obj.validation_dir, exist_ok=True)
-        # os.makedirs(self.mainapp_obj.model_path, exist_ok=True)
 
-
-        # Calculate dataset splits
+        # Total dataset ka size nikalte hain
         no_of_dataset = len(images)
-        training_split = int(0.7 * no_of_dataset)
+        training_split = int(0.7 * no_of_dataset)  # 70% ko training ke liye allocate kar rahe hain
 
-        # Split images into training, validation, and testing sets
+        # Dataset ko split karte hain
         training_images = images[:training_split]
         validation_images = images[training_split:]
 
-        def move_file(image_list, main_directory):
-            # Create directories for images and labels
+        # function move_file ko call kar rahe hain images ko move karne ke liye
+        move_file(training_images, self.mainapp_obj.training_dir, images_path, labels_path)
+        move_file(validation_images, self.mainapp_obj.validation_dir, images_path, labels_path)
+    
+        self.create_yaml_file(yaml_filename="Brain_Tumor_Detection.yaml")  # Yaml file create karte hain
+
+        messagebox.showinfo("Success", "Dataset split completed successfully.")  # Success message show karte hain
+
+        def move_file(image_list, images_path, labels_path, main_directory):
+            # Images aur labels ke liye directories create karte hain
             directory_images_path = os.path.join(main_directory, 'images')
             directory_labels_path = os.path.join(main_directory, 'labels')
             os.makedirs(directory_images_path, exist_ok=True)
             os.makedirs(directory_labels_path, exist_ok=True)
 
-            missing_count = 0
-            padding = 7
-            original_height = 132
-            new_height = original_height + padding
+            missing_count = 0  # Missing files ka count initialize kar rahe hain
 
             for filename in image_list:
-                # Define source paths for image and corresponding label
+                # Image aur label ke source paths define karte hain
                 image_src = os.path.join(images_path, filename)
                 label_file = filename.rsplit('.', 1)[0] + ".txt"
                 label_src = os.path.join(labels_path, label_file)
-                
-                # Define destination paths for image and label
+
+                # Destination paths ko define karte hain
                 image_dest = os.path.join(directory_images_path, filename)
                 label_dest = os.path.join(directory_labels_path, label_file)
 
-                # Check if label file exists and move both files
-                if os.path.exists(label_src):
+                if os.path.exists(label_src):  # Agar label file exist karti hai
                     try:
-                        # Add padding to image
-                        image = cv2.imread(image_src)
-                        if image is None:
+                        image = cv2.imread(image_src)  # Image ko load karte hain
+                        if image is None:  # Agar image load nahi hoti
                             print(f"Failed to load image: {image_src}")
                             missing_count += 1
                             continue
 
-                        padded_image = cv2.copyMakeBorder(image, padding, 0, 0, 0, cv2.BORDER_CONSTANT, value=[0, 0, 0])
-                        padded_image = cv2.resize(padded_image, (416, 416))
-                        cv2.imwrite(image_dest, padded_image)
-                        print(f"Image {padded_image} is padded sucessfully")
+                        height, width = image.shape[:2]  # Image ke height aur width ko extract karte hain
 
-                        # Adjust label coordinates
-                        temp_label_dest = label_dest + ".temp"
-                        with open(label_src, "r") as infile, open(temp_label_dest, "w") as outfile:
-                            for line in infile:
-                                class_id, x_center, y_center, width, height = map(float, line.split())
-                                
-                                # Adjust y_center and height for the new image height
-                                y_center_new = (y_center * original_height + padding) / new_height
-                                height_new = height * original_height / new_height
-                                
-                                # Write adjusted labels
-                                outfile.write(f"{int(class_id)} {x_center:.6f} {y_center_new:.6f} {width:.6f} {height_new:.6f}\n")
-                        
-                        # Replace the original label with the updated one
-                        os.replace(temp_label_dest, label_dest)
-                        print(f"Label {padded_image} is padded sucessfully")
+                        if height != width:  # Agar image square nahi hai
+                            # Padding add karte hain taake image square ho jaye
+                            new_size = max(height, width)
+
+                            # Padding calculate karte hain
+                            top_padding = (new_size - height) // 2
+                            bottom_padding = new_size - height - top_padding
+                            left_padding = (new_size - width) // 2
+                            right_padding = new_size - width - left_padding
+
+                            # Image ko padding ke saath save karte hain
+                            padded_image = cv2.copyMakeBorder(image, top_padding, bottom_padding, left_padding, right_padding, cv2.BORDER_CONSTANT, value=(0, 0, 0))
+                            cv2.imwrite(image_dest, padded_image)
+
+                            # Label coordinates ko adjust karte hain using NumPy vectorization
+                            labels = np.loadtxt(label_src)  # Label data ko NumPy array mein load karte hain
+                            # Vectorized adjustment
+                            x_center = (labels[:, 1] * width + left_padding) / new_size
+                            y_center = (labels[:, 2] * height + top_padding) / new_size
+                            width_new = labels[:, 3] * width / new_size
+                            height_new = labels[:, 4] * height / new_size
+
+                            # Adjusted labels ko save karte hain
+                            adjusted_labels = np.column_stack((labels[:, 0], x_center, y_center, width_new, height_new))  # Class_id aur new coordinates ko combine karte hain
+                            np.savetxt(label_dest, adjusted_labels, fmt='%d %.16f %.16f %.16f %.16f')  # Adjusted labels ko save karte hain
+
+                            print(f"Image and label {filename} padded successfully.")
+                        else:
+                            # Square images ko directly move karte hain bina padding ke
+                            cv2.imwrite(image_dest, image)
+                            os.replace(label_src, label_dest)
+                            print(f"Image and label {filename} moved without padding.")
                     except Exception as e:
                         print(f"Error processing {filename}: {e}")
                         missing_count += 1
                 else:
                     missing_count += 1
 
-        # Move files into the respective train/val/test directories
-        move_file(training_images, self.mainapp_obj.training_dir)
-        move_file(validation_images, self.mainapp_obj.validation_dir)
-    
-        self.create_yaml_file(yaml_filename="Brain_Tumor_Detection.yaml")
-            
-
-        messagebox.showinfo("Success","Dataset split completed successfully.")
-
+            print(f"Process completed with {missing_count} missing files.")  # Missing files ki count print karte hain
