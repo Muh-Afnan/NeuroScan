@@ -83,42 +83,68 @@ class TrainModel:
         for det in highest_detections.values():
             if det is not None:  # Only keep valid detections
                 final_detections.append(det)
+                print(final_detections)
 
-        # # to display only one detection
-        # highest_confidence_detection = None
-        # max_confidence = max(det[1] for det in final_detections)
+        # to display only one detection
+        highest_confidence_detection = None
+        max_confidence = max(det[1] for det in final_detections)
 
-        # for det in final_detections:
-        #     if det[1] == max_confidence:
-        #         if (highest_confidence_detection is None) or (det[2] > highest_confidence_detection[2]):
-        #             highest_confidence_detection = det
-
+        for det in final_detections:
+            if det[1] == max_confidence:
+                if highest_confidence_detection is None or det[2] > highest_confidence_detection[2]:
+                    highest_confidence_detection = det  # Assign tuple instead of appending
+                    print(highest_confidence_detection)
 
         # Detections ko visualize karo
-        # for box, conf, cls in highest_confidence_detection:
-        for box, conf, cls in final_detections:
-            x1, y1, x2, y2 = map(int, box)
-            # Class ke mutabiq label define karo
-            label = "No Tumor" if cls == 0 else "Benign" if cls == 1 else "Malignant"
-            percent_value = conf * 100
-            text = f"{label} {percent_value:.1f}%"
+        box, conf, cls = highest_confidence_detection
+        x1, y1, x2, y2 = map(int, box)
+        # Class ke mutabiq label define karo
+        label = "No Tumor" if cls == 0 else "Benign" if cls == 1 else "Malignant"
+        percent_value = conf * 100
+        text = f"{label} {percent_value:.1f}%"
 
-            # Har class ke liye color define karo
-            color = (0, 255, 0) if cls == 0 else (255, 0, 0) if cls == 1 else (0, 0, 255)
+        # Har class ke liye color define karo
+        color = (0, 255, 0) if cls == 0 else (255, 0, 0) if cls == 1 else (0, 0, 255)
 
-            # Font size aur thickness dynamically adjust karo
-            font_scale = max(0.3, min(0.5, image.shape[0] / 500))
-            font_thickness = max(1, int(image.shape[0] / 300))
+        # Font size aur thickness dynamically adjust karo
+        font_scale = max(0.3, min(0.5, image.shape[0] / 500))
+        font_thickness = max(1, int(image.shape[0] / 300))
 
-            # Text ka size aur background calculate karo
-            text_size = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, font_scale, font_thickness)[0]
-            text_bg_x1, text_bg_y1 = x1, y1 - text_size[1] - 6
-            text_bg_x2, text_bg_y2 = x1 + text_size[0] + 4, y1
+        # Text ka size aur background calculate karo
+        text_size = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, font_scale, font_thickness)[0]
+        text_bg_x1, text_bg_y1 = x1, y1 - text_size[1] - 6
+        text_bg_x2, text_bg_y2 = x1 + text_size[0] + 4, y1
 
-            # Bounding box aur label ko draw karo
-            cv2.rectangle(image, (x1, y1), (x2, y2), color, 1)
-            cv2.rectangle(image, (text_bg_x1, text_bg_y1), (text_bg_x2, text_bg_y2), color, -1)
-            cv2.putText(image, text, (x1 + 2, y1 - 5), cv2.FONT_HERSHEY_SIMPLEX, font_scale, (255, 255, 255), font_thickness)
+        # Bounding box aur label ko draw karo
+        cv2.rectangle(image, (x1, y1), (x2, y2), color, 1)
+        cv2.rectangle(image, (text_bg_x1, text_bg_y1), (text_bg_x2, text_bg_y2), color, -1)
+        cv2.putText(image, text, (x1 + 2, y1 - 5), cv2.FONT_HERSHEY_SIMPLEX, font_scale, (255, 255, 255), font_thickness)
 
         return image
+
+        # for box, conf, cls in final_detections:
+        #     x1, y1, x2, y2 = map(int, box)
+        #     # Class ke mutabiq label define karo
+        #     label = "No Tumor" if cls == 0 else "Benign" if cls == 1 else "Malignant"
+        #     percent_value = conf * 100
+        #     text = f"{label} {percent_value:.1f}%"
+
+        #     # Har class ke liye color define karo
+        #     color = (0, 255, 0) if cls == 0 else (255, 0, 0) if cls == 1 else (0, 0, 255)
+
+        #     # Font size aur thickness dynamically adjust karo
+        #     font_scale = max(0.3, min(0.5, image.shape[0] / 500))
+        #     font_thickness = max(1, int(image.shape[0] / 300))
+
+        #     # Text ka size aur background calculate karo
+        #     text_size = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, font_scale, font_thickness)[0]
+        #     text_bg_x1, text_bg_y1 = x1, y1 - text_size[1] - 6
+        #     text_bg_x2, text_bg_y2 = x1 + text_size[0] + 4, y1
+
+        #     # Bounding box aur label ko draw karo
+        #     cv2.rectangle(image, (x1, y1), (x2, y2), color, 1)
+        #     cv2.rectangle(image, (text_bg_x1, text_bg_y1), (text_bg_x2, text_bg_y2), color, -1)
+        #     cv2.putText(image, text, (x1 + 2, y1 - 5), cv2.FONT_HERSHEY_SIMPLEX, font_scale, (255, 255, 255), font_thickness)
+
+        # return image
 
