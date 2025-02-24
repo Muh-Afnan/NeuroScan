@@ -58,11 +58,11 @@ class TrainModel:
         confidence_threshold = 0.01
 
         # Confidence threshold se upar ke detections ko filter karo
-        filtered_detections = [
-            (box, conf, cls)
-            for box, conf, cls in zip(boxes, confidences, classes)
-            if conf > confidence_threshold
-        ]
+        filtered_detections = []
+        for box, conf, cls in zip(boxes, confidences, classes):
+            if conf > confidence_threshold:  # Check confidence threshold
+                filtered_detections.append((box, conf, cls))  # Add to the list
+
 
         # Agar koi detection nahi milti to message print karo
         if not filtered_detections:
@@ -79,9 +79,23 @@ class TrainModel:
                 highest_detections[cls] = (box, conf, cls)
 
         # Sirf highest detections ko extract karo
-        final_detections = [det for det in highest_detections.values() if det is not None]
+        final_detections = []
+        for det in highest_detections.values():
+            if det is not None:  # Only keep valid detections
+                final_detections.append(det)
+
+        # # to display only one detection
+        # highest_confidence_detection = None
+        # max_confidence = max(det[1] for det in final_detections)
+
+        # for det in final_detections:
+        #     if det[1] == max_confidence:
+        #         if (highest_confidence_detection is None) or (det[2] > highest_confidence_detection[2]):
+        #             highest_confidence_detection = det
+
 
         # Detections ko visualize karo
+        # for box, conf, cls in highest_confidence_detection:
         for box, conf, cls in final_detections:
             x1, y1, x2, y2 = map(int, box)
             # Class ke mutabiq label define karo
